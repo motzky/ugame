@@ -29,18 +29,18 @@ namespace game
         }
 
         AutoRelease(const AutoRelease &) = delete;
-        auto operator=(const AutoRelease &) -> AutoRelease = delete;
+        auto operator=(const AutoRelease &) -> AutoRelease & = delete;
 
         AutoRelease(AutoRelease &&other)
             : AutoRelease()
         {
             swap(other);
         }
-        auto operator=(AutoRelease &&other) -> AutoRelease
+        auto operator=(AutoRelease &&other) -> AutoRelease &
         {
             AutoRelease new_obj{std::move(other)};
             swap(new_obj);
-            return this;
+            return *this;
         }
 
         auto swap(AutoRelease &other) noexcept -> void
