@@ -56,6 +56,11 @@ namespace game
             return _obj != Invalid;
         }
 
+        T *operator&() noexcept
+        {
+            return std::addressof(_obj);
+        }
+
     private:
         T _obj;
         std::function<void(T)> _deleter;

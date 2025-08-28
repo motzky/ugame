@@ -20,8 +20,10 @@
     DO(::PFNGLDELETEPROGRAMPROC, glDeleteProgram)                     \
     DO(::PFNGLATTACHSHADERPROC, glAttachShader)                       \
     DO(::PFNGLLINKPROGRAMPROC, glLinkProgram)                         \
+    DO(::PFNGLDELETEVERTEXARRAYSPROC, glDeleteVertexArrays)           \
     DO(::PFNGLGENVERTEXARRAYSPROC, glGenVertexArrays)                 \
     DO(::PFNGLGENBUFFERSPROC, glGenBuffers)                           \
+    DO(::PFNGLDELETEBUFFERSPROC, glDeleteBuffers)                     \
     DO(::PFNGLBINDVERTEXARRAYPROC, glBindVertexArray)                 \
     DO(::PFNGLBINDBUFFERPROC, glBindBuffer)                           \
     DO(::PFNGLBUFFERDATAPROC, glBufferData)                           \
