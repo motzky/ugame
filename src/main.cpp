@@ -4,11 +4,8 @@
 
 #include <utility>
 
-#include "auto_release.h"
-#include "error.h"
 #include "exception.h"
 #include "material.h"
-#include "mesh.h"
 #include "renderer.h"
 #include "shader.h"
 #include "window.h"
