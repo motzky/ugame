@@ -9,6 +9,7 @@
 #include "exception.h"
 #include "material.h"
 #include "mesh.h"
+#include "renderer.h"
 #include "shader.h"
 #include "window.h"
 
@@ -53,22 +54,15 @@ auto main() -> int
     {
         game::Window window(800u, 600u); // Create a window with specified width and height
 
-        auto vertex_shader = game::Shader{vertex_shader_src, game::ShaderType::VERTEX};
-        auto fragment_shader = game::Shader{fragment_shader_src, game::ShaderType::FRAGMENT};
+        const auto vertex_shader = game::Shader{vertex_shader_src, game::ShaderType::VERTEX};
+        const auto fragment_shader = game::Shader{fragment_shader_src, game::ShaderType::FRAGMENT};
         auto material = game::Material{vertex_shader, fragment_shader};
-        auto mesh = game::Mesh{};
 
-        ::glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        const auto renderer = game::Renderer{std::move(material)};
 
         while (!window.windowShouldClose())
         {
-            ::glClear(GL_COLOR_BUFFER_BIT);
-
-            ::glUseProgram(material.native_handle());
-            mesh.bind();
-            ::glDrawArrays(GL_TRIANGLES, 0, 3);
-            mesh.unbind();
-
+            renderer.render();
             window.swapBuffers();
         }
     }

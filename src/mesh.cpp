@@ -39,12 +39,12 @@ namespace game
         ::glBindVertexArray(0);
     }
 
-    auto Mesh::bind() -> void
+    auto Mesh::bind() const -> void
     {
         ::glBindVertexArray(_vao);
     }
 
-    auto Mesh::unbind() -> void
+    auto Mesh::unbind() const -> void
     {
         ::glBindVertexArray(0);
     }

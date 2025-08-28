@@ -1,8 +1,10 @@
 add_executable(
     nathan_stream
-    exception.cpp
+    exception.cpp    
     main.cpp
-    material.cpp    
+    mesh.cpp
+    material.cpp
+    renderer.cpp
     shader.cpp
     window.cpp
 )

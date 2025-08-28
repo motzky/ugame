@@ -11,8 +11,8 @@ namespace game
     public:
         Mesh();
 
-        auto bind() -> void;
-        auto unbind() -> void;
+        auto bind() const -> void;
+        auto unbind() const -> void;
 
     private:
         AutoRelease<GLuint> _vao;
