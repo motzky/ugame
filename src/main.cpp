@@ -68,7 +68,7 @@ auto main() -> int
     }
     catch (const game::Exception &err)
     {
-        std::println(std::cerr, "{}\n{}", err.what(), err.stacktrace());
+        std::println(std::cerr, "{}", err);
     }
     catch (...)
     {
