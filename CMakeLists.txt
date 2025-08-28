@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.22)
+cmake_minimum_required(VERSION 3.30)
 
 project(
     nathan_stream
@@ -7,10 +7,11 @@ project(
     LANGUAGES C CXX
 )
 
-find_package(Vulkan REQUIRED)
 find_package(glfw3 REQUIRED)
+find_package(Backtrace REQUIRED)
 
 set (CMAKE_CXX_STANDARD 23)
+set (CMAKE_CXX_FLAGS -std=c++23)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 

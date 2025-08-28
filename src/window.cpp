@@ -3,6 +3,11 @@
 #include <stdexcept>
 #include <cstdint>
 
+#include <GLFW/glfw3.h>
+
+#include "auto_release.h"
+#include "error.h"
+
 namespace game
 {
     Window::Window(std::uint32_t width, std::uint32_t height)

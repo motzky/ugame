@@ -1,6 +1,8 @@
 add_executable(
     nathan_stream
+    exception.cpp
     main.cpp
+    shader.cpp
     window.cpp
 )
 
@@ -10,11 +12,12 @@ target_compile_features(
 )
 target_compile_options(
     nathan_stream
-    PUBLIC -Wall -Wextra -Wpedantic
+    PUBLIC -std=c++23 -Wall -Wextra -pedantic-errors
 )
 
 target_link_libraries(${PROJECT_NAME} 
     PRIVATE
-        Vulkan::Vulkan
         glfw
+        Backtrace::Backtrace
+        stdc++exp
 )
