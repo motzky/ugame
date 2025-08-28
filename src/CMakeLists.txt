@@ -18,6 +18,7 @@ target_compile_options(
 target_link_libraries(${PROJECT_NAME} 
     PRIVATE
         glfw
+        GL
         Backtrace::Backtrace
         stdc++exp
 )

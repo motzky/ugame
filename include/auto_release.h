@@ -51,6 +51,11 @@ namespace game
         T get() const { return _obj; }
         operator T() const { return _obj; }
 
+        explicit operator bool() const
+        {
+            return _obj != Invalid;
+        }
+
     private:
         T _obj;
         std::function<void(T)> _deleter;

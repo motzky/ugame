@@ -7,6 +7,25 @@
 
 #include "auto_release.h"
 #include "error.h"
+#include "opengl.h"
+
+namespace
+{
+    template <class T>
+    auto resolve_gl_function(T &function, const std::string &name) -> void
+    {
+        const auto address = ::GL_GET_PROC_ADDRESS(name.c_str());
+        game::ensure(address != nullptr, "failed to resolve {}", name);
+
+        function = reinterpret_cast<T>(address);
+    }
+
+    auto resolve_global_gl_functions() -> void
+    {
+#define RESOLVE(TYPE, NAME) resolve_gl_function(NAME, #NAME);
+        FOR_OPENGL_FUNCTIONS(RESOLVE);
+    }
+}
 
 namespace game
 {
@@ -59,11 +78,39 @@ namespace game
         // For non-Windows platforms, you might want to handle this differently
         : _windowHandle{} // Placeholder for non-Windows platforms
     {
-        _windowHandle = glfwCreateWindow(width, height, "Game Window", nullptr, nullptr);
-        if (!_windowHandle)
-        {
-            throw std::runtime_error("Failed to create GLFW window");
-        }
+        game::ensure(glfwInit(), "failed to initialize GLFW");
+
+        ::glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+        ::glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+
+        _windowHandle = {::glfwCreateWindow(width, height, "Game Window", nullptr, nullptr),
+                         ::glfwDestroyWindow};
+        game::ensure(_windowHandle, "failed to create window");
+
+        ::glfwMakeContextCurrent(_windowHandle);
+
+        resolve_global_gl_functions();
     }
 #endif
+
+    auto Window::windowShouldClose() -> bool
+    {
+#ifdef WIN32
+        return true;
+#else
+        ::glfwPollEvents();
+
+        return ::glfwWindowShouldClose(_windowHandle);
+#endif
+    }
+
+    auto Window::swapBuffers() -> void
+    {
+#ifdef WIN32
+        ::SwapBuffers(_windowHandle)
+#else
+        ::glfwSwapBuffers(_windowHandle);
+#endif
+    }
+
 }

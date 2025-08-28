@@ -25,12 +25,15 @@ namespace game
         Window(Window &&) noexcept = default;
         Window &operator=(Window &&) = default;
 
+        auto windowShouldClose() -> bool;
+        auto swapBuffers() -> void;
+
     private:
 #ifdef _WIN32
         AutoRelease<::HWND, nullptr> _windowHandle;
         ::WNDCLASSA _wc;
 #else
-        GLFWwindow *_windowHandle; // Placeholder for non-Windows platforms
+        AutoRelease<::GLFWwindow *, nullptr> _windowHandle; // Placeholder for non-Windows platforms
 #endif
     };
 }
