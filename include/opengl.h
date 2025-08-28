@@ -31,6 +31,7 @@
     DO(::PFNGLENABLEVERTEXATTRIBARRAYPROC, glEnableVertexAttribArray) \
     DO(::PFNGLUSEPROGRAMPROC, glUseProgram)                           \
     DO(::PFNGLGETSHADERINFOLOGPROC, glGetShaderInfoLog)               \
+    DO(::PFNGLDEBUGMESSAGECALLBACKPROC, glDebugMessageCallback)       \
     DO(::PFNGLDRAWARRAYSEXTPROC, glDrawArraysExt)
 
 #define DO_INLINE(TYPE, NAME) inline TYPE NAME;

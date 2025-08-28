@@ -5,6 +5,7 @@
 #include <utility>
 
 #include "exception.h"
+#include "log.h"
 #include "material.h"
 #include "renderer.h"
 #include "shader.h"
@@ -45,7 +46,7 @@ void main()
 
 auto main() -> int
 {
-    std::println("Hello, World!\n");
+    game::log::info("hello world");
 
     try
     {

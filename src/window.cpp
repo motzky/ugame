@@ -1,7 +1,8 @@
 #include "window.h"
 
-#include <stdexcept>
 #include <cstdint>
+#include <print>
+#include <stdexcept>
 
 #include <GLFW/glfw3.h>
 
@@ -11,6 +12,18 @@
 
 namespace
 {
+    void APIENTRY opengl_debug_callback(
+        GLenum source,
+        GLenum type,
+        GLuint id,
+        GLenum severity,
+        GLsizei,
+        const GLchar *message,
+        const void *)
+    {
+        std::println("{} {} {} {} {}", source, type, id, severity, message);
+    }
+
     template <class T>
     auto resolve_gl_function(T &function, const std::string &name) -> void
     {
@@ -24,6 +37,12 @@ namespace
     {
 #define RESOLVE(TYPE, NAME) resolve_gl_function(NAME, #NAME);
         FOR_OPENGL_FUNCTIONS(RESOLVE);
+    }
+
+    auto setup_debug() -> void
+    {
+        ::glEnable(GL_DEBUG_OUTPUT);
+        ::glDebugMessageCallback(opengl_debug_callback, nullptr);
     }
 }
 
@@ -89,7 +108,8 @@ namespace game
 
         ::glfwMakeContextCurrent(_windowHandle);
 
-        resolve_global_gl_functions();
+        ::resolve_global_gl_functions();
+        ::setup_debug();
     }
 #endif
 
