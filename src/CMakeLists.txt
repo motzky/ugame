@@ -2,6 +2,7 @@ add_executable(
     nathan_stream
     exception.cpp
     main.cpp
+    material.cpp    
     shader.cpp
     window.cpp
 )

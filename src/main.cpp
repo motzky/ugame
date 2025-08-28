@@ -7,6 +7,7 @@
 #include "auto_release.h"
 #include "error.h"
 #include "exception.h"
+#include "material.h"
 #include "shader.h"
 #include "window.h"
 
@@ -59,12 +60,7 @@ auto main() -> int
         auto vertex_shader = game::Shader{vertex_shader_src, game::ShaderType::VERTEX};
         auto fragment_shader = game::Shader{fragment_shader_src, game::ShaderType::FRAGMENT};
 
-        auto program = game::AutoRelease<::GLuint>{::glCreateProgram(), ::glDeleteProgram};
-        game::ensure(program, "failed ot create opengl program");
-
-        ::glAttachShader(program, vertex_shader.native_handle());
-        ::glAttachShader(program, fragment_shader.native_handle());
-        ::glLinkProgram(program);
+        auto material = game::Material{vertex_shader, fragment_shader};
 
         ::glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
@@ -90,7 +86,7 @@ auto main() -> int
         {
             ::glClear(GL_COLOR_BUFFER_BIT);
 
-            ::glUseProgram(program);
+            ::glUseProgram(material.native_handle());
             ::glBindVertexArray(vao);
             ::glDrawArrays(GL_TRIANGLES, 0, 3);
 
