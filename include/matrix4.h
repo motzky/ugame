@@ -58,6 +58,7 @@ namespace game
         }
 
         static auto look_at(const Vector3 &eye, const Vector3 &look_at, const Vector3 &up) -> Matrix4;
+        static auto perspective(float fov, float width, float height, float near_plane, float far_plane) -> Matrix4;
 
         auto make_translate(const game::Vector3 &v1) -> game::Matrix4
         {
@@ -124,6 +125,25 @@ namespace game
         return m * Matrix4{-eye};
     }
 
+    inline auto Matrix4::perspective(float fov, float width, float height, float near_plane, float far_plane) -> Matrix4
+    {
+        Matrix4 m;
+
+        const auto aspect_ratio = width / height;
+        const auto tmp = std::tanf(fov / 2.f);
+        const auto t = tmp * near_plane;
+        const auto b = -t;
+        const auto r = t * aspect_ratio;
+        const auto l = b * aspect_ratio;
+
+        m._elements = {{(2.f * near_plane) / (r - l), 0.f, 0.f, 0.f,
+                        0.f, (2.f * near_plane) / (t - b), 0.f, 0.f,
+                        (r + l) / (r - l), (t + b) / (t - b), -(far_plane + near_plane) / (far_plane - near_plane), -1.f,
+                        0.f, 0.f, -(2.f * far_plane * near_plane) / (far_plane - near_plane), 0.f}};
+
+        return m;
+    }
+
 }
 
 template <>
@@ -138,6 +158,9 @@ struct std::formatter<game::Matrix4>
     {
         const auto *data = obj.data().data();
         return std::format_to(ctx.out(), "{} {} {} {}\n{} {} {} {}\n{} {} {} {}\n{} {} {} {}",
-                              data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7], data[8], data[9], data[10], data[11], data[12], data[13], data[14], data[15]);
+                              data[0], data[4], data[8], data[12],
+                              data[1], data[5], data[9], data[13],
+                              data[2], data[6], data[10], data[14],
+                              data[3], data[7], data[11], data[15]);
     }
 };
