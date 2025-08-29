@@ -2,8 +2,10 @@
 #include <iostream>
 #include <print>
 
+#include <numbers>
 #include <utility>
 
+#include "camera.h"
 #include "exception.h"
 #include "log.h"
 #include "material.h"
@@ -62,9 +64,18 @@ auto main() -> int
 
         const auto renderer = game::Renderer{std::move(material)};
 
+        const auto camera = game::Camera{{.x = 0.f, .y = 0.f, .z = 5.f},
+                                         {.x = 0.f, .y = 0.f, .z = 0.f},
+                                         {.x = 0.f, .y = 1.f, .z = 0.f},
+                                         std::numbers::pi_v<float> / 4.f,
+                                         800.f,
+                                         600.f,
+                                         0.001f,
+                                         100.f};
+
         while (!window.windowShouldClose())
         {
-            renderer.render();
+            renderer.render(camera);
             window.swapBuffers();
         }
     }

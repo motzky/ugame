@@ -1,5 +1,6 @@
 #pragma once
 
+#include "camera.h"
 #include "material.h"
 #include "mesh.h"
 
@@ -9,7 +10,7 @@ namespace game
     {
     public:
         Renderer(Material material);
-        auto render() const -> void;
+        auto render(const Camera &camera) const -> void;
 
     private:
         Material _material;
