@@ -1,19 +1,15 @@
 #pragma once
 
 #include "camera.h"
-#include "material.h"
-#include "mesh.h"
+#include "scene.h"
 
 namespace game
 {
     class Renderer
     {
     public:
-        Renderer(Material material);
-        auto render(const Camera &camera) const -> void;
+        auto render(const Camera &camera, const Scene &scene) const -> void;
 
     private:
-        Material _material;
-        Mesh _mesh;
     };
 }

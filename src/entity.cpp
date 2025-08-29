@@ -12,6 +12,14 @@ namespace game
     {
     }
 
+    auto Entity::mesh() const -> const Mesh *
+    {
+        return _mesh;
+    }
+    auto Entity::material() const -> const Material *
+    {
+        return _material;
+    }
     auto Entity::model() const -> std::span<const float>
     {
         return _model.data();

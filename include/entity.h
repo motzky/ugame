@@ -13,6 +13,8 @@ namespace game
     public:
         Entity(const Mesh *mesh, const Material *material);
 
+        auto mesh() const -> const Mesh *;
+        auto material() const -> const Material *;
         auto model() const -> std::span<const float>;
 
     private:

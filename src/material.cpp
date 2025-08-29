@@ -13,8 +13,8 @@ namespace game
         ensure(vertex_shader.type() == ShaderType::VERTEX, "vertex_shader is not a vertex shader");
         ensure(fragment_shader.type() == ShaderType::FRAGMENT, "fragment_shader is not a fragment shader");
 
-        _handle = game::AutoRelease<::GLuint>{::glCreateProgram(), ::glDeleteProgram};
-        game::ensure(_handle, "failed ot create opengl program");
+        _handle = AutoRelease<::GLuint>{::glCreateProgram(), ::glDeleteProgram};
+        ensure(_handle, "failed ot create opengl program");
 
         ::glAttachShader(_handle, vertex_shader.native_handle());
         ::glAttachShader(_handle, fragment_shader.native_handle());

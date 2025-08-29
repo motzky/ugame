@@ -4,8 +4,8 @@ add_executable(
     entity.cpp
     exception.cpp
     main.cpp
-    mesh.cpp
     material.cpp
+    mesh.cpp
     renderer.cpp
     shader.cpp
     window.cpp

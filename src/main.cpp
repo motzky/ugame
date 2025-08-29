@@ -6,10 +6,12 @@
 #include <utility>
 
 #include "camera.h"
+#include "entity.h"
 #include "exception.h"
 #include "log.h"
 #include "material.h"
 #include "renderer.h"
+#include "scene.h"
 #include "shader.h"
 #include "window.h"
 
@@ -62,7 +64,11 @@ auto main() -> int
         const auto fragment_shader = game::Shader{fragment_shader_src, game::ShaderType::FRAGMENT};
         auto material = game::Material{vertex_shader, fragment_shader};
 
-        const auto renderer = game::Renderer{std::move(material)};
+        const auto renderer = game::Renderer{};
+
+        const auto mesh = game::Mesh{};
+        const auto entity = game::Entity{&mesh, &material};
+        auto scene = game::Scene{.entities{&entity}};
 
         const auto camera = game::Camera{{.x = 0.f, .y = 0.f, .z = 5.f},
                                          {.x = 0.f, .y = 0.f, .z = 0.f},
@@ -75,7 +81,7 @@ auto main() -> int
 
         while (!window.windowShouldClose())
         {
-            renderer.render(camera);
+            renderer.render(camera, scene);
             window.swapBuffers();
         }
     }
