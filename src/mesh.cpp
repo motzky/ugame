@@ -6,11 +6,56 @@
 
 namespace
 {
+    // Each face has a single color
     static constexpr game::VertexData vertex_data[] = {
-        {.position = {.x = 0.f, .y = .5f, .z = 0.f}, .color = {.r = 1.f, .g = 0.f, .b = 0.f}},
-        {.position = {.x = -.5f, .y = -.5f, .z = 0.f}, .color = {.r = 0.f, .g = 1.f, .b = 0.f}},
-        {.position = {.x = .5f, .y = -.5f, .z = 0.f}, .color = {.r = 0.f, .g = 0.f, .b = 1.f}}};
+        // Front face (z = +0.5) - Cyan
+        {.position = {.x = -0.5f, .y = -0.5f, .z = 0.5f}, .color = {.r = 0.f, .g = 1.f, .b = 1.f}},
+        {.position = {.x = 0.5f, .y = -0.5f, .z = 0.5f}, .color = {.r = 0.f, .g = 1.f, .b = 1.f}},
+        {.position = {.x = 0.5f, .y = 0.5f, .z = 0.5f}, .color = {.r = 0.f, .g = 1.f, .b = 1.f}},
+        {.position = {.x = -0.5f, .y = -0.5f, .z = 0.5f}, .color = {.r = 0.f, .g = 1.f, .b = 1.f}},
+        {.position = {.x = 0.5f, .y = 0.5f, .z = 0.5f}, .color = {.r = 0.f, .g = 1.f, .b = 1.f}},
+        {.position = {.x = -0.5f, .y = 0.5f, .z = 0.5f}, .color = {.r = 0.f, .g = 1.f, .b = 1.f}},
 
+        // Back face (z = -0.5) - Magenta
+        {.position = {.x = -0.5f, .y = -0.5f, .z = -0.5f}, .color = {.r = 1.f, .g = 0.f, .b = 1.f}},
+        {.position = {.x = 0.5f, .y = 0.5f, .z = -0.5f}, .color = {.r = 1.f, .g = 0.f, .b = 1.f}},
+        {.position = {.x = 0.5f, .y = -0.5f, .z = -0.5f}, .color = {.r = 1.f, .g = 0.f, .b = 1.f}},
+        {.position = {.x = -0.5f, .y = -0.5f, .z = -0.5f}, .color = {.r = 1.f, .g = 0.f, .b = 1.f}},
+        {.position = {.x = -0.5f, .y = 0.5f, .z = -0.5f}, .color = {.r = 1.f, .g = 0.f, .b = 1.f}},
+        {.position = {.x = 0.5f, .y = 0.5f, .z = -0.5f}, .color = {.r = 1.f, .g = 0.f, .b = 1.f}},
+
+        // Left face (x = -0.5) - Blue
+        {.position = {.x = -0.5f, .y = -0.5f, .z = -0.5f}, .color = {.r = 0.f, .g = 0.f, .b = 1.f}},
+        {.position = {.x = -0.5f, .y = -0.5f, .z = 0.5f}, .color = {.r = 0.f, .g = 0.f, .b = 1.f}},
+        {.position = {.x = -0.5f, .y = 0.5f, .z = 0.5f}, .color = {.r = 0.f, .g = 0.f, .b = 1.f}},
+        {.position = {.x = -0.5f, .y = -0.5f, .z = -0.5f}, .color = {.r = 0.f, .g = 0.f, .b = 1.f}},
+        {.position = {.x = -0.5f, .y = 0.5f, .z = 0.5f}, .color = {.r = 0.f, .g = 0.f, .b = 1.f}},
+        {.position = {.x = -0.5f, .y = 0.5f, .z = -0.5f}, .color = {.r = 0.f, .g = 0.f, .b = 1.f}},
+
+        // Right face (x = +0.5) - Green
+        {.position = {.x = 0.5f, .y = -0.5f, .z = -0.5f}, .color = {.r = 0.f, .g = 1.f, .b = 0.f}},
+        {.position = {.x = 0.5f, .y = 0.5f, .z = 0.5f}, .color = {.r = 0.f, .g = 1.f, .b = 0.f}},
+        {.position = {.x = 0.5f, .y = -0.5f, .z = 0.5f}, .color = {.r = 0.f, .g = 1.f, .b = 0.f}},
+        {.position = {.x = 0.5f, .y = -0.5f, .z = -0.5f}, .color = {.r = 0.f, .g = 1.f, .b = 0.f}},
+        {.position = {.x = 0.5f, .y = 0.5f, .z = -0.5f}, .color = {.r = 0.f, .g = 1.f, .b = 0.f}},
+        {.position = {.x = 0.5f, .y = 0.5f, .z = 0.5f}, .color = {.r = 0.f, .g = 1.f, .b = 0.f}},
+
+        // Top face (y = +0.5) - Red
+        {.position = {.x = -0.5f, .y = 0.5f, .z = 0.5f}, .color = {.r = 1.f, .g = 0.f, .b = 0.f}},
+        {.position = {.x = 0.5f, .y = 0.5f, .z = 0.5f}, .color = {.r = 1.f, .g = 0.f, .b = 0.f}},
+        {.position = {.x = 0.5f, .y = 0.5f, .z = -0.5f}, .color = {.r = 1.f, .g = 0.f, .b = 0.f}},
+        {.position = {.x = -0.5f, .y = 0.5f, .z = 0.5f}, .color = {.r = 1.f, .g = 0.f, .b = 0.f}},
+        {.position = {.x = 0.5f, .y = 0.5f, .z = -0.5f}, .color = {.r = 1.f, .g = 0.f, .b = 0.f}},
+        {.position = {.x = -0.5f, .y = 0.5f, .z = -0.5f}, .color = {.r = 1.f, .g = 0.f, .b = 0.f}},
+
+        // Bottom face (y = -0.5) - Yellow
+        {.position = {.x = -0.5f, .y = -0.5f, .z = 0.5f}, .color = {.r = 1.f, .g = 1.f, .b = 0.f}},
+        {.position = {.x = 0.5f, .y = -0.5f, .z = -0.5f}, .color = {.r = 1.f, .g = 1.f, .b = 0.f}},
+        {.position = {.x = 0.5f, .y = -0.5f, .z = 0.5f}, .color = {.r = 1.f, .g = 1.f, .b = 0.f}},
+        {.position = {.x = -0.5f, .y = -0.5f, .z = 0.5f}, .color = {.r = 1.f, .g = 1.f, .b = 0.f}},
+        {.position = {.x = -0.5f, .y = -0.5f, .z = -0.5f}, .color = {.r = 1.f, .g = 1.f, .b = 0.f}},
+        {.position = {.x = 0.5f, .y = -0.5f, .z = -0.5f}, .color = {.r = 1.f, .g = 1.f, .b = 0.f}},
+    };
 }
 
 namespace game

@@ -18,7 +18,7 @@ namespace game
 
     auto Renderer::render() const -> void
     {
-        ::glClear(GL_COLOR_BUFFER_BIT);
+        ::glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         ::glUseProgram(_material.native_handle());
 
@@ -51,7 +51,7 @@ namespace game
         ::glUniformMatrix4fv(proj_uniform, 1, GL_FALSE, proj.data().data());
 
         _mesh.bind();
-        ::glDrawArrays(GL_TRIANGLES, 0, 3);
+        ::glDrawArrays(GL_TRIANGLES, 0, 36);
         _mesh.unbind();
     }
 }
