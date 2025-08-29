@@ -1,7 +1,8 @@
 add_executable(
     nathan_stream
     camera.cpp
-    exception.cpp    
+    entity.cpp
+    exception.cpp
     main.cpp
     mesh.cpp
     material.cpp
