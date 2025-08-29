@@ -7,6 +7,16 @@ project(
     LANGUAGES C CXX
 )
 
+include(FetchContent)
+
+FetchContent_Declare(
+    googletest
+    GIT_REPOSITORY https://github.com/google/googletest.git
+    GIT_TAG v1.15.2
+)
+
+FetchContent_GetProperties(googletest)
+
 find_package(glfw3 REQUIRED)
 find_package(Backtrace REQUIRED)
 
@@ -14,8 +24,12 @@ set (CMAKE_CXX_STANDARD 23)
 set (CMAKE_CXX_FLAGS -std=c++23)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+set(FETCHCONTENT_QUIET FALSE)
 
 include_directories(include)
 
 add_subdirectory(src)
 
+enable_testing()
+include(CTest)
+add_subdirectory(tests)
