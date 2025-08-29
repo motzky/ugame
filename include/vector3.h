@@ -30,6 +30,8 @@ namespace game
 
             return {.x = i, .y = -j, .z = k};
         }
+
+        constexpr auto operator==(const Vector3 &) const -> bool = default;
     };
 
     constexpr auto operator-=(Vector3 &v1, const Vector3 &v2) -> Vector3 &
@@ -49,4 +51,5 @@ namespace game
     {
         return {-v.x, -v.y, -v.z};
     }
+
 }

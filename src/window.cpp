@@ -42,7 +42,7 @@ namespace
     auto setup_debug() -> void
     {
         ::glEnable(GL_DEBUG_OUTPUT);
-        ::glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+        //::glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
         ::glDebugMessageCallback(opengl_debug_callback, nullptr);
     }
 }
@@ -111,6 +111,8 @@ namespace game
 
         ::resolve_global_gl_functions();
         ::setup_debug();
+
+        ::glEnable(GL_CULL_FACE);
     }
 #endif
 
