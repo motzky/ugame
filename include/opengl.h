@@ -32,6 +32,8 @@
     DO(::PFNGLUSEPROGRAMPROC, glUseProgram)                           \
     DO(::PFNGLGETSHADERINFOLOGPROC, glGetShaderInfoLog)               \
     DO(::PFNGLDEBUGMESSAGECALLBACKPROC, glDebugMessageCallback)       \
+    DO(::PFNGLGETUNIFORMLOCATIONPROC, glGetUniformLocation)           \
+    DO(::PFNGLUNIFORMMATRIX4FVPROC, glUniformMatrix4fv)               \
     DO(::PFNGLDRAWARRAYSEXTPROC, glDrawArraysExt)
 
 #define DO_INLINE(TYPE, NAME) inline TYPE NAME;

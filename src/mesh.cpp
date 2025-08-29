@@ -2,13 +2,14 @@
 
 #include "auto_release.h"
 #include "opengl.h"
+#include "vertex_data.h"
 
 namespace
 {
-    static constexpr float vertex_data[] = {
-        0.f, .5f, 0.f, 1.f, 0.f, 0.f,
-        -.5f, -.5f, 0.f, 0.f, 1.f, 0.f,
-        .5f, -.5f, 0.f, 0.f, 0.f, 1.f};
+    static constexpr game::VertexData vertex_data[] = {
+        {.position = {.x = 0.f, .y = .5f, .z = 0.f}, .color = {.r = 1.f, .g = 0.f, .b = 0.f}},
+        {.position = {.x = -.5f, .y = -.5f, .z = 0.f}, .color = {.r = 0.f, .g = 1.f, .b = 0.f}},
+        {.position = {.x = .5f, .y = -.5f, .z = 0.f}, .color = {.r = 0.f, .g = 0.f, .b = 1.f}}};
 
 }
 
