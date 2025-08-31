@@ -67,10 +67,11 @@ auto main() -> int
         const auto renderer = game::Renderer{};
 
         const auto mesh = game::Mesh{};
-        const auto entity = game::Entity{&mesh, &material};
-        auto scene = game::Scene{.entities{&entity}};
+        const auto entity1 = game::Entity{&mesh, &material, {.x = 0.f, .y = -1.f, .z = 0.f}};
+        const auto entity2 = game::Entity{&mesh, &material, {.x = 0.f, .y = 1.f, .z = 0.f}};
+        auto scene = game::Scene{.entities{&entity1, &entity2}};
 
-        const auto camera = game::Camera{{.x = 0.f, .y = 0.f, .z = 5.f},
+        const auto camera = game::Camera{{.x = 3.f, .y = 0.f, .z = 5.f},
                                          {.x = 0.f, .y = 0.f, .z = 0.f},
                                          {.x = 0.f, .y = 1.f, .z = 0.f},
                                          std::numbers::pi_v<float> / 4.f,
