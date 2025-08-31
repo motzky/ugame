@@ -22,12 +22,7 @@ namespace game::log
     template <Level L, class... Args>
     struct Print
     {
-    };
-
-    template <Level L, class... Args>
-    struct Print<L, const char *, Args...>
-    {
-        Print(const char *msg, Args &&...args, std::source_location loc = std::source_location::current())
+        Print(std::format_string<Args...> msg, Args &&...args, std::source_location loc = std::source_location::current())
         {
             auto level = "?";
             if constexpr (L == Level::DEBUG)
@@ -51,26 +46,26 @@ namespace game::log
                 level = "ERROR";
             }
 
-            std::println("[{}] ({}:{}) - {}", level, loc.file_name(), loc.line(), std::vformat(msg, std::make_format_args(args...)));
+            std::println("[{}] ({}:{}) - {}", level, loc.file_name(), loc.line(), std::format(msg, std::forward<Args>(args)...));
         }
     };
 
     template <Level L, class... Args>
-    Print(Args &&...) -> Print<L, Args...>;
+    Print(std::format_string<Args...>, Args &&...) -> Print<L, Args...>;
 
     template <class... Args>
-    using debug = Print<Level::DEBUG, const char *, Args...>;
+    using debug = Print<Level::DEBUG, Args...>;
 
     template <class... Args>
-    using info = Print<Level::INFO, const char *, Args...>;
+    using info = Print<Level::INFO, Args...>;
 
     template <class... Args>
-    using warn = Print<Level::WARN, const char *, Args...>;
+    using warn = Print<Level::WARN, Args...>;
 
     template <class... Args>
 #ifndef WIN32
-    using error = Print<Level::ERROR, const char *, Args...>;
+    using error = Print<Level::ERROR, Args...>;
 #else
-    using error = Print<Level::ERR, const char *, Args...>;
+    using error = Print<Level::ERR, Args...>;
 #endif
 }

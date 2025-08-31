@@ -54,7 +54,7 @@ namespace
 
     void APIENTRY glfw_error_callback(int, const char *description)
     {
-        game::log::error(std::string(description).c_str());
+        game::log::error("{}", description);
     }
 
     // void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods)
