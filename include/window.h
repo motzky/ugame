@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <optional>
 
 #ifdef _WIN32
 #define NOMINMAX
@@ -10,6 +11,7 @@
 #endif
 
 #include "auto_release.h"
+#include "event.h"
 
 namespace game
 {
@@ -25,12 +27,13 @@ namespace game
         Window(Window &&) noexcept = default;
         Window &operator=(Window &&) = default;
 
-        auto windowShouldClose() -> bool;
-        auto swapBuffers() -> void;
+        auto pump_event() -> std::optional<Event>;
+        auto swap() -> void;
 
     private:
 #ifdef _WIN32
         AutoRelease<::HWND, nullptr> _windowHandle;
+        AutoRelease<::HDC> _dc;
         ::WNDCLASSA _wc;
 #else
         AutoRelease<::GLFWwindow *, nullptr> _windowHandle; // Placeholder for non-Windows platforms
