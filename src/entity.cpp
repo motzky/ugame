@@ -8,7 +8,7 @@
 
 namespace game
 {
-    Entity::Entity(const Mesh *mesh, const Material *material) : _mesh(mesh), _material(material), _model()
+    Entity::Entity(const Mesh *mesh, const Material *material, const Vector3 &position) : _mesh(mesh), _material(material), _model(position)
     {
     }
 

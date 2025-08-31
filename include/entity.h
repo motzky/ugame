@@ -11,7 +11,7 @@ namespace game
     class Entity
     {
     public:
-        Entity(const Mesh *mesh, const Material *material);
+        Entity(const Mesh *mesh, const Material *material, const Vector3 &position);
 
         auto mesh() const -> const Mesh *;
         auto material() const -> const Material *;
