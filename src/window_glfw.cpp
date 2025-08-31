@@ -34,7 +34,7 @@ namespace
         const GLchar *message,
         const void *)
     {
-        std::println("{} {} {} {} {}", source, type, id, severity, message);
+        // std::println("{} {} {} {} {}", source, type, id, severity, message);
         switch (severity)
         {
         case GL_DEBUG_SEVERITY_HIGH:
