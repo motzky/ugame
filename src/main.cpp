@@ -1,10 +1,11 @@
 #include <format>
 #include <iostream>
-#include <print>
-#include <variant>
-
+#include <unordered_map>
 #include <numbers>
+#include <print>
+#include <ranges>
 #include <utility>
+#include <variant>
 
 #include "camera.h"
 #include "entity.h"
@@ -67,13 +68,25 @@ auto main() -> int
         const auto vertex_shader = game::Shader{vertex_shader_src, game::ShaderType::VERTEX};
         const auto fragment_shader = game::Shader{fragment_shader_src, game::ShaderType::FRAGMENT};
         auto material = game::Material{vertex_shader, fragment_shader};
+        const auto mesh = game::Mesh{};
 
         const auto renderer = game::Renderer{};
 
-        const auto mesh = game::Mesh{};
-        const auto entity1 = game::Entity{&mesh, &material, {.x = 0.f, .y = -1.f, .z = 0.f}};
-        const auto entity2 = game::Entity{&mesh, &material, {.x = 0.f, .y = 1.f, .z = 0.f}};
-        auto scene = game::Scene{.entities{&entity1, &entity2}};
+        auto entities = std::vector<game::Entity>{};
+
+        for (auto i = -10; i < 10; ++i)
+        {
+            for (auto j = -10; j < 10; ++j)
+            {
+                entities.emplace_back(game::Entity{
+                    &mesh, &material, game::Vector3{.x = static_cast<float>(i) * 1.5f, .y = -1.f, .z = static_cast<float>(j) * 1.5f}});
+            }
+        }
+
+        const auto scene = game::Scene{
+            .entities = entities | std::views::transform([](const auto &e)
+                                                         { return &e; }) |
+                        std::ranges::to<std::vector>()};
 
         auto camera = game::Camera{{.x = 0.f, .y = 0.f, .z = 5.f},
                                    {.x = 0.f, .y = 0.f, .z = 0.f},
@@ -84,7 +97,7 @@ auto main() -> int
                                    0.001f,
                                    100.f};
 
-        auto velocity = game::Vector3{.x = 0.f, .y = 0.f, .z = 0.f};
+        auto key_state = std::unordered_map<game::Key, bool>{};
         auto running = true;
 
         while (running)
@@ -92,46 +105,31 @@ auto main() -> int
             auto event = window.pump_event();
             while (event && running)
             {
-                std::visit([&](auto &&arg)
-                           {
-                    using T = std::decay_t<decltype(arg)>;
-                    if constexpr(std::same_as<T, game::StopEvent>)
+                std::visit(
+                    [&](auto &&arg)
                     {
-                        running = false;
-                    }
-                    else if constexpr(std::same_as<T, game::KeyEvent>)
-                    {                                    
-                        game::log::debug("key: {} {}", arg.key(), arg.state());
-                        if (arg.key() == game::Key::LEFT_ARROW || arg.key() == game::Key::A)
+                        using T = std::decay_t<decltype(arg)>;
+                        if constexpr (std::same_as<T, game::StopEvent>)
                         {
-                            velocity += arg.state() == game::KeyState::UP 
-                                            ? game::Vector3{.x=1.f, .y=0.f, .z=0.f} 
-                                            : game::Vector3{.x=-1.f, .y=0.f, .z=0.f};
-
+                            running = false;
                         }
-                        else if (arg.key() == game::Key::RIGHT_ARROW || arg.key() == game::Key::D)
+                        else if constexpr (std::same_as<T, game::KeyEvent>)
                         {
-                            velocity += arg.state() == game::KeyState::UP 
-                                            ? game::Vector3{.x=-1.f, .y=0.f, .z=0.f} 
-                                            : game::Vector3{.x=1.f, .y=0.f, .z=0.f};
+                            // game::log::debug("key: {} {}", arg.key(), arg.state());
 
+                            key_state[arg.key()] = arg.state() == game::KeyState::DOWN;
                         }
-                        else if (arg.key() == game::Key::UP_ARROW || arg.key() == game::Key::W)
-                        {
-                            velocity += arg.state() == game::KeyState::UP 
-                                            ? game::Vector3{.x=0.f, .y=0.f, .z=1.f} 
-                                            : game::Vector3{.x=0.f, .y=0.f, .z=-1.f};
-                        }                              
-                        else if (arg.key() == game::Key::DOWN_ARROW || arg.key() == game::Key::S)
-                        {
-                            velocity += arg.state() == game::KeyState::UP 
-                                            ? game::Vector3{.x=0.f, .y=0.f, .z=-1.f} 
-                                            : game::Vector3{.x=0.f, .y=0.f, .z=1.f};
-
-                        }
-                    } }, *event);
+                    },
+                    *event);
                 event = window.pump_event();
             }
+
+            auto velocity = game::Vector3{
+                .x = (key_state[game::Key::D] || key_state[game::Key::RIGHT_ARROW] ? 1.f : 0.f) +
+                     (key_state[game::Key::A] || key_state[game::Key::LEFT_ARROW] ? -1.f : 0.f),
+                .y = 0.f,
+                .z = (key_state[game::Key::W] || key_state[game::Key::UP_ARROW] ? -1.f : 0.f) +
+                     (key_state[game::Key::S] || key_state[game::Key::DOWN_ARROW] ? 1.f : 0.f)};
 
             camera.translate(game::Vector3::normalize(velocity));
 
