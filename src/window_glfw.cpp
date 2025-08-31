@@ -1,5 +1,6 @@
 #ifdef WIN32
 #error This code unit is NOT for Windows
+#else
 
 #include "window.h"
 
@@ -14,11 +15,11 @@
 #include "auto_release.h"
 #include "error.h"
 #include "event.h"
+#include "key.h"
+#include "key_event.h"
 #include "log.h"
 #include "opengl.h"
 #include "stop_event.h"
-
-#else
 
 namespace
 {
@@ -34,6 +35,21 @@ namespace
         const void *)
     {
         std::println("{} {} {} {} {}", source, type, id, severity, message);
+        switch (severity)
+        {
+        case GL_DEBUG_SEVERITY_HIGH:
+            game::log::error("{} - {}: {} from {}", id, type, message, source);
+            break;
+        case GL_DEBUG_SEVERITY_MEDIUM:
+            game::log::warn("{} - {}: {} from {}", id, type, message, source);
+            break;
+        case GL_DEBUG_SEVERITY_LOW:
+            game::log::info("{} - {}: {} from {}", id, type, message, source);
+            break;
+        case GL_DEBUG_SEVERITY_NOTIFICATION:
+            game::log::debug("{} - {}: {} from {}", id, type, message, source);
+            break;
+        }
     }
 
     void APIENTRY glfw_error_callback(int, const char *description)
@@ -41,16 +57,25 @@ namespace
         game::log::error(std::string(description).c_str());
     }
 
-    void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods)
+    // void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods)
+    void key_callback(GLFWwindow *window, int key, int, int action, int)
     {
         if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
         {
-            game::log::info("ESC key pressed");
             glfwSetWindowShouldClose(window, GLFW_TRUE);
             return;
         }
 
-        game::log::info("key pressed");
+        if (action == GLFW_PRESS)
+        {
+            g_event_queue.emplace(game::KeyEvent{static_cast<game::Key>(key), game::KeyState::DOWN});
+            return;
+        }
+        if (action == GLFW_RELEASE)
+        {
+            g_event_queue.emplace(game::KeyEvent{static_cast<game::Key>(key), game::KeyState::UP});
+            return;
+        }
     }
 
     template <class T>

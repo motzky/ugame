@@ -19,6 +19,8 @@
 #include "opengl.h"
 #include "stop_event.h"
 
+#pragma comment(lib, "opengl32.lib")
+
 namespace
 {
     auto g_event_queue = std::queue<game::Event>{};

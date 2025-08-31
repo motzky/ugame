@@ -1,18 +1,22 @@
 #include <format>
 #include <iostream>
 #include <print>
+#include <variant>
 
 #include <numbers>
 #include <utility>
 
 #include "camera.h"
 #include "entity.h"
+#include "event.h"
 #include "exception.h"
+#include "key_event.h"
 #include "log.h"
 #include "material.h"
 #include "renderer.h"
 #include "scene.h"
 #include "shader.h"
+#include "stop_event.h"
 #include "window.h"
 
 #include "shader.h"
@@ -71,19 +75,68 @@ auto main() -> int
         const auto entity2 = game::Entity{&mesh, &material, {.x = 0.f, .y = 1.f, .z = 0.f}};
         auto scene = game::Scene{.entities{&entity1, &entity2}};
 
-        const auto camera = game::Camera{{.x = 3.f, .y = 0.f, .z = 5.f},
-                                         {.x = 0.f, .y = 0.f, .z = 0.f},
-                                         {.x = 0.f, .y = 1.f, .z = 0.f},
-                                         std::numbers::pi_v<float> / 4.f,
-                                         800.f,
-                                         600.f,
-                                         0.001f,
-                                         100.f};
+        auto camera = game::Camera{{.x = 0.f, .y = 0.f, .z = 5.f},
+                                   {.x = 0.f, .y = 0.f, .z = 0.f},
+                                   {.x = 0.f, .y = 1.f, .z = 0.f},
+                                   std::numbers::pi_v<float> / 4.f,
+                                   800.f,
+                                   600.f,
+                                   0.001f,
+                                   100.f};
 
-        while (!window.windowShouldClose())
+        auto velocity = game::Vector3{.x = 0.f, .y = 0.f, .z = 0.f};
+        auto running = true;
+
+        while (running)
         {
+            auto event = window.pump_event();
+            while (event && running)
+            {
+                std::visit([&](auto &&arg)
+                           {
+                    using T = std::decay_t<decltype(arg)>;
+                    if constexpr(std::same_as<T, game::StopEvent>)
+                    {
+                        running = false;
+                    }
+                    else if constexpr(std::same_as<T, game::KeyEvent>)
+                    {                                    
+                        game::log::debug("key: {} {}", arg.key(), arg.state());
+                        if (arg.key() == game::Key::LEFT_ARROW || arg.key() == game::Key::A)
+                        {
+                            velocity += arg.state() == game::KeyState::UP 
+                                            ? game::Vector3{.x=1.f, .y=0.f, .z=0.f} 
+                                            : game::Vector3{.x=-1.f, .y=0.f, .z=0.f};
+
+                        }
+                        else if (arg.key() == game::Key::RIGHT_ARROW || arg.key() == game::Key::D)
+                        {
+                            velocity += arg.state() == game::KeyState::UP 
+                                            ? game::Vector3{.x=-1.f, .y=0.f, .z=0.f} 
+                                            : game::Vector3{.x=1.f, .y=0.f, .z=0.f};
+
+                        }
+                        else if (arg.key() == game::Key::UP_ARROW || arg.key() == game::Key::W)
+                        {
+                            velocity += arg.state() == game::KeyState::UP 
+                                            ? game::Vector3{.x=0.f, .y=0.f, .z=1.f} 
+                                            : game::Vector3{.x=0.f, .y=0.f, .z=-1.f};
+                        }                              
+                        else if (arg.key() == game::Key::DOWN_ARROW || arg.key() == game::Key::S)
+                        {
+                            velocity += arg.state() == game::KeyState::UP 
+                                            ? game::Vector3{.x=0.f, .y=0.f, .z=-1.f} 
+                                            : game::Vector3{.x=0.f, .y=0.f, .z=1.f};
+
+                        }
+                    } }, *event);
+                event = window.pump_event();
+            }
+
+            camera.translate(game::Vector3::normalize(velocity));
+
             renderer.render(camera, scene);
-            window.swapBuffers();
+            window.swap();
         }
     }
     catch (const game::Exception &err)
