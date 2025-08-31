@@ -11,6 +11,7 @@
 #include <ranges>
 
 #include <Windows.h>
+#include <hidusage.h>
 
 #include "auto_release.h"
 #include "error.h"
@@ -72,6 +73,21 @@ namespace
         case WM_KEYUP:
         {
             g_event_queue.emplace(game::KeyEvent{static_cast<game::Key>{wParam}, game::KeyState::DOWN});
+            break;
+        }
+        case WM_INPUT:
+        {
+            auto raw = ::RAWINPUT{};
+            auto dwSize = UINT{sizeof(RAWINPUT)};
+            game::ensure(::GetRawInputdata(reinterpret_cast<::HRAWINPUT>(lParam), RID_INPUT, &raw, &dwSize, sizeof(::RAWINPUTHEADER)) != static_cast<::UINT>(-1), "failed to get raw input");
+
+            if (raw.header.dwType == RIM_TYPEMOUSE)
+            {
+                const auto x = raw.data.mouse.lLastX;
+                const auto y = raw.data.mouse.lLastY;
+
+                // game::log::debug("mouse event");
+            }
             break;
         }
         }
@@ -247,6 +263,14 @@ namespace game
 
         ::ShowWindow(_windowHandle, SW_SHOW); // Show the window
         ::UpdateWindow(_windowHandle);        // Update the window to reflect changes
+
+        const auto rid = ::RAWINPUTDEVICE{
+            .usUsagePage = HID_USAGE_PAGE_GENERIC,
+            .usUsage = HID_USAGE_GENERIC_MOUSE,
+            .dwFlags = RIDEV_INPUTSINK,
+            .hwndTarget = _windowHandle};
+
+        ensure(::RegisterRawInputDevices(&rid, 1, sizeof(rid)) == TRUE, "failed to register input device");
 
         resolve_wgl_functions(wc.hInstance);
         init_opengl(_dc);
