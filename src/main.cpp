@@ -84,8 +84,9 @@ auto main() -> int
         }
 
         const auto scene = game::Scene{
-            .entities = entities | std::views::transform([](const auto &e)
-                                                         { return &e; }) |
+            .entities = entities |
+                        std::views::transform([](const auto &e)
+                                              { return &e; }) |
                         std::ranges::to<std::vector>()};
 
         auto camera = game::Camera{{.x = 0.f, .y = 0.f, .z = 5.f},
