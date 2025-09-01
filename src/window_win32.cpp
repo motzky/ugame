@@ -42,6 +42,10 @@ namespace
         const GLchar *message,
         const void *)
     {
+        if (type == GL_DEBUG_TYPE_ERROR)
+        {
+            game::ensure(false, "{} {} {} {} {}", source, type, id, severity, message);
+        }
         switch (severity)
         {
         case GL_DEBUG_SEVERITY_HIGH:
