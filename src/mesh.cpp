@@ -3,6 +3,8 @@
 #include <ranges>
 
 #include "auto_release.h"
+#include "buffer_writer.h"
+#include "buffer.h"
 #include "opengl.h"
 #include "vertex_data.h"
 
@@ -40,20 +42,17 @@ namespace game
     Mesh::Mesh()
         : _vao{0u, [](auto vao)
                { ::glDeleteVertexArrays(1, &vao); }},
-          _vbo{0u, [](auto vbo)
-               { ::glDeleteBuffers(1, &vbo); }},
+          _vbo{sizeof(vertex_data) + sizeof(indices)},
           _index_count(static_cast<std::uint32_t>(std::ranges::distance(indices))), _index_offset{sizeof(vertex_data)}
     {
-        ::glCreateBuffers(1, &_vbo);
-        ::glNamedBufferStorage(_vbo, sizeof(vertex_data) + sizeof(indices), nullptr, GL_DYNAMIC_STORAGE_BIT);
-
-        ::glNamedBufferSubData(_vbo, 0, sizeof(vertex_data), vertex_data);
-        ::glNamedBufferSubData(_vbo, sizeof(vertex_data), sizeof(indices), indices);
+        auto writer = BufferWriter{_vbo};
+        writer.write(vertex_data);
+        writer.write(indices);
 
         ::glCreateVertexArrays(1, &_vao);
 
-        ::glVertexArrayVertexBuffer(_vao, 0, _vbo, 0, sizeof(VertexData));
-        ::glVertexArrayElementBuffer(_vao, _vbo);
+        ::glVertexArrayVertexBuffer(_vao, 0, _vbo.native_handle(), 0, sizeof(VertexData));
+        ::glVertexArrayElementBuffer(_vao, _vbo.native_handle());
 
         ::glEnableVertexArrayAttrib(_vao, 0);
         ::glEnableVertexArrayAttrib(_vao, 1);

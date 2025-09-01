@@ -1,4 +1,4 @@
-#include "buffer.h"
+#include "buffer_writer.h"
 
 #include <cstdint>
 #include <span>
@@ -9,10 +9,8 @@
 
 namespace game
 {
-    Buffer::Buffer(std::uint32_t size)
-    {
-    }
-    auto Buffer::write(std::span<const std::byte>, std::size_t offset) const -> void
+    BufferWriter::BufferWriter(const Buffer &buffer)
+        : _buffer(buffer), _offset{}
     {
     }
 

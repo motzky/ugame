@@ -1,5 +1,6 @@
 add_executable(
     nathan_stream
+    buffer_writer.cpp
     buffer.cpp
     camera.cpp
     entity.cpp

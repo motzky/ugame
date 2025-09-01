@@ -3,6 +3,7 @@
 #include <cstdint>
 
 #include "auto_release.h"
+#include "buffer.h"
 #include "opengl.h"
 
 namespace game
@@ -20,7 +21,7 @@ namespace game
 
     private:
         AutoRelease<GLuint> _vao;
-        AutoRelease<GLuint> _vbo;
+        Buffer _vbo;
 
         std::uint32_t _index_count;
         std::uintptr_t _index_offset;

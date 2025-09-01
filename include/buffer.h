@@ -16,6 +16,8 @@ namespace game
 
         auto write(std::span<const std::byte>, std::size_t offset) const -> void;
 
+        auto native_handle() const -> ::GLuint;
+
     private:
         AutoRelease<::GLuint> _buffer;
     };
