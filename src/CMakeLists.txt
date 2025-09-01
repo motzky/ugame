@@ -7,6 +7,7 @@ add_executable(
     main.cpp
     material.cpp
     mesh.cpp
+    mouse_event.cpp
     renderer.cpp
     shader.cpp
     window.cpp
