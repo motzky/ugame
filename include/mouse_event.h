@@ -1,5 +1,7 @@
 #pragma once
 
+#include <format>
+
 namespace game
 {
 
@@ -17,3 +19,17 @@ namespace game
         float _delta_y;
     };
 }
+
+template <>
+struct std::formatter<game::MouseEvent>
+{
+    constexpr auto parse(std::format_parse_context &ctx)
+    {
+        return std::begin(ctx);
+    }
+
+    auto format(const game::MouseEvent &obj, std::format_context &ctx) const
+    {
+        return std::format_to(ctx.out(), "MouseEvent {} {}", obj.delta_x(), obj.delta_y());
+    }
+};
