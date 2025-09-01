@@ -18,6 +18,7 @@
 #include "event.h"
 #include "key.h"
 #include "key_event.h"
+#include "mouse_event.h"
 #include "log.h"
 #include "opengl.h"
 #include "stop_event.h"
@@ -85,6 +86,8 @@ namespace
             {
                 const auto x = raw.data.mouse.lLastX;
                 const auto y = raw.data.mouse.lLastY;
+
+                g_event_queue.emplace(game::MouseEvent{static_cast<float>(x), static_cast<float>(y)});
 
                 // game::log::debug("mouse event");
             }

@@ -77,6 +77,27 @@ namespace
         }
     }
 
+    void mouse_callback(GLFWwindow * /*window*/, double xpos, double ypos)
+    {
+        static auto last_x = float{};
+        static auto last_y = float{};
+
+        auto xf = static_cast<float>(xpos);
+        auto yf = static_cast<float>(ypos);
+
+        // game::log::debug("Mouse pos: {} {}", xpos, ypos);
+
+        auto dx = last_x - xf;
+        auto dy = last_y - yf;
+
+        // game::log::debug("Mouse delta: {} {}", dx, dy);
+
+        g_event_queue.emplace(game::MouseEvent{dx, dy});
+
+        last_x = xf;
+        last_y = yf;
+    }
+
     template <class T>
     auto resolve_gl_function(T &function, const std::string &name) -> void
     {
@@ -118,6 +139,20 @@ namespace game
         game::ensure(_windowHandle, "failed to create window");
 
         ::glfwSetKeyCallback(_windowHandle, key_callback);
+        if (::glfwRawMouseMotionSupported())
+        {
+            ::glfwSetInputMode(_windowHandle, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+            ::glfwSetInputMode(_windowHandle, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
+        }
+        else
+        {
+            ::glfwSetInputMode(_windowHandle, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+        }
+        ::glfwSetCursorPosCallback(_windowHandle, mouse_callback);
+
+        // TODO
+        // ::glfwSetMouseButtonCallback(_windowHandle, mouse_button_callback);
+        // ::glfwSetScrollCallback(_windowHandle, scroll_callback);
 
         ::glfwMakeContextCurrent(_windowHandle);
 

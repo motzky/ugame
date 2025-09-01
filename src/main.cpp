@@ -14,6 +14,7 @@
 #include "key_event.h"
 #include "log.h"
 #include "material.h"
+#include "mouse_event.h"
 #include "renderer.h"
 #include "scene.h"
 #include "shader.h"
@@ -116,9 +117,13 @@ auto main() -> int
                         }
                         else if constexpr (std::same_as<T, game::KeyEvent>)
                         {
-                            // game::log::debug("key: {} {}", arg.key(), arg.state());
+                            // game::log::debug("{}", arg);
 
                             key_state[arg.key()] = arg.state() == game::KeyState::DOWN;
+                        }
+                        else if constexpr (std::same_as<T, game::MouseEvent>)
+                        {
+                            game::log::debug("{}", arg);
                         }
                     },
                     *event);
