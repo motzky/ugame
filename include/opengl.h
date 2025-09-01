@@ -40,6 +40,8 @@
     DO(::PFNGLVERTEXARRAYVERTEXBUFFERPROC, glVertexArrayVertexBuffer)   \
     DO(::PFNGLENABLEVERTEXARRAYATTRIBPROC, glEnableVertexArrayAttrib)   \
     DO(::PFNGLVERTEXARRAYATTRIBFORMATPROC, glVertexArrayAttribFormat)   \
+    DO(::PFNGLNAMEDBUFFERSUBDATAPROC, glNamedBufferSubData)             \
+    DO(::PFNGLVERTEXARRAYELEMENTBUFFERPROC, glVertexArrayElementBuffer) \
     DO(::PFNGLVERTEXARRAYATTRIBBINDINGPROC, glVertexArrayAttribBinding) \
     DO(::PFNGLDRAWARRAYSEXTPROC, glDrawArraysExt)
 
