@@ -30,3 +30,14 @@ TEST(vector3, normalize)
 
     ASSERT_EQ(norm, expected);
 }
+
+TEST(vector3, multiply_assign_scalar)
+{
+    auto v1 = game::Vector3{.x = 1.f, .y = 2.f, .z = 3.f};
+
+    const auto expected = game::Vector3{.x = 10.f, .y = 20.f, .z = 30.f};
+
+    v1 *= 10.f;
+
+    ASSERT_EQ(v1, expected);
+}

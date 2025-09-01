@@ -63,6 +63,14 @@ namespace game
 
         return v1;
     }
+    constexpr auto operator*=(Vector3 &v1, const float scalar) -> Vector3 &
+    {
+        v1.x *= scalar;
+        v1.y *= scalar;
+        v1.z *= scalar;
+
+        return v1;
+    }
     constexpr auto operator+(const Vector3 &v1, const Vector3 &v2) -> Vector3
     {
         auto tmp = v1;
