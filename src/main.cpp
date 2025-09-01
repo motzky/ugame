@@ -150,9 +150,17 @@ auto main() -> int
             {
                 walk_direction -= camera.direction();
             }
-            const auto speed = 3.f / 60.f;
+            if (key_state[game::Key::SPACE])
+            {
+                walk_direction += camera.up();
+            }
+            if (key_state[game::Key::LCTRL])
+            {
+                walk_direction -= camera.up();
+            }
 
-            camera.translate(game::Vector3::normalize(walk_direction) * speed);
+            const auto speed = key_state[game::Key::LSHIFT] ? 10.f : 3.f;
+            camera.translate(game::Vector3::normalize(walk_direction) * (speed / 60.f));
             camera.update();
 
             renderer.render(camera, scene);

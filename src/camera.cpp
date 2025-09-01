@@ -33,7 +33,11 @@ namespace game
     }
     auto Camera::right() const -> Vector3
     {
-        return Vector3::normalize(Vector3::cross(_direction, _up));
+        return _right;
+    }
+    auto Camera::up() const -> Vector3
+    {
+        return _up;
     }
 
     auto Camera::translate(const Vector3 &translation) -> void
@@ -83,6 +87,7 @@ namespace game
     auto Camera::update() -> void
     {
         _direction = create_direction(_pitch, _yaw);
+        _right = Vector3::normalize(Vector3::cross(_direction, _up));
         recalculate_view();
     }
 

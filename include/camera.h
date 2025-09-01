@@ -15,6 +15,8 @@ namespace game
 
         auto direction() const -> Vector3;
         auto right() const -> Vector3;
+        auto up() const -> Vector3;
+
         auto translate(const Vector3 &translation) -> void;
         auto view() const -> std::span<const float>;
         auto projection() const -> std::span<const float>;
@@ -32,6 +34,7 @@ namespace game
         Matrix4 _projection;
         Vector3 _position;
         Vector3 _direction;
+        Vector3 _right;
         Vector3 _up;
         float _pitch;
         float _yaw;
