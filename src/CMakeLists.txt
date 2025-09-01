@@ -1,5 +1,6 @@
 add_executable(
     nathan_stream
+    buffer.cpp
     camera.cpp
     entity.cpp
     exception.cpp

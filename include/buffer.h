@@ -1,0 +1,22 @@
+#pragma once
+
+#include <cstdint>
+#include <span>
+#include <cstddef>
+
+#include "auto_release.h"
+#include "opengl.h"
+
+namespace game
+{
+    class Buffer
+    {
+    public:
+        Buffer(std::uint32_t size);
+
+        auto write(std::span<const std::byte>, std::size_t offset) const -> void;
+
+    private:
+        AutoRelease<::GLuint> _buffer;
+    };
+}
