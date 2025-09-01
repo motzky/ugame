@@ -14,8 +14,13 @@ namespace game
         TAB = 0x9,
         RETURN = 0xd,
 
+#ifdef WIN32
         LSHIFT = 0x10,
         LCTRL = 0x11,
+#else
+        LSHIFT = 0x154,
+        LCTRL = 0x155,
+#endif
 
         ESC = 0x1b,
 
