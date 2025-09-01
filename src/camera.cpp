@@ -12,9 +12,9 @@ namespace
 {
     auto create_direction(float pitch, float yaw) -> game::Vector3
     {
-        return game::Vector3::normalize({.x = std::sin(yaw) * std::cos(pitch),
-                                         .y = std::sin(pitch),
-                                         .z = std::cos(yaw) * std::cos(pitch)});
+        return game::Vector3::normalize({std::sin(yaw) * std::cos(pitch),
+                                         std::sin(pitch),
+                                         std::cos(yaw) * std::cos(pitch)});
     }
 
 }

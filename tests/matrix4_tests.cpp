@@ -33,7 +33,7 @@ TEST(matrx4, multiply_by_identity)
 
 TEST(matrix4, look_at)
 {
-    const auto view = game::Matrix4::look_at({.x = 1.f, .y = 0.f, .z = 5.f}, {.x = 0.f, .y = 0.f, .z = 0.f}, {.x = 0.f, .y = 1.f, .z = 0.f});
+    const auto view = game::Matrix4::look_at({1.f, 0.f, 5.f}, {0.f}, {0.f, 1.f, 0.f});
     const auto expected = game::Matrix4{{0.980581f, 0.f, 0.196116f, 0.f,
                                          0.f, 1.f, 0.f, 0.f, -0.196116f, 0.f, 0.980581f, 0.f,
                                          0.f, 0.f, -5.099020f, 1.f}};

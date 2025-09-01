@@ -80,7 +80,7 @@ auto main() -> int
             for (auto j = -10; j < 10; ++j)
             {
                 entities.emplace_back(game::Entity{
-                    &mesh, &material, game::Vector3{.x = static_cast<float>(i) * 1.5f, .y = -1.f, .z = static_cast<float>(j) * 1.5f}});
+                    &mesh, &material, game::Vector3{static_cast<float>(i) * 1.5f, -1.f, static_cast<float>(j) * 1.5f}});
             }
         }
 
@@ -90,9 +90,9 @@ auto main() -> int
                                               { return &e; }) |
                         std::ranges::to<std::vector>()};
 
-        auto camera = game::Camera{{.x = 0.f, .y = 0.f, .z = 5.f},
-                                   {.x = 0.f, .y = 0.f, .z = 0.f},
-                                   {.x = 0.f, .y = 1.f, .z = 0.f},
+        auto camera = game::Camera{{0.f, 0.f, 5.f},
+                                   {0.f, 0.f, 0.f},
+                                   {0.f, 1.f, 0.f},
                                    std::numbers::pi_v<float> / 4.f,
                                    800.f,
                                    600.f,
@@ -132,7 +132,7 @@ auto main() -> int
                 event = window.pump_event();
             }
 
-            auto walk_direction = game::Vector3{.x = 0.f, .y = 0.f, .z = 0.f};
+            auto walk_direction = game::Vector3{0.f};
 
             if (key_state[game::Key::D] || key_state[game::Key::RIGHT_ARROW])
             {
@@ -150,14 +150,9 @@ auto main() -> int
             {
                 walk_direction -= camera.direction();
             }
-            walk_direction = game::Vector3::normalize(walk_direction);
-
             const auto speed = 3.f / 60.f;
-            walk_direction.x *= speed;
-            walk_direction.y *= speed;
-            walk_direction.z *= speed;
 
-            camera.translate(walk_direction);
+            camera.translate(game::Vector3::normalize(walk_direction) * speed);
             camera.update();
 
             renderer.render(camera, scene);
