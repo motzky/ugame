@@ -12,7 +12,7 @@ namespace game
     {
         return _delta_x;
     }
-    auto MouseEvent::delta_x() const -> float
+    auto MouseEvent::delta_y() const -> float
     {
         return _delta_y;
     }
