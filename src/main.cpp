@@ -123,21 +123,42 @@ auto main() -> int
                         }
                         else if constexpr (std::same_as<T, game::MouseEvent>)
                         {
-                            game::log::debug("{}", arg);
+                            static constexpr auto sensitivity = float{0.005f};
+                            camera.adjust_pitch(arg.delta_y() * sensitivity);
+                            camera.adjust_yaw(arg.delta_x() * sensitivity);
                         }
                     },
                     *event);
                 event = window.pump_event();
             }
 
-            auto velocity = game::Vector3{
-                .x = (key_state[game::Key::D] || key_state[game::Key::RIGHT_ARROW] ? 1.f : 0.f) +
-                     (key_state[game::Key::A] || key_state[game::Key::LEFT_ARROW] ? -1.f : 0.f),
-                .y = 0.f,
-                .z = (key_state[game::Key::W] || key_state[game::Key::UP_ARROW] ? -1.f : 0.f) +
-                     (key_state[game::Key::S] || key_state[game::Key::DOWN_ARROW] ? 1.f : 0.f)};
+            auto walk_direction = game::Vector3{.x = 0.f, .y = 0.f, .z = 0.f};
 
-            camera.translate(game::Vector3::normalize(velocity));
+            if (key_state[game::Key::D] || key_state[game::Key::RIGHT_ARROW])
+            {
+                walk_direction += camera.right();
+            }
+            if (key_state[game::Key::A] || key_state[game::Key::LEFT_ARROW])
+            {
+                walk_direction -= camera.right();
+            }
+            if (key_state[game::Key::W] || key_state[game::Key::UP_ARROW])
+            {
+                walk_direction += camera.direction();
+            }
+            if (key_state[game::Key::S] || key_state[game::Key::DOWN_ARROW])
+            {
+                walk_direction -= camera.direction();
+            }
+            walk_direction = game::Vector3::normalize(walk_direction);
+
+            const auto speed = 3.f / 60.f;
+            walk_direction.x *= speed;
+            walk_direction.y *= speed;
+            walk_direction.z *= speed;
+
+            camera.translate(walk_direction);
+            camera.update();
 
             renderer.render(camera, scene);
             window.swap();
