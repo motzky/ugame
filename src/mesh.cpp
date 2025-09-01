@@ -66,23 +66,21 @@ namespace game
           _vbo{0u, [](auto vbo)
                { ::glDeleteBuffers(1, &vbo); }}
     {
-        ::glGenVertexArrays(1, &_vao);
+        ::glCreateBuffers(1, &_vbo);
+        ::glNamedBufferStorage(_vbo, sizeof(vertex_data), vertex_data, GL_DYNAMIC_STORAGE_BIT);
 
-        ::glBindVertexArray(_vao);
+        ::glCreateVertexArrays(1, &_vao);
 
-        ::glGenBuffers(1, &_vbo);
+        ::glVertexArrayVertexBuffer(_vao, 0, _vbo, 0, sizeof(VertexData));
 
-        ::glBindVertexArray(_vao);
+        ::glEnableVertexArrayAttrib(_vao, 0);
+        ::glEnableVertexArrayAttrib(_vao, 1);
 
-        ::glBindBuffer(GL_ARRAY_BUFFER, _vbo);
-        ::glBufferData(GL_ARRAY_BUFFER, sizeof(vertex_data), vertex_data, GL_STATIC_DRAW);
+        ::glVertexArrayAttribFormat(_vao, 0, 3, GL_FLOAT, GL_FALSE, offsetof(VertexData, position));
+        ::glVertexArrayAttribFormat(_vao, 1, 3, GL_FLOAT, GL_FALSE, offsetof(VertexData, color));
 
-        ::glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), reinterpret_cast<void *>(0));
-        ::glEnableVertexAttribArray(0);
-        ::glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), reinterpret_cast<void *>(3 * sizeof(float)));
-        ::glEnableVertexAttribArray(1);
-
-        ::glBindVertexArray(0);
+        ::glVertexArrayAttribBinding(_vao, 0, 0);
+        ::glVertexArrayAttribBinding(_vao, 1, 0);
     }
 
     auto Mesh::bind() const -> void

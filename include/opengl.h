@@ -10,30 +10,37 @@
 #define GL_GET_PROC_ADDRESS glfwGetProcAddress
 #endif
 
-#define FOR_OPENGL_FUNCTIONS(DO)                                      \
-    DO(::PFNGLCREATESHADERPROC, glCreateShader)                       \
-    DO(::PFNGLDELETESHADERPROC, glDeleteShader)                       \
-    DO(::PFNGLSHADERSOURCEPROC, glShaderSource)                       \
-    DO(::PFNGLCOMPILESHADERARBPROC, glCompileShader)                  \
-    DO(::PFNGLGETSHADERIVPROC, glGetShaderiv)                         \
-    DO(::PFNGLCREATEPROGRAMPROC, glCreateProgram)                     \
-    DO(::PFNGLDELETEPROGRAMPROC, glDeleteProgram)                     \
-    DO(::PFNGLATTACHSHADERPROC, glAttachShader)                       \
-    DO(::PFNGLLINKPROGRAMPROC, glLinkProgram)                         \
-    DO(::PFNGLDELETEVERTEXARRAYSPROC, glDeleteVertexArrays)           \
-    DO(::PFNGLGENVERTEXARRAYSPROC, glGenVertexArrays)                 \
-    DO(::PFNGLGENBUFFERSPROC, glGenBuffers)                           \
-    DO(::PFNGLDELETEBUFFERSPROC, glDeleteBuffers)                     \
-    DO(::PFNGLBINDVERTEXARRAYPROC, glBindVertexArray)                 \
-    DO(::PFNGLBINDBUFFERPROC, glBindBuffer)                           \
-    DO(::PFNGLBUFFERDATAPROC, glBufferData)                           \
-    DO(::PFNGLVERTEXATTRIBPOINTERPROC, glVertexAttribPointer)         \
-    DO(::PFNGLENABLEVERTEXATTRIBARRAYPROC, glEnableVertexAttribArray) \
-    DO(::PFNGLUSEPROGRAMPROC, glUseProgram)                           \
-    DO(::PFNGLGETSHADERINFOLOGPROC, glGetShaderInfoLog)               \
-    DO(::PFNGLDEBUGMESSAGECALLBACKPROC, glDebugMessageCallback)       \
-    DO(::PFNGLGETUNIFORMLOCATIONPROC, glGetUniformLocation)           \
-    DO(::PFNGLUNIFORMMATRIX4FVPROC, glUniformMatrix4fv)               \
+#define FOR_OPENGL_FUNCTIONS(DO)                                        \
+    DO(::PFNGLCREATESHADERPROC, glCreateShader)                         \
+    DO(::PFNGLDELETESHADERPROC, glDeleteShader)                         \
+    DO(::PFNGLSHADERSOURCEPROC, glShaderSource)                         \
+    DO(::PFNGLCOMPILESHADERARBPROC, glCompileShader)                    \
+    DO(::PFNGLGETSHADERIVPROC, glGetShaderiv)                           \
+    DO(::PFNGLCREATEPROGRAMPROC, glCreateProgram)                       \
+    DO(::PFNGLDELETEPROGRAMPROC, glDeleteProgram)                       \
+    DO(::PFNGLATTACHSHADERPROC, glAttachShader)                         \
+    DO(::PFNGLLINKPROGRAMPROC, glLinkProgram)                           \
+    DO(::PFNGLDELETEVERTEXARRAYSPROC, glDeleteVertexArrays)             \
+    DO(::PFNGLGENVERTEXARRAYSPROC, glGenVertexArrays)                   \
+    DO(::PFNGLGENBUFFERSPROC, glGenBuffers)                             \
+    DO(::PFNGLDELETEBUFFERSPROC, glDeleteBuffers)                       \
+    DO(::PFNGLBINDVERTEXARRAYPROC, glBindVertexArray)                   \
+    DO(::PFNGLBINDBUFFERPROC, glBindBuffer)                             \
+    DO(::PFNGLBUFFERDATAPROC, glBufferData)                             \
+    DO(::PFNGLVERTEXATTRIBPOINTERPROC, glVertexAttribPointer)           \
+    DO(::PFNGLENABLEVERTEXATTRIBARRAYPROC, glEnableVertexAttribArray)   \
+    DO(::PFNGLUSEPROGRAMPROC, glUseProgram)                             \
+    DO(::PFNGLGETSHADERINFOLOGPROC, glGetShaderInfoLog)                 \
+    DO(::PFNGLDEBUGMESSAGECALLBACKPROC, glDebugMessageCallback)         \
+    DO(::PFNGLGETUNIFORMLOCATIONPROC, glGetUniformLocation)             \
+    DO(::PFNGLUNIFORMMATRIX4FVPROC, glUniformMatrix4fv)                 \
+    DO(::PFNGLCREATEBUFFERSPROC, glCreateBuffers)                       \
+    DO(::PFNGLNAMEDBUFFERSTORAGEPROC, glNamedBufferStorage)             \
+    DO(::PFNGLCREATEVERTEXARRAYSPROC, glCreateVertexArrays)             \
+    DO(::PFNGLVERTEXARRAYVERTEXBUFFERPROC, glVertexArrayVertexBuffer)   \
+    DO(::PFNGLENABLEVERTEXARRAYATTRIBPROC, glEnableVertexArrayAttrib)   \
+    DO(::PFNGLVERTEXARRAYATTRIBFORMATPROC, glVertexArrayAttribFormat)   \
+    DO(::PFNGLVERTEXARRAYATTRIBBINDINGPROC, glVertexArrayAttribBinding) \
     DO(::PFNGLDRAWARRAYSEXTPROC, glDrawArraysExt)
 
 #define DO_INLINE(TYPE, NAME) inline TYPE NAME;
