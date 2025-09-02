@@ -16,6 +16,8 @@ add_executable(
     window.cpp
 )
 
+target_include_directories(nathan_stream PUBLIC ${stb_lib_SOURCE_DIR})
+
 target_compile_features(
     nathan_stream
     PUBLIC cxx_std_23

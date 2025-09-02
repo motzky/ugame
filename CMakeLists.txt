@@ -17,6 +17,15 @@ FetchContent_Declare(
 
 FetchContent_GetProperties(googletest)
 
+FetchContent_Declare(
+    stb_lib
+    GIT_REPOSITORY https://github.com/nothings/stb.git
+    GIT_TAG 5c205738c191bcb0abc65c4febfa9bd25ff35234
+)
+
+FetchContent_MakeAvailable(stb_lib)
+
+
 find_package(glfw3 REQUIRED)
 find_package(Backtrace REQUIRED)
 
