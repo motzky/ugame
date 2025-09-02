@@ -11,6 +11,7 @@ add_executable(
     mesh.cpp
     mouse_event.cpp
     renderer.cpp
+    resource_loader.cpp
     shader.cpp
     window.cpp
 )
