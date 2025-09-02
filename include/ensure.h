@@ -1,6 +1,7 @@
 #pragma once
 
 #include <format>
+#include <memory>
 #include <string_view>
 
 #include "auto_release.h"
@@ -21,5 +22,11 @@ namespace game
     auto ensure(AutoRelease<T> &obj, std::string_view msg, Args &&...args) -> void
     {
         ensure(!!obj, msg, std::forward<Args>(args)...);
+    }
+
+    template <class T, class D, class... Args>
+    auto ensure(std::unique_ptr<T, D> &obj, std::string_view msg, Args &&...args) -> void
+    {
+        ensure(obj != nullptr, msg, std::forward<Args>(args)...);
     }
 }
