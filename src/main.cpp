@@ -64,7 +64,7 @@ auto main(int argc, char **argv) -> int
                         std::views::transform([](const auto &e)
                                               { return &e; }) |
                         std::ranges::to<std::vector>(),
-            .ambient = {.r = 0.f, .g = .5f, .b = 1.f}};
+            .ambient = {.r = .3f, .g = .3f, .b = .3f}};
 
         auto camera = game::Camera{{0.f, 0.f, 5.f},
                                    {0.f, 0.f, 0.f},
