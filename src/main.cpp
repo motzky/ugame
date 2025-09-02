@@ -25,8 +25,6 @@
 #include "stop_event.h"
 #include "window.h"
 
-#include "shader.h"
-
 auto main(int argc, char **argv) -> int
 {
 
