@@ -9,6 +9,7 @@
 
 #include "camera.h"
 #include "entity.h"
+#include "error.h"
 #include "event.h"
 #include "exception.h"
 #include "key_event.h"
@@ -24,26 +25,21 @@
 
 #include "shader.h"
 
-namespace
+auto main(int argc, char **argv) -> int
 {
-    static constexpr auto vertex_shader_src = R"(
-)";
-
-    static constexpr auto fragment_shader_src = R"(
-)";
-
-}
-
-auto main() -> int
-{
-    game::log::info("hello world");
 
     try
     {
-        game::Window window(800u, 600u); // Create a window with specified width and height
+        game::ensure(argc >= 2, "{} <root_path>", argv[0]);
 
-        const auto vertex_shader = game::Shader{vertex_shader_src, game::ShaderType::VERTEX};
-        const auto fragment_shader = game::Shader{fragment_shader_src, game::ShaderType::FRAGMENT};
+        game::log::info("hello world");
+
+        auto window = game::Window{800u, 600u}; // Create a window with specified width and height
+
+        auto resource_loader = game::ResourceLoader{argv[1]};
+
+        const auto vertex_shader = game::Shader{resource_loader.load_string("simple.vert"), game::ShaderType::VERTEX};
+        const auto fragment_shader = game::Shader{resource_loader.load_string("simple.frag"), game::ShaderType::FRAGMENT};
         auto material = game::Material{vertex_shader, fragment_shader};
         const auto mesh = game::Mesh{};
 
