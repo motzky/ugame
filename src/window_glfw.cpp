@@ -13,7 +13,7 @@
 #include <GLFW/glfw3.h>
 
 #include "auto_release.h"
-#include "error.h"
+#include "ensure.h"
 #include "event.h"
 #include "key.h"
 #include "key_event.h"

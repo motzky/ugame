@@ -5,7 +5,7 @@
 #include "entity.h"
 #include "material.h"
 #include "mesh.h"
-#include "error.h"
+#include "ensure.h"
 #include "opengl.h"
 #include "scene.h"
 

@@ -1,6 +1,6 @@
 #include "shader.h"
 
-#include "error.h"
+#include "ensure.h"
 #include "exception.h"
 
 namespace

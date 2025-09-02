@@ -9,7 +9,7 @@
 
 #include "camera.h"
 #include "entity.h"
-#include "error.h"
+#include "ensure.h"
 #include "event.h"
 #include "exception.h"
 #include "key_event.h"

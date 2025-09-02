@@ -1,7 +1,7 @@
 #include "material.h"
 
 #include "auto_release.h"
-#include "error.h"
+#include "ensure.h"
 #include "opengl.h"
 #include "shader.h"
 
