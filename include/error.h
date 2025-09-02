@@ -3,6 +3,7 @@
 #include <format>
 #include <string_view>
 
+#include "auto_release.h"
 #include "exception.h"
 
 namespace game
