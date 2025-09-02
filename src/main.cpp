@@ -1,9 +1,10 @@
 #include <format>
 #include <iostream>
-#include <unordered_map>
 #include <numbers>
+#include <cmath>
 #include <print>
 #include <ranges>
+#include <unordered_map>
 #include <utility>
 #include <variant>
 
@@ -39,6 +40,7 @@ auto main(int argc, char **argv) -> int
         auto resource_loader = game::ResourceLoader{argv[1]};
 
         auto texture = game::Texture{resource_loader.load_binary("container2.png"), 500u, 500u};
+        auto spec_map = game::Texture{resource_loader.load_binary("container2_specular.png"), 500u, 500u};
         auto sampler = game::TextureSampler{};
 
         const auto vertex_shader = game::Shader{resource_loader.load_string("simple.vert"), game::ShaderType::VERTEX};
@@ -50,21 +52,29 @@ auto main(int argc, char **argv) -> int
 
         auto entities = std::vector<game::Entity>{};
 
+        const auto tex_ptrs = std::vector<const game::Texture *>{&texture, &spec_map};
+
         for (auto i = -10; i < 10; ++i)
         {
             for (auto j = -10; j < 10; ++j)
             {
                 entities.emplace_back(game::Entity{
-                    &mesh, &material, game::Vector3{static_cast<float>(i) * 1.5f, -1.f, static_cast<float>(j) * 1.5f}, &texture, &sampler});
+                    &mesh,
+                    &material,
+                    game::Vector3{static_cast<float>(i) * 1.5f, -1.f, static_cast<float>(j) * 1.5f},
+                    tex_ptrs,
+                    &sampler});
             }
         }
 
-        const auto scene = game::Scene{
+        auto scene = game::Scene{
             .entities = entities |
                         std::views::transform([](const auto &e)
                                               { return &e; }) |
                         std::ranges::to<std::vector>(),
-            .ambient = {.r = .3f, .g = .3f, .b = .3f}};
+            .ambient = {.r = .2f, .g = .2f, .b = .2f},
+            .directional = {.direction = {-1.f, -1.f, -1.f}, .color = {.r = .3f, .g = .3f, .b = .3f}},
+            .point = {.position = {5.f, 5.f, 0.f}, .color = {.r = .5f, .g = .5f, .b = .5f}}};
 
         auto camera = game::Camera{{0.f, 0.f, 5.f},
                                    {0.f, 0.f, 0.f},
@@ -138,6 +148,11 @@ auto main(int argc, char **argv) -> int
             const auto speed = key_state[game::Key::LSHIFT] ? 10.f : 3.f;
             camera.translate(game::Vector3::normalize(walk_direction) * (speed / 60.f));
             camera.update();
+
+            static auto t = 0.f;
+            t += 0.05f;
+            scene.point.position.x = std::sin(t) * 10.f;
+            scene.point.position.z = std::cos(t) * 10.f;
 
             renderer.render(camera, scene);
             window.swap();

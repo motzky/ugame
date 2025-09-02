@@ -10,8 +10,8 @@
 
 namespace game
 {
-    Entity::Entity(const Mesh *mesh, const Material *material, const Vector3 &position, const Texture *texture, const TextureSampler *sampler)
-        : _mesh(mesh), _material(material), _model(position), _texture(texture), _sampler(sampler)
+    Entity::Entity(const Mesh *mesh, const Material *material, const Vector3 &position, std::vector<const Texture *> textures, const TextureSampler *sampler)
+        : _mesh(mesh), _material(material), _model(position), _textures(textures), _sampler(sampler)
     {
     }
 
@@ -27,9 +27,9 @@ namespace game
     {
         return _model.data();
     }
-    auto Entity::texture() const -> const Texture *
+    auto Entity::textures() const -> const std::vector<const Texture *> &
     {
-        return _texture;
+        return _textures;
     }
     auto Entity::sampler() const -> const TextureSampler *
     {

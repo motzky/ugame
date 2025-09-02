@@ -10,9 +10,11 @@ namespace game
         float u;
         float v;
     };
+
     struct VertexData
     {
         Vector3 position;
         UV uv;
+        Vector3 normal;
     };
 }

@@ -12,36 +12,36 @@ namespace
 {
     // 6 faces × 4 vertices per face = 24 vertices
     constexpr game::VertexData vertex_data[] = {
-        // Front face
-        {{-0.5f, -0.5f, 0.5f}, {0.0f, 0.0f}},
-        {{0.5f, -0.5f, 0.5f}, {1.0f, 0.0f}},
-        {{0.5f, 0.5f, 0.5f}, {1.0f, 1.0f}},
-        {{-0.5f, 0.5f, 0.5f}, {0.0f, 1.0f}},
-        // Right face
-        {{0.5f, -0.5f, 0.5f}, {0.0f, 0.0f}},
-        {{0.5f, -0.5f, -0.5f}, {1.0f, 0.0f}},
-        {{0.5f, 0.5f, -0.5f}, {1.0f, 1.0f}},
-        {{0.5f, 0.5f, 0.5f}, {0.0f, 1.0f}},
-        // Back face
-        {{0.5f, -0.5f, -0.5f}, {0.0f, 0.0f}},
-        {{-0.5f, -0.5f, -0.5f}, {1.0f, 0.0f}},
-        {{-0.5f, 0.5f, -0.5f}, {1.0f, 1.0f}},
-        {{0.5f, 0.5f, -0.5f}, {0.0f, 1.0f}},
-        // Left face
-        {{-0.5f, -0.5f, -0.5f}, {0.0f, 0.0f}},
-        {{-0.5f, -0.5f, 0.5f}, {1.0f, 0.0f}},
-        {{-0.5f, 0.5f, 0.5f}, {1.0f, 1.0f}},
-        {{-0.5f, 0.5f, -0.5f}, {0.0f, 1.0f}},
-        // Top face
-        {{-0.5f, 0.5f, 0.5f}, {0.0f, 0.0f}},
-        {{0.5f, 0.5f, 0.5f}, {1.0f, 0.0f}},
-        {{0.5f, 0.5f, -0.5f}, {1.0f, 1.0f}},
-        {{-0.5f, 0.5f, -0.5f}, {0.0f, 1.0f}},
-        // Bottom face
-        {{-0.5f, -0.5f, -0.5f}, {0.0f, 0.0f}},
-        {{0.5f, -0.5f, -0.5f}, {1.0f, 0.0f}},
-        {{0.5f, -0.5f, 0.5f}, {1.0f, 1.0f}},
-        {{-0.5f, -0.5f, 0.5f}, {0.0f, 1.0f}},
+        // Front face (+Z)
+        {{-0.5f, -0.5f, 0.5f}, {0.0f, 0.0f}, {0.f, 0.f, 1.f}},
+        {{0.5f, -0.5f, 0.5f}, {1.0f, 0.0f}, {0.f, 0.f, 1.f}},
+        {{0.5f, 0.5f, 0.5f}, {1.0f, 1.0f}, {0.f, 0.f, 1.f}},
+        {{-0.5f, 0.5f, 0.5f}, {0.0f, 1.0f}, {0.f, 0.f, 1.f}},
+        // Right face (+X)
+        {{0.5f, -0.5f, 0.5f}, {0.0f, 0.0f}, {1.f, 0.f, 0.f}},
+        {{0.5f, -0.5f, -0.5f}, {1.0f, 0.0f}, {1.f, 0.f, 0.f}},
+        {{0.5f, 0.5f, -0.5f}, {1.0f, 1.0f}, {1.f, 0.f, 0.f}},
+        {{0.5f, 0.5f, 0.5f}, {0.0f, 1.0f}, {1.f, 0.f, 0.f}},
+        // Back face (-Z)
+        {{0.5f, -0.5f, -0.5f}, {0.0f, 0.0f}, {0.f, 0.f, -1.f}},
+        {{-0.5f, -0.5f, -0.5f}, {1.0f, 0.0f}, {0.f, 0.f, -1.f}},
+        {{-0.5f, 0.5f, -0.5f}, {1.0f, 1.0f}, {0.f, 0.f, -1.f}},
+        {{0.5f, 0.5f, -0.5f}, {0.0f, 1.0f}, {0.f, 0.f, -1.f}},
+        // Left face (-X)
+        {{-0.5f, -0.5f, -0.5f}, {0.0f, 0.0f}, {-1.f, 0.f, 0.f}},
+        {{-0.5f, -0.5f, 0.5f}, {1.0f, 0.0f}, {-1.f, 0.f, 0.f}},
+        {{-0.5f, 0.5f, 0.5f}, {1.0f, 1.0f}, {-1.f, 0.f, 0.f}},
+        {{-0.5f, 0.5f, -0.5f}, {0.0f, 1.0f}, {-1.f, 0.f, 0.f}},
+        // Top face (+Y)
+        {{-0.5f, 0.5f, 0.5f}, {0.0f, 0.0f}, {0.f, 1.f, 0.f}},
+        {{0.5f, 0.5f, 0.5f}, {1.0f, 0.0f}, {0.f, 1.f, 0.f}},
+        {{0.5f, 0.5f, -0.5f}, {1.0f, 1.0f}, {0.f, 1.f, 0.f}},
+        {{-0.5f, 0.5f, -0.5f}, {0.0f, 1.0f}, {0.f, 1.f, 0.f}},
+        // Bottom face (-Y)
+        {{-0.5f, -0.5f, -0.5f}, {0.0f, 0.0f}, {0.f, -1.f, 0.f}},
+        {{0.5f, -0.5f, -0.5f}, {1.0f, 0.0f}, {0.f, -1.f, 0.f}},
+        {{0.5f, -0.5f, 0.5f}, {1.0f, 1.0f}, {0.f, -1.f, 0.f}},
+        {{-0.5f, -0.5f, 0.5f}, {0.0f, 1.0f}, {0.f, -1.f, 0.f}},
     };
 
     constexpr GLuint indices[] = {
@@ -79,15 +79,17 @@ namespace game
         ::glVertexArrayVertexBuffer(_vao, 0, _vbo.native_handle(), 0, sizeof(VertexData));
         ::glVertexArrayElementBuffer(_vao, _vbo.native_handle());
 
-        ::glEnableVertexArrayAttrib(_vao, 0);
-        ::glEnableVertexArrayAttrib(_vao, 1);
+        ::glEnableVertexArrayAttrib(_vao, 0); // position
+        ::glEnableVertexArrayAttrib(_vao, 1); // uv
+        ::glEnableVertexArrayAttrib(_vao, 2); // normal
 
         ::glVertexArrayAttribFormat(_vao, 0, 3, GL_FLOAT, GL_FALSE, offsetof(VertexData, position));
-        // ::glVertexArrayAttribFormat(_vao, 1, 3, GL_FLOAT, GL_FALSE, offsetof(VertexData, color));
         ::glVertexArrayAttribFormat(_vao, 1, 2, GL_FLOAT, GL_FALSE, offsetof(VertexData, uv));
+        ::glVertexArrayAttribFormat(_vao, 2, 3, GL_FLOAT, GL_FALSE, offsetof(VertexData, normal));
 
         ::glVertexArrayAttribBinding(_vao, 0, 0);
         ::glVertexArrayAttribBinding(_vao, 1, 0);
+        ::glVertexArrayAttribBinding(_vao, 2, 0);
     }
 
     auto Mesh::bind() const -> void
