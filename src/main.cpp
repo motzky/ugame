@@ -34,7 +34,7 @@ auto main(int argc, char **argv) -> int
 
         game::log::info("hello world");
 
-        auto window = game::Window{800u, 600u}; // Create a window with specified width and height
+        auto window = game::Window{800u, 600u};
 
         auto resource_loader = game::ResourceLoader{argv[1]};
 
@@ -63,7 +63,8 @@ auto main(int argc, char **argv) -> int
             .entities = entities |
                         std::views::transform([](const auto &e)
                                               { return &e; }) |
-                        std::ranges::to<std::vector>()};
+                        std::ranges::to<std::vector>(),
+            .ambient = {.r = 0.f, .g = .5f, .b = 1.f}};
 
         auto camera = game::Camera{{0.f, 0.f, 5.f},
                                    {0.f, 0.f, 0.f},

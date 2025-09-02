@@ -24,6 +24,14 @@ namespace game
         }
 
         template <class T>
+        auto write(const T &obj) -> void
+            requires(std::is_trivially_copyable_v<T>)
+        {
+            auto span = std::span<const T>(&obj, 1);
+            write(span);
+        }
+
+        template <class T>
         auto write(std::span<const T> data) -> void
         {
             _buffer.write(std::as_bytes(data), _offset);

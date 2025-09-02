@@ -14,5 +14,6 @@ namespace game
 
     private:
         Buffer _camera_buffer;
+        Buffer _light_buffer;
     };
 }
