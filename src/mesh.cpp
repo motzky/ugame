@@ -45,9 +45,11 @@ namespace game
           _vbo{sizeof(vertex_data) + sizeof(indices)},
           _index_count(static_cast<std::uint32_t>(std::ranges::distance(indices))), _index_offset{sizeof(vertex_data)}
     {
-        auto writer = BufferWriter{_vbo};
-        writer.write(vertex_data);
-        writer.write(indices);
+        {
+            auto writer = BufferWriter{_vbo};
+            writer.write(vertex_data);
+            writer.write(indices);
+        }
 
         ::glCreateVertexArrays(1, &_vao);
 

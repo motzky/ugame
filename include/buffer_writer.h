@@ -23,8 +23,15 @@ namespace game
             _offset += sizeof(T) * N;
         }
 
+        template <class T>
+        auto write(std::span<const T> data) -> void
+        {
+            _buffer.write(std::as_bytes(data), _offset);
+            _offset += data.size_bytes();
+        }
+
     private:
         const Buffer &_buffer;
-        std::uint32_t _offset;
+        std::size_t _offset;
     };
 }

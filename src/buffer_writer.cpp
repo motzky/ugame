@@ -1,4 +1,4 @@
-#include "buffer.h"
+#include "buffer_writer.h"
 
 #include <cstdint>
 #include <span>
@@ -9,20 +9,9 @@
 
 namespace game
 {
-    Buffer::Buffer(std::uint32_t size)
-        : _buffer{0u, [](auto vbo)
-                  { ::glDeleteBuffers(1, &vbo); }}
+    BufferWriter::BufferWriter(const Buffer &buffer)
+        : _buffer(buffer), _offset{}
     {
-        ::glCreateBuffers(1, &_buffer);
-        ::glNamedBufferStorage(_buffer, size, nullptr, GL_DYNAMIC_STORAGE_BIT);
-    }
-    auto Buffer::write(std::span<const std::byte> data, std::size_t offset) const -> void
-    {
-        ::glNamedBufferSubData(_buffer, offset, data.size(), data.data());
     }
 
-    auto Buffer::native_handle() const -> ::GLuint
-    {
-        return _buffer;
-    }
 }

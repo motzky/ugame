@@ -43,6 +43,7 @@
     DO(::PFNGLNAMEDBUFFERSUBDATAPROC, glNamedBufferSubData)             \
     DO(::PFNGLVERTEXARRAYELEMENTBUFFERPROC, glVertexArrayElementBuffer) \
     DO(::PFNGLVERTEXARRAYATTRIBBINDINGPROC, glVertexArrayAttribBinding) \
+    DO(::PFNGLBINDBUFFERBASEPROC, glBindBufferBase)                     \
     DO(::PFNGLDRAWARRAYSEXTPROC, glDrawArraysExt)
 
 #define DO_INLINE(TYPE, NAME) inline TYPE NAME;

@@ -165,6 +165,12 @@ namespace game
 
         // ::glEnable(GL_CULL_FACE);
         ::glEnable(GL_DEPTH_TEST);
+
+        auto vendor_str = ::glGetString(GL_VENDOR);
+        game::log::info("Current render device vendor: {}", reinterpret_cast<const char *>(vendor_str));
+
+        auto renderer_str = ::glGetString(GL_RENDERER);
+        game::log::info("Current render device: {}", reinterpret_cast<const char *>(renderer_str));
     }
     auto Window::pump_event() -> std::optional<Event>
     {
