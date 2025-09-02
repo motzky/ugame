@@ -18,6 +18,8 @@
 #include "mouse_event.h"
 #include "renderer.h"
 #include "resource_loader.h"
+#include "texture.h"
+#include "texture_sampler.h"
 #include "scene.h"
 #include "shader.h"
 #include "stop_event.h"
@@ -38,6 +40,9 @@ auto main(int argc, char **argv) -> int
 
         auto resource_loader = game::ResourceLoader{argv[1]};
 
+        auto texture = game::Texture{resource_loader.load_binary("container2.png"), 500u, 500u};
+        auto sampler = game::TextureSampler{};
+
         const auto vertex_shader = game::Shader{resource_loader.load_string("simple.vert"), game::ShaderType::VERTEX};
         const auto fragment_shader = game::Shader{resource_loader.load_string("simple.frag"), game::ShaderType::FRAGMENT};
         auto material = game::Material{vertex_shader, fragment_shader};
@@ -52,7 +57,7 @@ auto main(int argc, char **argv) -> int
             for (auto j = -10; j < 10; ++j)
             {
                 entities.emplace_back(game::Entity{
-                    &mesh, &material, game::Vector3{static_cast<float>(i) * 1.5f, -1.f, static_cast<float>(j) * 1.5f}});
+                    &mesh, &material, game::Vector3{static_cast<float>(i) * 1.5f, -1.f, static_cast<float>(j) * 1.5f}, &texture, &sampler});
             }
         }
 

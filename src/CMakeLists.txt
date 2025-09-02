@@ -13,6 +13,8 @@ add_executable(
     renderer.cpp
     resource_loader.cpp
     shader.cpp
+    texture.cpp
+    texture_sampler.cpp
     window.cpp
 )
 

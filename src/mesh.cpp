@@ -10,31 +10,54 @@
 
 namespace
 {
-    // Each face has a single color
+    // 6 faces × 4 vertices per face = 24 vertices
     constexpr game::VertexData vertex_data[] = {
-        {.position = {-0.5f, -0.5f, 0.5f}, .color = {0.12f, 0.34f, 0.56f}},
-        {.position = {0.5f, -0.5f, 0.5f}, .color = {0.78f, 0.23f, 0.89f}},
-        {.position = {0.5f, 0.5f, 0.5f}, .color = {0.45f, 0.67f, 0.12f}},
-        {.position = {-0.5f, 0.5f, 0.5f}, .color = {0.91f, 0.11f, 0.33f}},
-        {.position = {-0.5f, -0.5f, -0.5f}, .color = {0.22f, 0.88f, 0.44f}},
-        {.position = {0.5f, -0.5f, -0.5f}, .color = {0.66f, 0.55f, 0.77f}},
-        {.position = {0.5f, 0.5f, -0.5f}, .color = {0.39f, 0.99f, 0.21f}},
-        {.position = {-0.5f, 0.5f, -0.5f}, .color = {0.81f, 0.14f, 0.62f}},
+        // Front face
+        {{-0.5f, -0.5f, 0.5f}, {0.0f, 0.0f}},
+        {{0.5f, -0.5f, 0.5f}, {1.0f, 0.0f}},
+        {{0.5f, 0.5f, 0.5f}, {1.0f, 1.0f}},
+        {{-0.5f, 0.5f, 0.5f}, {0.0f, 1.0f}},
+        // Right face
+        {{0.5f, -0.5f, 0.5f}, {0.0f, 0.0f}},
+        {{0.5f, -0.5f, -0.5f}, {1.0f, 0.0f}},
+        {{0.5f, 0.5f, -0.5f}, {1.0f, 1.0f}},
+        {{0.5f, 0.5f, 0.5f}, {0.0f, 1.0f}},
+        // Back face
+        {{0.5f, -0.5f, -0.5f}, {0.0f, 0.0f}},
+        {{-0.5f, -0.5f, -0.5f}, {1.0f, 0.0f}},
+        {{-0.5f, 0.5f, -0.5f}, {1.0f, 1.0f}},
+        {{0.5f, 0.5f, -0.5f}, {0.0f, 1.0f}},
+        // Left face
+        {{-0.5f, -0.5f, -0.5f}, {0.0f, 0.0f}},
+        {{-0.5f, -0.5f, 0.5f}, {1.0f, 0.0f}},
+        {{-0.5f, 0.5f, 0.5f}, {1.0f, 1.0f}},
+        {{-0.5f, 0.5f, -0.5f}, {0.0f, 1.0f}},
+        // Top face
+        {{-0.5f, 0.5f, 0.5f}, {0.0f, 0.0f}},
+        {{0.5f, 0.5f, 0.5f}, {1.0f, 0.0f}},
+        {{0.5f, 0.5f, -0.5f}, {1.0f, 1.0f}},
+        {{-0.5f, 0.5f, -0.5f}, {0.0f, 1.0f}},
+        // Bottom face
+        {{-0.5f, -0.5f, -0.5f}, {0.0f, 0.0f}},
+        {{0.5f, -0.5f, -0.5f}, {1.0f, 0.0f}},
+        {{0.5f, -0.5f, 0.5f}, {1.0f, 1.0f}},
+        {{-0.5f, -0.5f, 0.5f}, {0.0f, 1.0f}},
     };
 
     constexpr GLuint indices[] = {
+        // Each face: 2 triangles (6 indices)
         // Front face
         0, 1, 2, 2, 3, 0,
         // Right face
-        1, 5, 6, 6, 2, 1,
+        4, 5, 6, 6, 7, 4,
         // Back face
-        5, 4, 7, 7, 6, 5,
+        8, 9, 10, 10, 11, 8,
         // Left face
-        4, 0, 3, 3, 7, 4,
+        12, 13, 14, 14, 15, 12,
         // Top face
-        3, 2, 6, 6, 7, 3,
+        16, 17, 18, 18, 19, 16,
         // Bottom face
-        4, 5, 1, 1, 0, 4};
+        20, 21, 22, 22, 23, 20};
 }
 
 namespace game
@@ -60,7 +83,8 @@ namespace game
         ::glEnableVertexArrayAttrib(_vao, 1);
 
         ::glVertexArrayAttribFormat(_vao, 0, 3, GL_FLOAT, GL_FALSE, offsetof(VertexData, position));
-        ::glVertexArrayAttribFormat(_vao, 1, 3, GL_FLOAT, GL_FALSE, offsetof(VertexData, color));
+        // ::glVertexArrayAttribFormat(_vao, 1, 3, GL_FLOAT, GL_FALSE, offsetof(VertexData, color));
+        ::glVertexArrayAttribFormat(_vao, 1, 2, GL_FLOAT, GL_FALSE, offsetof(VertexData, uv));
 
         ::glVertexArrayAttribBinding(_vao, 0, 0);
         ::glVertexArrayAttribBinding(_vao, 1, 0);

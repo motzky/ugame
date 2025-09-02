@@ -34,6 +34,7 @@
     DO(::PFNGLDEBUGMESSAGECALLBACKPROC, glDebugMessageCallback)         \
     DO(::PFNGLGETUNIFORMLOCATIONPROC, glGetUniformLocation)             \
     DO(::PFNGLUNIFORMMATRIX4FVPROC, glUniformMatrix4fv)                 \
+    DO(::PFNGLUNIFORM1IPROC, glUniform1i)                               \
     DO(::PFNGLCREATEBUFFERSPROC, glCreateBuffers)                       \
     DO(::PFNGLNAMEDBUFFERSTORAGEPROC, glNamedBufferStorage)             \
     DO(::PFNGLCREATEVERTEXARRAYSPROC, glCreateVertexArrays)             \
@@ -44,6 +45,13 @@
     DO(::PFNGLVERTEXARRAYELEMENTBUFFERPROC, glVertexArrayElementBuffer) \
     DO(::PFNGLVERTEXARRAYATTRIBBINDINGPROC, glVertexArrayAttribBinding) \
     DO(::PFNGLBINDBUFFERBASEPROC, glBindBufferBase)                     \
+    DO(::PFNGLCREATETEXTURESPROC, glCreateTextures)                     \
+    DO(::PFNGLTEXTURESTORAGE2DPROC, glTextureStorage2D)                 \
+    DO(::PFNGLTEXTURESUBIMAGE2DPROC, glTextureSubImage2D)               \
+    DO(::PFNGLCREATESAMPLERSPROC, glCreateSamplers)                     \
+    DO(::PFNGLDELETESAMPLERSPROC, glDeleteSamplers)                     \
+    DO(::PFNGLBINDTEXTUREUNITPROC, glBindTextureUnit)                   \
+    DO(::PFNGLBINDSAMPLERPROC, glBindSampler)                           \
     DO(::PFNGLDRAWARRAYSEXTPROC, glDrawArraysExt)
 
 #define DO_INLINE(TYPE, NAME) inline TYPE NAME;

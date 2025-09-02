@@ -5,9 +5,14 @@
 
 namespace game
 {
+    struct UV
+    {
+        float u;
+        float v;
+    };
     struct VertexData
     {
         Vector3 position;
-        Color color;
+        UV uv;
     };
 }

@@ -8,6 +8,8 @@
 #include "ensure.h"
 #include "opengl.h"
 #include "scene.h"
+#include "texture.h"
+#include "texture_sampler.h"
 
 namespace game
 {
@@ -32,6 +34,8 @@ namespace game
         {
             const auto *mesh = entity->mesh();
             const auto *material = entity->material();
+            const auto *texture = entity->texture();
+            const auto *sampler = entity->sampler();
 
             ::glUseProgram(material->native_handle());
 
@@ -39,6 +43,13 @@ namespace game
             ensure(model_uniform > -1, "failed to get location of uniform {}", "model");
 
             ::glUniformMatrix4fv(model_uniform, 1, GL_FALSE, entity->model().data());
+
+            ::glBindTextureUnit(0, texture->native_handle());
+            ::glBindSampler(0, sampler->native_handle());
+
+            const auto tex_uniform = ::glGetUniformLocation(material->native_handle(), "tex");
+            ensure(tex_uniform > -1, "failed to get location of uniform {}", "tex");
+            ::glUniform1i(tex_uniform, 0);
 
             mesh->bind();
             ::glDrawElements(GL_TRIANGLES, mesh->index_count(), GL_UNSIGNED_INT, reinterpret_cast<void *>(mesh->index_offset()));
