@@ -19,6 +19,17 @@ namespace game
         ::glAttachShader(_handle, vertex_shader.native_handle());
         ::glAttachShader(_handle, fragment_shader.native_handle());
         ::glLinkProgram(_handle);
+
+        ::GLint result{};
+        ::glGetProgramiv(_handle, GL_LINK_STATUS, &result);
+
+        if (result != GL_TRUE)
+        {
+            char log[1024];
+            ::glGetProgramInfoLog(_handle, sizeof(log), nullptr, log);
+
+            game::ensure(result == GL_TRUE, "failed to link program \n{}", log);
+        }
     }
 
     auto Material::native_handle() const -> ::GLuint

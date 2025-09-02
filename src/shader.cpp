@@ -36,7 +36,14 @@ namespace game
 
         ::GLint result{};
         ::glGetShaderiv(_handle, GL_COMPILE_STATUS, &result);
-        game::ensure(result == GL_TRUE, "failed to compile shader {}", _type);
+
+        if (result != GL_TRUE)
+        {
+            char log[1024];
+            ::glGetShaderInfoLog(_handle, sizeof(log), nullptr, log);
+
+            game::ensure(result == GL_TRUE, "failed to compile shader {}\n{}", _type, log);
+        }
     }
 
     auto Shader::type() const -> ShaderType

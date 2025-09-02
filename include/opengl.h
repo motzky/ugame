@@ -31,6 +31,8 @@
     DO(::PFNGLENABLEVERTEXATTRIBARRAYPROC, glEnableVertexAttribArray)   \
     DO(::PFNGLUSEPROGRAMPROC, glUseProgram)                             \
     DO(::PFNGLGETSHADERINFOLOGPROC, glGetShaderInfoLog)                 \
+    DO(::PFNGLGETPROGRAMINFOLOGPROC, glGetProgramInfoLog)               \
+    DO(::PFNGLGETPROGRAMIVPROC, glGetProgramiv)                         \
     DO(::PFNGLDEBUGMESSAGECALLBACKPROC, glDebugMessageCallback)         \
     DO(::PFNGLGETUNIFORMLOCATIONPROC, glGetUniformLocation)             \
     DO(::PFNGLUNIFORMMATRIX4FVPROC, glUniformMatrix4fv)                 \
