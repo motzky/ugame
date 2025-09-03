@@ -40,6 +40,8 @@ namespace game
         auto width() const -> std::uint32_t;
         auto height() const -> std::uint32_t;
 
+        auto show_cursor(bool show) const -> void;
+
     private:
         AutoRelease<HandleType, nullptr> _windowHandle;
         std::uint32_t _width;

@@ -36,8 +36,10 @@ auto main(int argc, char **argv) -> int
 
         game::log::info("hello world");
 
-        auto width = 1920u;
-        auto height = 1080u;
+        // auto width = 1920u;
+        // auto height = 1080u;
+        auto width = 1280u;
+        auto height = 720u;
         auto window = game::Window{width, height};
 
         auto resource_loader = game::ResourceLoader{argv[1]};
@@ -91,6 +93,7 @@ auto main(int argc, char **argv) -> int
 
         auto key_state = std::unordered_map<game::Key, bool>{};
 
+        auto show_debug = true;
         const auto debug_ui = game::DebugUi(window.native_handle(), scene);
 
         auto running = true;
@@ -113,12 +116,20 @@ auto main(int argc, char **argv) -> int
                             // game::log::debug("{}", arg);
 
                             key_state[arg.key()] = arg.state() == game::KeyState::DOWN;
+                            if (arg.key() == game::Key::F1 && arg.state() == game::KeyState::UP)
+                            {
+                                show_debug = !show_debug;
+                                window.show_cursor(show_debug);
+                            }
                         }
                         else if constexpr (std::same_as<T, game::MouseEvent>)
                         {
-                            static constexpr auto sensitivity = float{0.005f};
-                            camera.adjust_pitch(arg.delta_y() * sensitivity);
-                            camera.adjust_yaw(arg.delta_x() * sensitivity);
+                            if (!show_debug)
+                            {
+                                static constexpr auto sensitivity = float{0.005f};
+                                camera.adjust_pitch(arg.delta_y() * sensitivity);
+                                camera.adjust_yaw(arg.delta_x() * sensitivity);
+                            }
                         }
                         else if constexpr (std::same_as<T, game::MouseButtonEvent>)
                         {
@@ -166,7 +177,10 @@ auto main(int argc, char **argv) -> int
             scene.point.position.z = std::cos(t) * 10.f;
 
             renderer.render(camera, scene);
-            debug_ui.render();
+            if (show_debug)
+            {
+                debug_ui.render();
+            }
             window.swap();
         }
     }

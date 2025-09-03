@@ -1,4 +1,4 @@
-#ifndef WIN32
+#ifndef _WIN32
 #error This code unit is ONLY for Windows !
 #endif
 
@@ -344,4 +344,10 @@ namespace game
     {
         return _height;
     }
+
+    auto Window::show_cursor(bool show) const -> void
+    {
+        log::warning("show_cursor() not supported on Windows yet!");
+    }
+
 }
