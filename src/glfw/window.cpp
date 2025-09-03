@@ -141,12 +141,13 @@ namespace game
         ::glfwSetKeyCallback(_windowHandle, key_callback);
         if (::glfwRawMouseMotionSupported())
         {
-            ::glfwSetInputMode(_windowHandle, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+            // ::glfwSetInputMode(_windowHandle, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+            ::glfwSetInputMode(_windowHandle, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
             ::glfwSetInputMode(_windowHandle, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
         }
         else
         {
-            ::glfwSetInputMode(_windowHandle, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+            ::glfwSetInputMode(_windowHandle, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
         }
         ::glfwSetCursorPosCallback(_windowHandle, mouse_callback);
 
@@ -190,6 +191,11 @@ namespace game
     auto Window::swap() -> void
     {
         ::glfwSwapBuffers(_windowHandle);
+    }
+
+    auto Window::native_handle() const -> HandleType
+    {
+        return _windowHandle;
     }
 
 }

@@ -18,6 +18,12 @@ namespace game
     class Window
     {
     public:
+#ifdef _WIN32
+        typedef ::HWND HandleType;
+#else
+        typedef ::GLFWwindow *HandleType;
+#endif
+
         Window(std::uint32_t width, std::uint32_t height);
         ~Window() = default;
 
@@ -30,13 +36,13 @@ namespace game
         auto pump_event() -> std::optional<Event>;
         auto swap() -> void;
 
+        auto native_handle() const -> HandleType;
+
     private:
+        AutoRelease<HandleType, nullptr> _windowHandle;
 #ifdef _WIN32
-        AutoRelease<::HWND, nullptr> _windowHandle;
         AutoRelease<::HDC> _dc;
         ::WNDCLASSA _wc;
-#else
-        AutoRelease<::GLFWwindow *, nullptr> _windowHandle; // Placeholder for non-Windows platforms
 #endif
     };
 }

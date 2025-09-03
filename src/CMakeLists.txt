@@ -15,10 +15,31 @@ add_executable(
     shader.cpp
     texture.cpp
     texture_sampler.cpp
-    window.cpp
+
+    ${imgui_SOURCE_DIR}/imgui.cpp
+    ${imgui_SOURCE_DIR}/imgui_demo.cpp
+    ${imgui_SOURCE_DIR}/imgui_draw.cpp
+    ${imgui_SOURCE_DIR}/imgui_tables.cpp
+    ${imgui_SOURCE_DIR}/imgui_widgets.cpp
+
+    ${imgui_SOURCE_DIR}/backends/imgui_impl_opengl3.cpp
 )
 
-target_include_directories(nathan_stream PUBLIC ${stb_lib_SOURCE_DIR})
+IF(WIN32)
+    target_sources(
+        nathan_stream
+        PRIVATE win32/window.cpp win32/debug_ui.cpp
+        ${imgui_SOURCE_DIR}/backends/imgui_impl_win32.cpp
+    )
+ELSEIF(UNIX)
+    target_sources(
+        nathan_stream
+        PRIVATE glfw/window.cpp glfw/debug_ui.cpp
+        ${imgui_SOURCE_DIR}/backends/imgui_impl_glfw.cpp
+    )
+ENDIF()
+
+target_include_directories(nathan_stream PUBLIC ${stb_lib_SOURCE_DIR} ${imgui_SOURCE_DIR})
 
 target_compile_features(
     nathan_stream
@@ -26,7 +47,7 @@ target_compile_features(
 )
 target_compile_options(
     nathan_stream
-    PUBLIC -std=c++23 -Wall -Wextra -pedantic-errors
+    PUBLIC -std=c++23 -Wall -Wextra -Wpedantic -Werror -pedantic-errors
 )
 
 target_link_libraries(${PROJECT_NAME} 

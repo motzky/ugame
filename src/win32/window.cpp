@@ -310,5 +310,10 @@ namespace game
     {
         ::SwapBuffers(_dc)
     }
+
+    auto Window::native_handle() const -> HandleType
+    {
+        return _windowHandle:
+    }
 }
 #endif
