@@ -38,9 +38,13 @@ namespace game
 
     auto DebugUi::render() const -> void
     {
+        auto io = ImGui::GetIO();
+
         ::ImGui_ImplOpenGL3_NewFrame();
         ::ImGui_ImplGlfw_NewFrame();
         ::ImGui::NewFrame();
+
+        ::ImGui::LabelText("FPS", "%0.1f", io.Framerate);
 
         // bool show_demo = true;
         // ::ImGui::ShowDemoWindow(&show_demo);
@@ -51,6 +55,10 @@ namespace game
             _scene.point.color.g = color[1];
             _scene.point.color.b = color[2];
         }
+
+        ::ImGui::SliderFloat("const", &_scene.point.const_attenuation, 0.f, 1.f);
+        ::ImGui::SliderFloat("linear", &_scene.point.linear_attenuation, 0.f, 1.f);
+        ::ImGui::SliderFloat("quad", &_scene.point.quad_attenuation, 0.f, 1.f);
 
         ::ImGui::Render();
 

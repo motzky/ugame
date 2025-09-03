@@ -43,7 +43,7 @@ namespace game
         auto uniform_count = ::GLint{};
         ::glGetProgramiv(_handle, GL_ACTIVE_UNIFORMS, &uniform_count);
 
-        log::info("new material ({} uniformas)", uniform_count);
+        log::info("new material ({} uniforms)", uniform_count);
 
         if (uniform_count != 0)
         {
@@ -65,7 +65,7 @@ namespace game
                 const auto location = ::glGetUniformLocation(_handle, name.c_str());
                 _uniforms[name] = location;
 
-                // log::debug("found uniform: {}", name);
+                log::debug("found uniform: {}", name);
             }
         }
     }

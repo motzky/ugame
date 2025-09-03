@@ -18,6 +18,9 @@ namespace game
     {
         Vector3 position;
         Color color;
+        float const_attenuation;
+        float linear_attenuation;
+        float quad_attenuation;
     };
 
     struct Scene

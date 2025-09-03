@@ -11,8 +11,6 @@
 #include "ensure.h"
 #include "opengl.h"
 #include "scene.h"
-#include "texture.h"
-#include "texture_sampler.h"
 
 namespace
 {
@@ -23,6 +21,7 @@ namespace
         alignas(16) game::Color direction_color;
         alignas(16) game::Vector3 point_postion;
         alignas(16) game::Color point_color;
+        alignas(16) game::Vector3 attenuation;
     };
 }
 
@@ -52,7 +51,8 @@ namespace game
                 .direction = scene.directional.direction,
                 .direction_color = scene.directional.color,
                 .point_postion = scene.point.position,
-                .point_color = scene.point.color};
+                .point_color = scene.point.color,
+                .attenuation = {scene.point.const_attenuation, scene.point.linear_attenuation, scene.point.quad_attenuation}};
             auto writer = BufferWriter{_light_buffer};
             writer.write(light_buffer);
         }

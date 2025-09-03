@@ -16,6 +16,7 @@ layout(std140, binding = 1) uniform lights
     vec3 direction_color;
     vec3 point_light;
     vec3 point_color;
+    vec3 attenuation;
 };
 
 layout(std140, binding = 0) uniform camera
@@ -31,27 +32,26 @@ vec3 calc_ambient()
     return ambient;
 }
 
-vec3 calc_directional(vec3 norm)
+vec3 calc_directional()
 {
     vec3 light_dir = normalize(-direction);
-    float diff = max(dot(norm, light_dir), 0.0);
+    float diff = max(dot(normal, light_dir), 0.0);
 
     return diff * direction_color;
 }
 
-vec3 calc_point_diffuse(vec3 light_dir, vec3 norm)
+vec3 calc_point()
 {
-    float diff = max(dot(norm, light_dir), 0.0);
-    return diff * point_color;
-}
+    float dist = length(point_light - frag_position.xyz);
+    float att = 1.0 / (attenuation.x + (attenuation.y * dist) + (attenuation.z * (dist * dist)));
 
-vec3 calc_point_specular(vec3 light_dir, vec3 norm)
-{
-    vec3 view_dir = normalize(eye - frag_position.xyz);
-    vec3 reflect_dir = reflect(-light_dir, norm);
-    float spec = pow(max(dot(view_dir, reflect_dir), 0.0), 32);
-    // return spec * point_color;
-    return spec * vec3(1,1,1);
+    vec3 light_dir = normalize(point_light - frag_position.xyz);
+    float diff = max(dot(normal, light_dir), 0.0);
+
+    vec3 reflect_dir = reflect(-light_dir, normal);
+    float spec = pow(max(dot(normalize(eye - frag_position.xyz), reflect_dir), 0.0), 32) * texture(tex1, tex_coord).r;
+
+    return ((diff + spec) * att) * point_color;
 }
 
 void main()
@@ -60,15 +60,8 @@ void main()
 
     vec4 albedo = texture(tex0, tex_coord);
     vec3 amb_color = calc_ambient() * albedo.rgb;
-    vec3 dir_color = calc_directional(norm);
+    vec3 dir_color = calc_directional();
+    vec3 point_color = calc_point();
 
-    vec3 point_light_dir = normalize(point_light - frag_position.xyz);
-
-    vec3 point_diffuse = calc_point_diffuse(point_light_dir, norm);
-    vec3 point_specular = calc_point_specular(point_light_dir, norm);
-
-    vec3 diffuse = (dir_color + point_diffuse) * albedo.rgb;
-    vec3 specular = point_specular * texture(tex1, tex_coord).rgb;
-
-    frag_color = vec4(amb_color + diffuse + specular, 1.0);
+    frag_color = vec4((amb_color + dir_color + point_color) * albedo.rgb, 1.0);
 }
