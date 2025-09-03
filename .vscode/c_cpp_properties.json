@@ -4,7 +4,8 @@
       "name": "Linux",
       "includePath": [
         "${workspaceFolder}/include/**",
-        "${workspaceFolder}/build/_deps/stb_lib-src/**"
+        "${workspaceFolder}/build/_deps/stb_lib-src/**",
+        "${workspaceFolder}/build/_deps/imgui-src/**"
       ],
       "defines": [],
       "compilerPath": "/usr/bin/g++",

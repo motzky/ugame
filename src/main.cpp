@@ -9,6 +9,7 @@
 #include <variant>
 
 #include "camera.h"
+#include "debug_ui.h"
 #include "entity.h"
 #include "ensure.h"
 #include "event.h"
@@ -87,6 +88,9 @@ auto main(int argc, char **argv) -> int
                                    100.f};
 
         auto key_state = std::unordered_map<game::Key, bool>{};
+
+        const auto debug_ui = game::DebugUi(window.native_handle());
+
         auto running = true;
 
         while (running)
@@ -156,6 +160,7 @@ auto main(int argc, char **argv) -> int
             scene.point.position.z = std::cos(t) * 10.f;
 
             renderer.render(camera, scene);
+            debug_ui.render();
             window.swap();
         }
     }
