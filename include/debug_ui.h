@@ -1,5 +1,8 @@
 #pragma once
 
+#include "imgui.h"
+#include "mouse_button_event.h"
+#include "scene.h"
 #include "window.h"
 
 namespace game
@@ -7,11 +10,13 @@ namespace game
     class DebugUi
     {
     public:
-        DebugUi(Window::HandleType window);
+        DebugUi(Window::HandleType window, Scene &_scene);
         ~DebugUi();
 
         auto render() const -> void;
+        auto add_mouse_event(const MouseButtonEvent &event) const -> void;
 
     private:
+        Scene &_scene;
     };
 }

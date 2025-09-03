@@ -9,11 +9,13 @@
 
 #include "backends/imgui_impl_glfw.h"
 
+#include "scene.h"
 #include "window.h"
 
 namespace game
 {
-    DebugUi::DebugUi(Window::HandleType window)
+    DebugUi::DebugUi(Window::HandleType window, Scene &scene)
+        : _scene(scene)
     {
         IMGUI_CHECKVERSION();
         ::ImGui::CreateContext();
@@ -23,7 +25,7 @@ namespace game
 
         ::ImGui::StyleColorsDark();
 
-        ::ImGui_ImplGlfw_InitForOpenGL(window, true);
+        ::ImGui_ImplGlfw_InitForOpenGL(window, false);
         ::ImGui_ImplOpenGL3_Init();
     }
 
@@ -40,11 +42,25 @@ namespace game
         ::ImGui_ImplGlfw_NewFrame();
         ::ImGui::NewFrame();
 
-        bool show_demo = true;
-        ::ImGui::ShowDemoWindow(&show_demo);
+        // bool show_demo = true;
+        // ::ImGui::ShowDemoWindow(&show_demo);
+        static float color[3]{};
+        if (::ImGui::ColorPicker3("", color))
+        {
+            _scene.point.color.r = color[0];
+            _scene.point.color.g = color[1];
+            _scene.point.color.b = color[2];
+        }
 
         ::ImGui::Render();
 
         ::ImGui_ImplOpenGL3_RenderDrawData(::ImGui::GetDrawData());
+    }
+
+    auto DebugUi::add_mouse_event(const MouseButtonEvent &event) const -> void
+    {
+        auto io = ImGui::GetIO();
+
+        io.AddMouseButtonEvent(0, event.state() == game::MouseButtonState::DOWN);
     }
 }

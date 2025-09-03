@@ -36,7 +36,11 @@ auto main(int argc, char **argv) -> int
 
         game::log::info("hello world");
 
-        auto window = game::Window{800u, 600u};
+        // auto width = 800u;
+        // auto height = 600u;
+        auto width = 1280u;
+        auto height = 720u;
+        auto window = game::Window{width, height};
 
         auto resource_loader = game::ResourceLoader{argv[1]};
 
@@ -89,7 +93,7 @@ auto main(int argc, char **argv) -> int
 
         auto key_state = std::unordered_map<game::Key, bool>{};
 
-        const auto debug_ui = game::DebugUi(window.native_handle());
+        const auto debug_ui = game::DebugUi(window.native_handle(), scene);
 
         auto running = true;
 
@@ -117,6 +121,10 @@ auto main(int argc, char **argv) -> int
                             static constexpr auto sensitivity = float{0.005f};
                             camera.adjust_pitch(arg.delta_y() * sensitivity);
                             camera.adjust_yaw(arg.delta_x() * sensitivity);
+                        }
+                        else if constexpr (std::same_as<T, game::MouseButtonEvent>)
+                        {
+                            debug_ui.add_mouse_event(arg);
                         }
                     },
                     *event);
