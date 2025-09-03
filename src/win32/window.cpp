@@ -1,6 +1,6 @@
 #ifndef WIN32
 #error This code unit is ONLY for Windows !
-#else
+#endif
 
 #include "window.h"
 
@@ -10,8 +10,9 @@
 #include <queue>
 #include <ranges>
 
-#include <Windows.h>
 #include <hidusage.h>
+#include <Windows.h>
+#include <Windowsx.h>
 
 #include "auto_release.h"
 #include "ensure.h"
@@ -19,6 +20,7 @@
 #include "key.h"
 #include "key_event.h"
 #include "mouse_event.h"
+#include "mouse_button_event.h"
 #include "log.h"
 #include "opengl.h"
 #include "stop_event.h"
@@ -95,6 +97,23 @@ namespace
 
                 // game::log::debug("mouse event");
             }
+            break;
+        }
+        case WM_LBUTTONUP:
+        {
+            g_event_queue.emplace(game::MouseButtonEvent{
+                static_cast<float>(GET_X_LPARAM(lParam)),
+                static_cast<float>(GET_Y_LPARAM(lParam)),
+                game::MouseButtonState::UP});
+            break;
+        }
+        case WM_LBUTTONDOWN:
+        {
+            g_event_queue.emplace(game::MouseButtonEvent{
+                static_cast<float>(GET_X_LPARAM(lParam)),
+                static_cast<float>(GET_Y_LPARAM(lParam)),
+                game::MouseButtonState::DOWN});
+            break;
             break;
         }
         }
@@ -316,4 +335,3 @@ namespace game
         return _windowHandle:
     }
 }
-#endif

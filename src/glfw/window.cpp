@@ -1,6 +1,6 @@
 #ifdef WIN32
 #error This code unit is NOT for Windows
-#else
+#endif
 
 #include "window.h"
 
@@ -17,6 +17,8 @@
 #include "event.h"
 #include "key.h"
 #include "key_event.h"
+#include "mouse_event.h"
+#include "mouse_button_event.h"
 #include "log.h"
 #include "opengl.h"
 #include "stop_event.h"
@@ -24,6 +26,7 @@
 namespace
 {
     auto g_event_queue = std::queue<game::Event>{};
+    auto g_process_mouse_events = false;
 
     void APIENTRY opengl_debug_callback(
         GLenum source,
@@ -56,8 +59,7 @@ namespace
         game::log::error("{}", description);
     }
 
-    // void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods)
-    void key_callback(GLFWwindow *window, int key, int, int action, int)
+    auto key_callback(GLFWwindow *window, int key, int, int action, int) -> void
     {
         if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
         {
@@ -77,8 +79,44 @@ namespace
         }
     }
 
-    void mouse_callback(GLFWwindow * /*window*/, double xpos, double ypos)
+    auto mouse_button_callback(GLFWwindow *window, int button, int action, int /*mods*/) -> void
     {
+        if (!g_process_mouse_events)
+        {
+            return;
+        }
+
+        if (button == GLFW_MOUSE_BUTTON_LEFT)
+        {
+            auto state = action == GLFW_PRESS ? game::MouseButtonState::DOWN : game::MouseButtonState::UP;
+
+            double xpos, ypos;
+            glfwGetCursorPos(window, &xpos, &ypos);
+
+            g_event_queue.emplace(game::MouseButtonEvent{static_cast<float>(xpos), static_cast<float>(ypos), state});
+
+            // game::log::debug("Mouse button event: {} @ {} {}", action == GLFW_PRESS ? "DOWN" : "UP", xpos, ypos);
+        }
+    }
+
+    auto mouse_cursor_entered_left_callback(GLFWwindow *, int entered) -> void
+    {
+        if (entered)
+        {
+            g_process_mouse_events = true;
+        }
+        else
+        {
+            g_process_mouse_events = false;
+        }
+    }
+
+    auto mouse_callback(GLFWwindow * /*window*/, double xpos, double ypos) -> void
+    {
+        if (!g_process_mouse_events)
+        {
+            return;
+        }
         static auto last_x = float{};
         static auto last_y = float{};
 
@@ -149,10 +187,11 @@ namespace game
         {
             ::glfwSetInputMode(_windowHandle, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
         }
-        ::glfwSetCursorPosCallback(_windowHandle, mouse_callback);
 
+        ::glfwSetCursorEnterCallback(_windowHandle, mouse_cursor_entered_left_callback);
+        ::glfwSetCursorPosCallback(_windowHandle, mouse_callback);
+        ::glfwSetMouseButtonCallback(_windowHandle, mouse_button_callback);
         // TODO
-        // ::glfwSetMouseButtonCallback(_windowHandle, mouse_button_callback);
         // ::glfwSetScrollCallback(_windowHandle, scroll_callback);
 
         ::glfwMakeContextCurrent(_windowHandle);
@@ -199,5 +238,3 @@ namespace game
     }
 
 }
-
-#endif
