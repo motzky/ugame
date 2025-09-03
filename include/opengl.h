@@ -54,6 +54,7 @@
     DO(::PFNGLDELETESAMPLERSPROC, glDeleteSamplers)                     \
     DO(::PFNGLBINDTEXTUREUNITPROC, glBindTextureUnit)                   \
     DO(::PFNGLBINDSAMPLERPROC, glBindSampler)                           \
+    DO(::PFNGLGETACTIVEUNIFORMPROC, glGetActiveUniform)                 \
     DO(::PFNGLDRAWARRAYSEXTPROC, glDrawArraysExt)
 
 #define DO_INLINE(TYPE, NAME) inline TYPE NAME;
