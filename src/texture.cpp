@@ -17,10 +17,10 @@ namespace game
         : _handle{0u, [](auto texture)
                   { ::glDeleteTextures(1u, &texture); }}
     {
-        auto w = static_cast<int>(width);
-        auto h = static_cast<int>(height);
+        auto w = int{0};
+        auto h = int{0};
+        auto num_channels = int{0};
 
-        auto num_channels = 3;
         auto raw_data = std::unique_ptr<::stbi_uc, decltype(&::stbi_image_free)>{
             ::stbi_load_from_memory(reinterpret_cast<const stbi_uc *>(data.data()),
                                     static_cast<int>(data.size_bytes()),
