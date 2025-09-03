@@ -39,9 +39,13 @@ auto main(int argc, char **argv) -> int
 
         auto resource_loader = game::ResourceLoader{argv[1]};
 
-        auto texture = game::Texture{resource_loader.load_binary("container2.png"), 500u, 500u};
+        auto albedo_tex = game::Texture{resource_loader.load_binary("container2.png"), 500u, 500u};
         auto spec_map = game::Texture{resource_loader.load_binary("container2_specular.png"), 500u, 500u};
         auto sampler = game::TextureSampler{};
+
+        const game::Texture *textures[]{&albedo_tex, &spec_map};
+        const game::TextureSampler *samplers[]{&sampler, &sampler};
+        auto tex_samp = std::views::zip(textures, samplers) | std::ranges::to<std::vector>();
 
         const auto vertex_shader = game::Shader{resource_loader.load_string("simple.vert"), game::ShaderType::VERTEX};
         const auto fragment_shader = game::Shader{resource_loader.load_string("simple.frag"), game::ShaderType::FRAGMENT};
@@ -52,8 +56,6 @@ auto main(int argc, char **argv) -> int
 
         auto entities = std::vector<game::Entity>{};
 
-        const auto tex_ptrs = std::vector<const game::Texture *>{&texture, &spec_map};
-
         for (auto i = -10; i < 10; ++i)
         {
             for (auto j = -10; j < 10; ++j)
@@ -62,8 +64,7 @@ auto main(int argc, char **argv) -> int
                     &mesh,
                     &material,
                     game::Vector3{static_cast<float>(i) * 1.5f, -1.f, static_cast<float>(j) * 1.5f},
-                    tex_ptrs,
-                    &sampler});
+                    tex_samp});
             }
         }
 

@@ -1,6 +1,8 @@
 #include "entity.h"
 
 #include <span>
+#include <tuple>
+#include <vector>
 
 #include "material.h"
 #include "matrix4.h"
@@ -10,8 +12,8 @@
 
 namespace game
 {
-    Entity::Entity(const Mesh *mesh, const Material *material, const Vector3 &position, std::vector<const Texture *> textures, const TextureSampler *sampler)
-        : _mesh(mesh), _material(material), _model(position), _textures(textures), _sampler(sampler)
+    Entity::Entity(const Mesh *mesh, const Material *material, const Vector3 &position, std::vector<std::tuple<const Texture *, const TextureSampler *>> &textures)
+        : _mesh(mesh), _material(material), _model(position), _textures(textures)
     {
     }
 
@@ -23,16 +25,12 @@ namespace game
     {
         return _material;
     }
-    auto Entity::model() const -> std::span<const float>
+    auto Entity::model() const -> const Matrix4 &
     {
-        return _model.data();
+        return _model;
     }
-    auto Entity::textures() const -> const std::vector<const Texture *> &
+    auto Entity::textures() const -> std::span<const std::tuple<const Texture *, const TextureSampler *>>
     {
         return _textures;
-    }
-    auto Entity::sampler() const -> const TextureSampler *
-    {
-        return _sampler;
     }
 }

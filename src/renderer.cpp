@@ -63,27 +63,10 @@ namespace game
         {
             const auto *mesh = entity->mesh();
             const auto *material = entity->material();
-            const auto *sampler = entity->sampler();
 
-            ::glUseProgram(material->native_handle());
-
-            const auto model_uniform = ::glGetUniformLocation(material->native_handle(), "model");
-            ensure(model_uniform > -1, "failed to get location of uniform {}", "model");
-
-            ::glUniformMatrix4fv(model_uniform, 1, GL_FALSE, entity->model().data());
-
-            for (const auto &[index, tex] : entity->textures() | std::views::enumerate)
-            {
-                const auto gl_index = static_cast<::GLuint>(index);
-                ::glBindTextureUnit(gl_index, tex->native_handle());
-                ::glBindSampler(gl_index, sampler->native_handle());
-
-                const auto uniform_name = std::format("tex{}", index);
-
-                const auto tex_uniform = ::glGetUniformLocation(material->native_handle(), uniform_name.c_str());
-                ensure(tex_uniform > -1, "failed to get location of uniform {}", uniform_name);
-                ::glUniform1i(tex_uniform, 0);
-            }
+            material->use();
+            material->set_uniform("model", entity->model());
+            material->bind_textures(entity->textures());
 
             mesh->bind();
             ::glDrawElements(GL_TRIANGLES, mesh->index_count(), GL_UNSIGNED_INT, reinterpret_cast<void *>(mesh->index_offset()));
