@@ -97,7 +97,7 @@ auto main(int argc, char **argv) -> int
         auto key_state = std::unordered_map<game::Key, bool>{};
 
         auto show_debug = true;
-        const auto debug_ui = game::DebugUi(window.native_handle(), scene);
+        const auto debug_ui = game::DebugUi(window.native_handle(), scene, camera);
 
         auto running = true;
 
@@ -174,10 +174,10 @@ auto main(int argc, char **argv) -> int
             camera.translate(game::Vector3::normalize(walk_direction) * (speed / 60.f));
             camera.update();
 
-            static auto t = 0.f;
-            t += 0.05f;
-            scene.point.position.x = std::sin(t) * 10.f;
-            scene.point.position.z = std::cos(t) * 10.f;
+            // static auto t = 0.f;
+            // t += 0.05f;
+            // scene.point.position.x = std::sin(t) * 10.f;
+            // scene.point.position.z = std::cos(t) * 10.f;
 
             renderer.render(camera, scene);
             if (show_debug)

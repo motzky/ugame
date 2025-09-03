@@ -1,6 +1,8 @@
 #pragma once
 
 #include "imgui.h"
+
+#include "camera.h"
 #include "mouse_button_event.h"
 #include "scene.h"
 #include "window.h"
@@ -10,7 +12,7 @@ namespace game
     class DebugUi
     {
     public:
-        DebugUi(Window::HandleType window, Scene &_scene);
+        DebugUi(Window::HandleType window, Scene &_scene, Camera &camera);
         ~DebugUi();
 
         auto render() const -> void;
@@ -18,5 +20,6 @@ namespace game
 
     private:
         Scene &_scene;
+        Camera &_camera;
     };
 }

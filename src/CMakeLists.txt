@@ -25,8 +25,9 @@ add_library(imguilib STATIC
     ${imgui_SOURCE_DIR}/imgui_draw.cpp
     ${imgui_SOURCE_DIR}/imgui_tables.cpp
     ${imgui_SOURCE_DIR}/imgui_widgets.cpp
-
     ${imgui_SOURCE_DIR}/backends/imgui_impl_opengl3.cpp
+
+    ${imguizmo_SOURCE_DIR}/ImGuizmo.cpp
 )
 
 IF(WIN32)
@@ -50,7 +51,7 @@ ELSEIF(UNIX)
 ENDIF()
 
 target_include_directories(imguilib PUBLIC ${imgui_SOURCE_DIR})
-target_include_directories(nathan_stream PUBLIC ${stb_lib_SOURCE_DIR} ${imgui_SOURCE_DIR})
+target_include_directories(nathan_stream PUBLIC ${stb_lib_SOURCE_DIR} ${imgui_SOURCE_DIR} ${imguizmo_SOURCE_DIR})
 
 target_compile_features(
     nathan_stream

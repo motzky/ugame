@@ -4,18 +4,20 @@
 
 #include "debug_ui.h"
 
-#include "imgui.h"
-#include "backends/imgui_impl_opengl3.h"
-
 #include "backends/imgui_impl_glfw.h"
+#include "backends/imgui_impl_opengl3.h"
+#include "imgui.h"
+#include "ImGuizmo.h"
 
+#include "camera.h"
+#include "matrix4.h"
 #include "scene.h"
 #include "window.h"
 
 namespace game
 {
-    DebugUi::DebugUi(Window::HandleType window, Scene &scene)
-        : _scene(scene)
+    DebugUi::DebugUi(Window::HandleType window, Scene &scene, Camera &camera)
+        : _scene(scene), _camera(camera)
     {
         IMGUI_CHECKVERSION();
         ::ImGui::CreateContext();
@@ -44,10 +46,27 @@ namespace game
         ::ImGui_ImplGlfw_NewFrame();
         ::ImGui::NewFrame();
 
+        ::ImGuizmo::BeginFrame();
+        ::ImGuizmo::SetOrthographic(false);
+        ::ImGuizmo::Enable(true);
+        ::ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
+
+        auto translate = Matrix4{_scene.point.position};
+
+        ::ImGuizmo::Manipulate(
+            _camera.view().data(),
+            _camera.projection().data(),
+            ::ImGuizmo::TRANSLATE,
+            ::ImGuizmo::WORLD,
+            const_cast<float *>(translate.data().data()),
+            nullptr, nullptr, nullptr, nullptr);
+
+        _scene.point.position.x = translate.data()[12];
+        _scene.point.position.y = translate.data()[13];
+        _scene.point.position.z = translate.data()[14];
+
         ::ImGui::LabelText("FPS", "%0.1f", io.Framerate);
 
-        // bool show_demo = true;
-        // ::ImGui::ShowDemoWindow(&show_demo);
         static float color[3]{};
         if (::ImGui::ColorPicker3("", color))
         {
@@ -61,7 +80,6 @@ namespace game
         ::ImGui::SliderFloat("quad", &_scene.point.quad_attenuation, 0.f, 1.f);
 
         ::ImGui::Render();
-
         ::ImGui_ImplOpenGL3_RenderDrawData(::ImGui::GetDrawData());
     }
 
