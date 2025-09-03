@@ -11,25 +11,42 @@
 #include "ensure.h"
 #include "opengl.h"
 #include "scene.h"
+#include "texture.h"
+#include "texture_sampler.h"
 
 namespace
 {
+
+#if defined(_MSC_VER)
+// disable weird warning about alingas in MSVC
+#pragma warning(push)
+#pragma warning(disable : 4324)
+#endif
+
+    struct PointLightBuffer
+    {
+        alignas(16) game::Vector3 point_postion;
+        alignas(16) game::Color point_color;
+        alignas(16) game::Vector3 attenuation;
+    };
+
     struct LightBuffer
     {
         alignas(16) game::Color ambient;
         alignas(16) game::Vector3 direction;
         alignas(16) game::Color direction_color;
-        alignas(16) game::Vector3 point_postion;
-        alignas(16) game::Color point_color;
-        alignas(16) game::Vector3 attenuation;
+        int num_points;
     };
+#if defined(_MSC_VER)
+#pragma warning(pop)
+#endif
 }
 
 namespace game
 {
     Renderer::Renderer()
         : _camera_buffer(sizeof(Matrix4) * 2u + sizeof(Vector3)),
-          _light_buffer(sizeof(LightBuffer))
+          _light_buffer(10240u)
     {
     }
 
@@ -50,14 +67,24 @@ namespace game
                 .ambient = scene.ambient,
                 .direction = scene.directional.direction,
                 .direction_color = scene.directional.color,
-                .point_postion = scene.point.position,
-                .point_color = scene.point.color,
-                .attenuation = {scene.point.const_attenuation, scene.point.linear_attenuation, scene.point.quad_attenuation}};
+                .num_points = static_cast<int>(scene.points.size())
+                // .point_postion = scene.point.position,
+                // .point_color = scene.point.color,
+                // .attenuation = {scene.point.const_attenuation, scene.point.linear_attenuation, scene.point.quad_attenuation}
+            };
             auto writer = BufferWriter{_light_buffer};
             writer.write(light_buffer);
+            for (const auto &point : scene.points)
+            {
+                auto point_light_bufer = PointLightBuffer{
+                    .point_postion = point.position,
+                    .point_color = point.color,
+                    .attenuation = {point.const_attenuation, point.linear_attenuation, point.quad_attenuation}};
+                writer.write(point_light_bufer);
+            }
         }
 
-        ::glBindBufferBase(GL_UNIFORM_BUFFER, 1, _light_buffer.native_handle());
+        ::glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, _light_buffer.native_handle());
 
         for (const auto *entity : scene.entities)
         {

@@ -80,10 +80,14 @@ auto main(int argc, char **argv) -> int
                         std::ranges::to<std::vector>(),
             .ambient = {.r = .2f, .g = .2f, .b = .2f},
             .directional = {.direction = {-1.f, -1.f, -1.f}, .color = {.r = .3f, .g = .3f, .b = .3f}},
-            .point = {.position = {5.f, 5.f, 0.f}, .color = {.r = .5f, .g = .5f, .b = .5f}, //
-                      .const_attenuation = 1.f,
-                      .linear_attenuation = .07,
-                      .quad_attenuation = 0.017}};
+            .points = {{.position = {5.f, 5.f, 0.f}, .color = {.r = 0.f, .g = 1.f, .b = 0.f}, //
+                        .const_attenuation = 1.f,
+                        .linear_attenuation = .07,
+                        .quad_attenuation = 0.017},
+                       {.position = {-5.f, 5.f, 0.f}, .color = {.r = 1.f, .g = 0.f, .b = 0.f}, //
+                        .const_attenuation = 1.f,
+                        .linear_attenuation = .07,
+                        .quad_attenuation = 0.017}}};
 
         auto camera = game::Camera{{0.f, 0.f, 5.f},
                                    {0.f, 0.f, 0.f},

@@ -28,6 +28,6 @@ namespace game
         std::vector<const Entity *> entities;
         Color ambient;
         DirectionalLight directional;
-        PointLight point;
+        std::vector<PointLight> points;
     };
 }
