@@ -25,6 +25,14 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(stb_lib)
 
+FetchContent_Declare(
+    imgui
+    GIT_REPOSITORY https://github.com/ocornut/imgui.git
+    GIT_TAG v1.91.6
+)
+
+FetchContent_MakeAvailable(imgui)
+
 
 find_package(glfw3 REQUIRED)
 find_package(Backtrace REQUIRED)
