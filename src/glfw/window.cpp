@@ -164,8 +164,7 @@ namespace
 namespace game
 {
     Window::Window(std::uint32_t width, std::uint32_t height)
-        // For non-Windows platforms, you might want to handle this differently
-        : _windowHandle{} // Placeholder for non-Windows platforms
+        : _windowHandle{}, _width(width), _height(height)
     {
         game::ensure(glfwInit(), "failed to initialize GLFW");
 
@@ -235,6 +234,14 @@ namespace game
     auto Window::native_handle() const -> HandleType
     {
         return _windowHandle;
+    }
+    auto Window::width() const -> std::uint32_t
+    {
+        return _width;
+    }
+    auto Window::height() const -> std::uint32_t
+    {
+        return _height;
     }
 
 }

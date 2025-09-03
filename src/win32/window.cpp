@@ -252,7 +252,9 @@ namespace
 namespace game
 {
     Window::Window(std::uint32_t width, std::uint32_t height)
-        : _windowHandle({}), _wc({}), _dc({})
+        : _windowHandle({}), _width(width), _height(height),
+          //
+          _wc({}), _dc({})
     {
         _wc = {
             .style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC,
@@ -333,5 +335,13 @@ namespace game
     auto Window::native_handle() const -> HandleType
     {
         return _windowHandle:
+    }
+    auto Window::width() const -> std::uint32_t
+    {
+        return _width;
+    }
+    auto Window::height() const -> std::uint32_t
+    {
+        return _height;
     }
 }

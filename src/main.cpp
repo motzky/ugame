@@ -36,10 +36,8 @@ auto main(int argc, char **argv) -> int
 
         game::log::info("hello world");
 
-        // auto width = 800u;
-        // auto height = 600u;
-        auto width = 1280u;
-        auto height = 720u;
+        auto width = 1920u;
+        auto height = 1080u;
         auto window = game::Window{width, height};
 
         auto resource_loader = game::ResourceLoader{argv[1]};
@@ -86,8 +84,8 @@ auto main(int argc, char **argv) -> int
                                    {0.f, 0.f, 0.f},
                                    {0.f, 1.f, 0.f},
                                    std::numbers::pi_v<float> / 4.f,
-                                   800.f,
-                                   600.f,
+                                   static_cast<float>(window.width()),
+                                   static_cast<float>(window.height()),
                                    0.001f,
                                    100.f};
 

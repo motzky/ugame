@@ -37,9 +37,13 @@ namespace game
         auto swap() -> void;
 
         auto native_handle() const -> HandleType;
+        auto width() const -> std::uint32_t;
+        auto height() const -> std::uint32_t;
 
     private:
         AutoRelease<HandleType, nullptr> _windowHandle;
+        std::uint32_t _width;
+        std::uint32_t _height;
 #ifdef _WIN32
         AutoRelease<::HDC> _dc;
         ::WNDCLASSA _wc;
