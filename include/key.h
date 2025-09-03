@@ -3,6 +3,10 @@
 #include <format>
 #include <string_view>
 
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
 #include "log.h"
 
 using namespace std::literals;
@@ -93,6 +97,34 @@ namespace game
         LEFT_ARROW = 0x107,
         DOWN_ARROW = 0x108,
         UP_ARROW = 0x109,
+#endif
+
+#ifdef WIN32
+        F1 = VK_F1,
+        F2 = VK_F2,
+        F3 = VK_F3,
+        F4 = VK_F4,
+        F5 = VK_F5,
+        F6 = VK_F6,
+        F7 = VK_F7,
+        F8 = VK_F8,
+        F9 = VK_F9,
+        F10 = VK_F10,
+        F11 = VK_F11,
+        F12 = VK_F12,
+#else
+        F1 = 0x122,
+        F2 = 0x123,
+        F3 = 0x124,
+        F4 = 0x125,
+        F5 = 0x126,
+        F6 = 0x127,
+        F7 = 0x128,
+        F8 = 0x129,
+        F9 = 0x12a,
+        F10 = 0x12b,
+        F11 = 0x12c,
+        F12 = 0x12d,
 #endif
 
     };
@@ -307,6 +339,43 @@ struct std::formatter<game::Key>
             break;
         case Z:
             s = "Z"sv;
+            break;
+
+        case F1:
+            s = "F1"sv;
+            break;
+        case F2:
+            s = "F2"sv;
+            break;
+        case F3:
+            s = "F3"sv;
+            break;
+        case F4:
+            s = "F4"sv;
+            break;
+        case F5:
+            s = "F5"sv;
+            break;
+        case F6:
+            s = "F6"sv;
+            break;
+        case F7:
+            s = "F7"sv;
+            break;
+        case F8:
+            s = "F8"sv;
+            break;
+        case F9:
+            s = "F9"sv;
+            break;
+        case F10:
+            s = "F10"sv;
+            break;
+        case F11:
+            s = "F11"sv;
+            break;
+        case F12:
+            s = "F12"sv;
             break;
         default:
             game::log::debug("key pressed raw: {}", static_cast<int>(obj));
