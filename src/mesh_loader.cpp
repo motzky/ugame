@@ -55,7 +55,7 @@ namespace game
         log::debug("loaded file {} with {} bytes", model_file, model_file_data.size());
 
         auto importer = ::Assimp::Importer{};
-        const auto *scene = importer.ReadFileFromMemory(model_file_data.data(), model_file_data.size(), ::aiProcess_Triangulate, model_file.data());
+        const auto *scene = importer.ReadFileFromMemory(model_file_data.data(), model_file_data.size(), ::aiProcess_Triangulate | ::aiProcess_FlipUVs, model_file.data());
 
         ensure(scene != nullptr, "failed to load model {} from {}", model_file, model_name);
         ensure(!(scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE), "failed to load model {} from {}", model_file, model_name);
