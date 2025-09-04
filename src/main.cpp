@@ -3,6 +3,7 @@
 #include <numbers>
 #include <cmath>
 #include <print>
+#include <random>
 #include <ranges>
 #include <unordered_map>
 #include <utility>
@@ -61,6 +62,10 @@ auto main(int argc, char **argv) -> int
 
         auto entities = std::vector<game::Entity>{};
 
+        auto rd = std::random_device{};
+        auto gen = std::mt19937{rd()};
+        auto dis = std::uniform_real_distribution(-5.f, 5.f);
+
         for (auto i = -10; i < 10; ++i)
         {
             for (auto j = -10; j < 10; ++j)
@@ -68,7 +73,7 @@ auto main(int argc, char **argv) -> int
                 entities.emplace_back(game::Entity{
                     &mesh,
                     &material,
-                    game::Vector3{static_cast<float>(i) * 1.5f, -1.f, static_cast<float>(j) * 1.5f},
+                    game::Vector3{static_cast<float>(i) * 1.5f, dis(gen), static_cast<float>(j) * 1.5f},
                     tex_samp});
             }
         }
