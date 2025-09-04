@@ -47,8 +47,10 @@ auto main(int argc, char **argv) -> int
         auto resource_loader = game::ResourceLoader{argv[1]};
         auto model_loader = game::ModelLoader{resource_loader};
 
-        auto albedo_tex = game::Texture{resource_loader.load_binary("container2.png"), 500u, 500u};
-        auto spec_map = game::Texture{resource_loader.load_binary("container2_specular.png"), 500u, 500u};
+        // auto albedo_tex = game::Texture{resource_loader.load_binary("container2.png"), 500u, 500u};
+        // auto spec_map = game::Texture{resource_loader.load_binary("container2_specular.png"), 500u, 500u};
+        auto albedo_tex = game::Texture{resource_loader.load_binary("barrel_Base_Color.png"), 4096u, 4096u};
+        auto spec_map = game::Texture{resource_loader.load_binary("barrel_Metallic.png"), 4096u, 4096u};
         auto sampler = game::TextureSampler{};
 
         const game::Texture *textures[]{&albedo_tex, &spec_map};
@@ -77,7 +79,8 @@ auto main(int argc, char **argv) -> int
                 entities.emplace_back(game::Entity{
                     &mesh,
                     &material,
-                    game::Vector3{static_cast<float>(i) * 5.f, dis(gen), static_cast<float>(j) * 5.f},
+                    game::Vector3{static_cast<float>(i) * 1.5f, dis(gen), static_cast<float>(j) * 1.5f},
+                    game::Vector3{.4f},
                     tex_samp});
             }
         }

@@ -14,7 +14,7 @@ namespace game
     class Entity
     {
     public:
-        Entity(const Mesh *mesh, const Material *material, const Vector3 &position, std::vector<std::tuple<const Texture *, const TextureSampler *>> &textures);
+        Entity(const Mesh *mesh, const Material *material, const Vector3 &position, const Vector3 &scale, std::vector<std::tuple<const Texture *, const TextureSampler *>> &textures);
 
         auto mesh() const -> const Mesh *;
         auto material() const -> const Material *;
