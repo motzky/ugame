@@ -5,7 +5,7 @@
 #include "auto_release.h"
 #include "buffer_writer.h"
 #include "buffer.h"
-#include "model_loader.h"
+#include "mesh_loader.h"
 #include "opengl.h"
 #include "vertex_data.h"
 
@@ -15,7 +15,7 @@ namespace
 
 namespace game
 {
-    Mesh::Mesh(const ModelData &data)
+    Mesh::Mesh(const MeshData &data)
         : _vao{0u, [](auto vao)
                { ::glDeleteVertexArrays(1, &vao); }},
           _vbo{static_cast<std::uint32_t>(data.vertices.size_bytes() + data.indices.size_bytes())},

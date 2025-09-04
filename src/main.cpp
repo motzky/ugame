@@ -18,7 +18,7 @@
 #include "key_event.h"
 #include "log.h"
 #include "material.h"
-#include "model_loader.h"
+#include "mesh_loader.h"
 #include "mouse_event.h"
 #include "renderer.h"
 #include "resource_loader.h"
@@ -45,7 +45,7 @@ auto main(int argc, char **argv) -> int
         auto window = game::Window{width, height};
 
         auto resource_loader = game::ResourceLoader{argv[1]};
-        auto model_loader = game::ModelLoader{resource_loader};
+        auto model_loader = game::MeshLoader{resource_loader};
 
         // auto albedo_tex = game::Texture{resource_loader.load_binary("container2.png"), 500u, 500u};
         // auto spec_map = game::Texture{resource_loader.load_binary("container2_specular.png"), 500u, 500u};

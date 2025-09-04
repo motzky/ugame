@@ -9,7 +9,7 @@ add_executable(
     main.cpp
     material.cpp
     mesh.cpp
-    model_loader.cpp
+    mesh_loader.cpp
     mouse_button_event.cpp
     mouse_event.cpp
     renderer.cpp

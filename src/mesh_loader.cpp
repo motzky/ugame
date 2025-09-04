@@ -1,4 +1,4 @@
-#include "model_loader.h"
+#include "mesh_loader.h"
 
 #include <cstdint>
 #include <ranges>
@@ -34,16 +34,16 @@ namespace
 
 namespace game
 {
-    ModelLoader::ModelLoader(ResourceLoader &resource_loader)
+    MeshLoader::MeshLoader(ResourceLoader &resource_loader)
         : _resource_loader(resource_loader)
     {
     }
 
-    auto ModelLoader::load(std::string_view model_file, std::string_view model_name) -> ModelData
+    auto MeshLoader::load(std::string_view model_file, std::string_view model_name) -> MeshData
     {
-        const auto loaded = _loaded_models.find(model_name);
+        const auto loaded = _loaded_meshes.find(model_name);
 
-        if (loaded != std::ranges::cend(_loaded_models))
+        if (loaded != std::ranges::cend(_loaded_meshes))
         {
             return {.vertices = loaded->second.vertices, .indices = loaded->second.indices};
         }
@@ -67,7 +67,7 @@ namespace game
         for (const auto *mesh : loaded_meshes)
         {
             log::debug("found mesh {}", mesh->mName.C_Str());
-            if (_loaded_models.contains(mesh->mName.C_Str()))
+            if (_loaded_meshes.contains(mesh->mName.C_Str()))
             {
                 log::debug("Mesh {} already in cache", mesh->mName.C_Str());
                 continue;
@@ -99,12 +99,12 @@ namespace game
                 }
             }
 
-            _loaded_models.emplace(mesh->mName.C_Str(), LoadedModelData{vertices(verts, normals, texture_coords), std::move(indices)});
+            _loaded_meshes.emplace(mesh->mName.C_Str(), LoadedMeshData{vertices(verts, normals, texture_coords), std::move(indices)});
         }
 
-        const auto loaded2 = _loaded_models.find(model_name);
+        const auto loaded2 = _loaded_meshes.find(model_name);
 
-        if (loaded2 != std::ranges::cend(_loaded_models))
+        if (loaded2 != std::ranges::cend(_loaded_meshes))
         {
             log::info("Loaded Mesh {}", model_name);
             return {.vertices = loaded2->second.vertices, .indices = loaded2->second.indices};
@@ -114,11 +114,11 @@ namespace game
         return {};
     }
 
-    auto ModelLoader::cube() -> ModelData
+    auto MeshLoader::cube() -> MeshData
     {
-        const auto loaded = _loaded_models.find("cube");
+        const auto loaded = _loaded_meshes.find("cube");
 
-        if (loaded != std::ranges::cend(_loaded_models))
+        if (loaded != std::ranges::cend(_loaded_meshes))
         {
             return {.vertices = loaded->second.vertices, .indices = loaded->second.indices};
         }
@@ -218,7 +218,7 @@ namespace game
             // Bottom face
             20, 21, 22, 22, 23, 20};
 
-        const auto new_item = _loaded_models.emplace("cube", LoadedModelData{vertices(positions, normals, texture_coords), std::move(indices)});
+        const auto new_item = _loaded_meshes.emplace("cube", LoadedMeshData{vertices(positions, normals, texture_coords), std::move(indices)});
 
         return {.vertices = new_item.first->second.vertices, .indices = new_item.first->second.indices};
     }
