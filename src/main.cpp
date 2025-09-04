@@ -51,10 +51,14 @@ auto main(int argc, char **argv) -> int
         // auto spec_map = game::Texture{resource_loader.load_binary("container2_specular.png"), 500u, 500u};
         auto albedo_tex = game::Texture{resource_loader.load_binary("barrel_Base_Color.png"), 4096u, 4096u};
         auto spec_map = game::Texture{resource_loader.load_binary("barrel_Metallic.png"), 4096u, 4096u};
+        auto normal_map = game::Texture{resource_loader.load_binary("barrel_Normal_OpenGL.png"), 4096u, 4096u};
+        // auto albedo_tex = game::Texture{resource_loader.load_binary("metal-studs_albedo.png"), 2048u, 2048u};
+        // auto spec_map = game::Texture{resource_loader.load_binary("metal-studs_metallic.png"), 2048u, 2048u};
+        // auto normal_map = game::Texture{resource_loader.load_binary("metal-studs_normal-ogl.png"), 2048u, 2048u};
         auto sampler = game::TextureSampler{};
 
-        const game::Texture *textures[]{&albedo_tex, &spec_map};
-        const game::TextureSampler *samplers[]{&sampler, &sampler};
+        const game::Texture *textures[]{&albedo_tex, &spec_map, &normal_map};
+        const game::TextureSampler *samplers[]{&sampler, &sampler, &sampler};
         auto tex_samp = std::views::zip(textures, samplers) | std::ranges::to<std::vector>();
 
         const auto vertex_shader = game::Shader{resource_loader.load_string("simple.vert"), game::ShaderType::VERTEX};
@@ -68,9 +72,9 @@ auto main(int argc, char **argv) -> int
 
         auto entities = std::vector<game::Entity>{};
 
-        auto rd = std::random_device{};
-        auto gen = std::mt19937{rd()};
-        auto dis = std::uniform_real_distribution(-5.f, 5.f);
+        [[maybe_unused]] auto rd = std::random_device{};
+        [[maybe_unused]] auto gen = std::mt19937{rd()};
+        [[maybe_unused]] auto dis = std::uniform_real_distribution(-5.f, 5.f);
 
         for (auto i = -10; i < 10; ++i)
         {
@@ -79,7 +83,8 @@ auto main(int argc, char **argv) -> int
                 entities.emplace_back(game::Entity{
                     &mesh,
                     &material,
-                    game::Vector3{static_cast<float>(i) * 1.5f, dis(gen), static_cast<float>(j) * 1.5f},
+                    // game::Vector3{static_cast<float>(i) * 1.5f, dis(gen), static_cast<float>(j) * 1.5f},
+                    game::Vector3{static_cast<float>(i) * 2.5f, 0.f, static_cast<float>(j) * 2.5f},
                     game::Vector3{.4f},
                     tex_samp});
             }
@@ -101,7 +106,7 @@ auto main(int argc, char **argv) -> int
                         .linear_attenuation = .07,
                         .quad_attenuation = 0.017}}};
 
-        auto camera = game::Camera{{0.f, 0.f, 5.f},
+        auto camera = game::Camera{{0.f, 2.f, 5.f},
                                    {0.f, 0.f, 0.f},
                                    {0.f, 1.f, 0.f},
                                    std::numbers::pi_v<float> / 4.f,

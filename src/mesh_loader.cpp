@@ -55,7 +55,10 @@ namespace game
         log::debug("loaded file {} with {} bytes", model_file, model_file_data.size());
 
         auto importer = ::Assimp::Importer{};
-        const auto *scene = importer.ReadFileFromMemory(model_file_data.data(), model_file_data.size(), ::aiProcess_Triangulate | ::aiProcess_FlipUVs, model_file.data());
+        const auto *scene = importer.ReadFileFromMemory(model_file_data.data(),
+                                                        model_file_data.size(),
+                                                        ::aiProcess_Triangulate | ::aiProcess_FlipUVs | ::aiProcess_CalcTangentSpace,
+                                                        model_file.data());
 
         ensure(scene != nullptr, "failed to load model {} from {}", model_file, model_name);
         ensure(!(scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE), "failed to load model {} from {}", model_file, model_name);
@@ -83,8 +86,11 @@ namespace game
             const auto normals = std::span<::aiVector3D>{mesh->mNormals, mesh->mNormals + mesh->mNumVertices} |
                                  std::views::transform(to_vector3);
 
+            const auto tangents = std::span<::aiVector3D>{mesh->mTangents, mesh->mNumVertices} |
+                                  std::views::transform(to_vector3);
+
             auto texture_coords = std::vector<UV>{};
-            for (auto i = 0u; i < mesh->mNumFaces; ++i)
+            for (auto i = 0u; i < mesh->mNumVertices; ++i)
             {
                 texture_coords.push_back({mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y});
             }
@@ -99,7 +105,7 @@ namespace game
                 }
             }
 
-            _loaded_meshes.emplace(mesh->mName.C_Str(), LoadedMeshData{vertices(verts, normals, texture_coords), std::move(indices)});
+            _loaded_meshes.emplace(mesh->mName.C_Str(), LoadedMeshData{vertices(verts, normals, tangents, texture_coords), std::move(indices)});
         }
 
         const auto loaded2 = _loaded_meshes.find(model_name);
@@ -218,7 +224,7 @@ namespace game
             // Bottom face
             20, 21, 22, 22, 23, 20};
 
-        const auto new_item = _loaded_meshes.emplace("cube", LoadedMeshData{vertices(positions, normals, texture_coords), std::move(indices)});
+        const auto new_item = _loaded_meshes.emplace("cube", LoadedMeshData{vertices(positions, normals, normals, texture_coords), std::move(indices)});
 
         return {.vertices = new_item.first->second.vertices, .indices = new_item.first->second.indices};
     }

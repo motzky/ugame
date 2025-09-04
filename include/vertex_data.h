@@ -15,6 +15,7 @@ namespace game
     {
         Vector3 position;
         Vector3 normal;
+        Vector3 tangent;
         UV uv;
     };
 }

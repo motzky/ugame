@@ -67,11 +67,7 @@ namespace game
                 .ambient = scene.ambient,
                 .direction = scene.directional.direction,
                 .direction_color = scene.directional.color,
-                .num_points = static_cast<int>(scene.points.size())
-                // .point_postion = scene.point.position,
-                // .point_color = scene.point.color,
-                // .attenuation = {scene.point.const_attenuation, scene.point.linear_attenuation, scene.point.quad_attenuation}
-            };
+                .num_points = static_cast<int>(scene.points.size())};
             auto writer = BufferWriter{_light_buffer};
             writer.write(light_buffer);
             for (const auto &point : scene.points)
