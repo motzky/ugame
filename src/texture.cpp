@@ -9,6 +9,7 @@
 #include <stb_image.h>
 
 #include "ensure.h"
+#include "log.h"
 #include "opengl.h"
 
 namespace game
@@ -31,14 +32,34 @@ namespace game
             ::stbi_image_free};
 
         ensure(raw_data, "failed to load texture date");
-        ensure(static_cast<std::uint32_t>(w) == width, "width is different {}", w);
-        ensure(static_cast<std::uint32_t>(h) == height, "height is different {}", h);
-        ensure(num_channels == 4, "num_channels is different: {}", num_channels);
+        // ensure(static_cast<std::uint32_t>(w) == width, "width is different {}", w);
+        // ensure(static_cast<std::uint32_t>(h) == height, "height is different {}", h);
+        // ensure(num_channels == 4, "num_channels is different: {}", num_channels);
+        log::info("loaded image width {}", w);
+        log::info("loaded image height {}", h);
+        log::info("loaded image channels {}", num_channels);
 
         ::glCreateTextures(GL_TEXTURE_2D, 1u, &_handle);
 
-        ::glTextureStorage2D(_handle, 1, GL_RGBA8, width, height);
-        ::glTextureSubImage2D(_handle, 0, 0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, raw_data.get());
+        switch (num_channels)
+        {
+        case 1:
+            ::glTextureStorage2D(_handle, 1, GL_R, width, height);
+            ::glTextureSubImage2D(_handle, 0, 0, 0, width, height, GL_R, GL_UNSIGNED_BYTE, raw_data.get());
+            break;
+        case 3:
+            ::glTextureStorage2D(_handle, 1, GL_RGB8, width, height);
+            ::glTextureSubImage2D(_handle, 0, 0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, raw_data.get());
+            break;
+        case 4:
+            ::glTextureStorage2D(_handle, 1, GL_RGBA8, width, height);
+            ::glTextureSubImage2D(_handle, 0, 0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, raw_data.get());
+            break;
+
+        default:
+            ensure(false, "unhandled num_channels {}", num_channels);
+            break;
+        }
     }
 
     auto Texture::native_handle() const -> ::GLuint
