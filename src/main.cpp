@@ -45,7 +45,7 @@ auto main(int argc, char **argv) -> int
         auto window = game::Window{width, height};
 
         auto resource_loader = game::ResourceLoader{argv[1]};
-        auto model_loader = game::ModelLoader{};
+        auto model_loader = game::ModelLoader{resource_loader};
 
         auto albedo_tex = game::Texture{resource_loader.load_binary("container2.png"), 500u, 500u};
         auto spec_map = game::Texture{resource_loader.load_binary("container2_specular.png"), 500u, 500u};
@@ -58,7 +58,9 @@ auto main(int argc, char **argv) -> int
         const auto vertex_shader = game::Shader{resource_loader.load_string("simple.vert"), game::ShaderType::VERTEX};
         const auto fragment_shader = game::Shader{resource_loader.load_string("simple.frag"), game::ShaderType::FRAGMENT};
         auto material = game::Material{vertex_shader, fragment_shader};
-        const auto mesh = game::Mesh{model_loader.cube()};
+
+        // const auto mesh = game::Mesh{model_loader.cube()};
+        const auto mesh = game::Mesh{model_loader.load("wine_barrel.fbx", "Cylinder.014")};
 
         const auto renderer = game::Renderer{};
 
@@ -75,7 +77,7 @@ auto main(int argc, char **argv) -> int
                 entities.emplace_back(game::Entity{
                     &mesh,
                     &material,
-                    game::Vector3{static_cast<float>(i) * 1.5f, dis(gen), static_cast<float>(j) * 1.5f},
+                    game::Vector3{static_cast<float>(i) * 5.f, dis(gen), static_cast<float>(j) * 5.f},
                     tex_samp});
             }
         }

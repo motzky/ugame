@@ -2,10 +2,12 @@
 
 #include <cstdint>
 #include <span>
+#include <string_view>
 #include <vector>
 
-#include "vertex_data.h"
+#include "resource_loader.h"
 #include "string_unordered_map.h"
+#include "vertex_data.h"
 
 namespace game
 {
@@ -18,6 +20,10 @@ namespace game
     class ModelLoader
     {
     public:
+        ModelLoader(ResourceLoader &resource_loader);
+
+        auto load(std::string_view model_file, std::string_view model_name) -> ModelData;
+
         auto cube() -> ModelData;
 
     private:
@@ -28,5 +34,6 @@ namespace game
         };
 
         StringUnorderedMap<LoadedModelData> _loaded_models;
+        ResourceLoader &_resource_loader;
     };
 }
