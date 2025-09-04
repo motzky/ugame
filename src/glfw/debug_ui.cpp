@@ -4,6 +4,11 @@
 
 #include "debug_ui.h"
 
+#include <cstring>
+#include <format>
+#include <ranges>
+#include <string>
+
 #include "backends/imgui_impl_glfw.h"
 #include "backends/imgui_impl_opengl3.h"
 #include "imgui.h"
@@ -51,35 +56,76 @@ namespace game
         ::ImGuizmo::Enable(true);
         ::ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
 
-        ::ImGui::LabelText("FPS", "%0.1f", io.Framerate);
-        for (auto &point : _scene.points)
+        static auto selected_point = std::size_t{};
+
+        if (::ImGui::Button("Add Light"))
         {
-            auto translate = Matrix4{point.position};
-
-            ::ImGuizmo::Manipulate(
-                _camera.view().data(),
-                _camera.projection().data(),
-                ::ImGuizmo::TRANSLATE,
-                ::ImGuizmo::WORLD,
-                const_cast<float *>(translate.data().data()),
-                nullptr, nullptr, nullptr, nullptr);
-
-            point.position.x = translate.data()[12];
-            point.position.y = translate.data()[13];
-            point.position.z = translate.data()[14];
-
-            static float color[3]{};
-            if (::ImGui::ColorPicker3("", color))
-            {
-                point.color.r = color[0];
-                point.color.g = color[1];
-                point.color.b = color[2];
-            }
-
-            ::ImGui::SliderFloat("const", &point.const_attenuation, 0.f, 1.f);
-            ::ImGui::SliderFloat("linear", &point.linear_attenuation, 0.f, 1.f);
-            ::ImGui::SliderFloat("quad", &point.quad_attenuation, 0.f, 1.f);
+            _scene.points.push_back(_scene.points.back());
+            selected_point = _scene.points.size() - 1u;
         }
+
+        ::ImGui::LabelText("FPS", "%0.1f", io.Framerate);
+
+        if (::ImGui::CollapsingHeader("ambient"))
+        {
+            float color[3]{};
+            std::memcpy(color, &_scene.ambient, sizeof(color));
+            if (::ImGui::ColorPicker3("ambient color", color))
+            {
+                std::memcpy(&_scene.ambient, color, sizeof(color));
+            }
+        }
+
+        if (::ImGui::CollapsingHeader("directional"))
+        {
+            float color[3]{};
+            std::memcpy(color, &_scene.directional.color, sizeof(color));
+            if (::ImGui::ColorPicker3("directional color", color))
+            {
+                std::memcpy(&_scene.directional.color, color, sizeof(color));
+            }
+        }
+
+        for (const auto &[index, point] : _scene.points | std::views::enumerate)
+        {
+            float color[3]{};
+            std::memcpy(color, &point.color, sizeof(color));
+
+            const auto header_name = std::format("color {}", index);
+            const auto picker_name = std::format("color {}", index);
+            const auto const_name = std::format("constant {}", index);
+            const auto linear_name = std::format("linear {}", index);
+            const auto quad_name = std::format("quad {}", index);
+
+            if (::ImGui::CollapsingHeader(header_name.c_str()))
+            {
+                if (::ImGui::ColorPicker3(picker_name.c_str(), color))
+                {
+                    std::memcpy(&point.color, color, sizeof(color));
+
+                    selected_point = index;
+                }
+
+                ::ImGui::SliderFloat(const_name.c_str(), &point.const_attenuation, 0.f, 1.f);
+                ::ImGui::SliderFloat(linear_name.c_str(), &point.linear_attenuation, 0.f, 1.f);
+                ::ImGui::SliderFloat(quad_name.c_str(), &point.quad_attenuation, 0.f, .1f);
+            }
+        }
+
+        auto &point = _scene.points[selected_point];
+        auto translate = Matrix4{point.position};
+
+        ::ImGuizmo::Manipulate(
+            _camera.view().data(),
+            _camera.projection().data(),
+            ::ImGuizmo::TRANSLATE,
+            ::ImGuizmo::WORLD,
+            const_cast<float *>(translate.data().data()),
+            nullptr, nullptr, nullptr, nullptr);
+
+        point.position.x = translate.data()[12];
+        point.position.y = translate.data()[13];
+        point.position.z = translate.data()[14];
 
         ::ImGui::Render();
         ::ImGui_ImplOpenGL3_RenderDrawData(::ImGui::GetDrawData());
