@@ -67,6 +67,12 @@ namespace game
         for (const auto *mesh : loaded_meshes)
         {
             log::debug("found mesh {}", mesh->mName.C_Str());
+            if (_loaded_models.contains(mesh->mName.C_Str()))
+            {
+                log::debug("Mesh {} already in cache", mesh->mName.C_Str());
+                continue;
+            }
+            log::debug("Mesh {} not found in cache. Caching...", mesh->mName.C_Str());
 
             const auto to_vector3 = [](const ::aiVector3D &v)
             { return Vector3{v.x, v.y, v.z}; };
@@ -100,6 +106,7 @@ namespace game
 
         if (loaded2 != std::ranges::cend(_loaded_models))
         {
+            log::info("Loaded Mesh {}", model_name);
             return {.vertices = loaded2->second.vertices, .indices = loaded2->second.indices};
         }
 
