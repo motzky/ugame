@@ -14,7 +14,7 @@
 
 namespace game
 {
-    Texture::Texture(std::span<const std::byte> data, std::uint32_t width, std::uint32_t height)
+    Texture::Texture(std::span<const std::byte> data, std::uint32_t /*width*/, std::uint32_t /*height*/)
         : _handle{0u, [](auto texture)
                   { ::glDeleteTextures(1u, &texture); }}
     {
@@ -44,16 +44,16 @@ namespace game
         switch (num_channels)
         {
         case 1:
-            ::glTextureStorage2D(_handle, 1, GL_R, width, height);
-            ::glTextureSubImage2D(_handle, 0, 0, 0, width, height, GL_R, GL_UNSIGNED_BYTE, raw_data.get());
+            ::glTextureStorage2D(_handle, 1, GL_R8, w, h);
+            ::glTextureSubImage2D(_handle, 0, 0, 0, w, h, GL_RED, GL_UNSIGNED_BYTE, raw_data.get());
             break;
         case 3:
-            ::glTextureStorage2D(_handle, 1, GL_RGB8, width, height);
-            ::glTextureSubImage2D(_handle, 0, 0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, raw_data.get());
+            ::glTextureStorage2D(_handle, 1, GL_RGB8, w, h);
+            ::glTextureSubImage2D(_handle, 0, 0, 0, w, h, GL_RGB, GL_UNSIGNED_BYTE, raw_data.get());
             break;
         case 4:
-            ::glTextureStorage2D(_handle, 1, GL_RGBA8, width, height);
-            ::glTextureSubImage2D(_handle, 0, 0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, raw_data.get());
+            ::glTextureStorage2D(_handle, 1, GL_RGBA8, w, h);
+            ::glTextureSubImage2D(_handle, 0, 0, 0, w, h, GL_RGBA, GL_UNSIGNED_BYTE, raw_data.get());
             break;
 
         default:
