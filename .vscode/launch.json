@@ -9,7 +9,7 @@
       "type": "cppdbg",
       "request": "launch",
       "program": "${workspaceFolder}/build/src/nathan_stream",
-      "args": [],
+      "args": ["../assets/"],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}/build",
       "environment": [],
