@@ -5,73 +5,27 @@
 #include "auto_release.h"
 #include "buffer_writer.h"
 #include "buffer.h"
+#include "model_loader.h"
 #include "opengl.h"
 #include "vertex_data.h"
 
 namespace
 {
-    // 6 faces × 4 vertices per face = 24 vertices
-    constexpr game::VertexData vertex_data[] = {
-        // Front face (+Z)
-        {{-0.5f, -0.5f, 0.5f}, {0.0f, 0.0f}, {0.f, 0.f, 1.f}},
-        {{0.5f, -0.5f, 0.5f}, {1.0f, 0.0f}, {0.f, 0.f, 1.f}},
-        {{0.5f, 0.5f, 0.5f}, {1.0f, 1.0f}, {0.f, 0.f, 1.f}},
-        {{-0.5f, 0.5f, 0.5f}, {0.0f, 1.0f}, {0.f, 0.f, 1.f}},
-        // Right face (+X)
-        {{0.5f, -0.5f, 0.5f}, {0.0f, 0.0f}, {1.f, 0.f, 0.f}},
-        {{0.5f, -0.5f, -0.5f}, {1.0f, 0.0f}, {1.f, 0.f, 0.f}},
-        {{0.5f, 0.5f, -0.5f}, {1.0f, 1.0f}, {1.f, 0.f, 0.f}},
-        {{0.5f, 0.5f, 0.5f}, {0.0f, 1.0f}, {1.f, 0.f, 0.f}},
-        // Back face (-Z)
-        {{0.5f, -0.5f, -0.5f}, {0.0f, 0.0f}, {0.f, 0.f, -1.f}},
-        {{-0.5f, -0.5f, -0.5f}, {1.0f, 0.0f}, {0.f, 0.f, -1.f}},
-        {{-0.5f, 0.5f, -0.5f}, {1.0f, 1.0f}, {0.f, 0.f, -1.f}},
-        {{0.5f, 0.5f, -0.5f}, {0.0f, 1.0f}, {0.f, 0.f, -1.f}},
-        // Left face (-X)
-        {{-0.5f, -0.5f, -0.5f}, {0.0f, 0.0f}, {-1.f, 0.f, 0.f}},
-        {{-0.5f, -0.5f, 0.5f}, {1.0f, 0.0f}, {-1.f, 0.f, 0.f}},
-        {{-0.5f, 0.5f, 0.5f}, {1.0f, 1.0f}, {-1.f, 0.f, 0.f}},
-        {{-0.5f, 0.5f, -0.5f}, {0.0f, 1.0f}, {-1.f, 0.f, 0.f}},
-        // Top face (+Y)
-        {{-0.5f, 0.5f, 0.5f}, {0.0f, 0.0f}, {0.f, 1.f, 0.f}},
-        {{0.5f, 0.5f, 0.5f}, {1.0f, 0.0f}, {0.f, 1.f, 0.f}},
-        {{0.5f, 0.5f, -0.5f}, {1.0f, 1.0f}, {0.f, 1.f, 0.f}},
-        {{-0.5f, 0.5f, -0.5f}, {0.0f, 1.0f}, {0.f, 1.f, 0.f}},
-        // Bottom face (-Y)
-        {{-0.5f, -0.5f, -0.5f}, {0.0f, 0.0f}, {0.f, -1.f, 0.f}},
-        {{0.5f, -0.5f, -0.5f}, {1.0f, 0.0f}, {0.f, -1.f, 0.f}},
-        {{0.5f, -0.5f, 0.5f}, {1.0f, 1.0f}, {0.f, -1.f, 0.f}},
-        {{-0.5f, -0.5f, 0.5f}, {0.0f, 1.0f}, {0.f, -1.f, 0.f}},
-    };
-
-    constexpr GLuint indices[] = {
-        // Each face: 2 triangles (6 indices)
-        // Front face
-        0, 1, 2, 2, 3, 0,
-        // Right face
-        4, 5, 6, 6, 7, 4,
-        // Back face
-        8, 9, 10, 10, 11, 8,
-        // Left face
-        12, 13, 14, 14, 15, 12,
-        // Top face
-        16, 17, 18, 18, 19, 16,
-        // Bottom face
-        20, 21, 22, 22, 23, 20};
 }
 
 namespace game
 {
-    Mesh::Mesh()
+    Mesh::Mesh(const ModelData &data)
         : _vao{0u, [](auto vao)
                { ::glDeleteVertexArrays(1, &vao); }},
-          _vbo{sizeof(vertex_data) + sizeof(indices)},
-          _index_count(static_cast<std::uint32_t>(std::ranges::distance(indices))), _index_offset{sizeof(vertex_data)}
+          _vbo{static_cast<std::uint32_t>(data.vertices.size_bytes() + data.indices.size_bytes())},
+          _index_count(static_cast<std::uint32_t>(data.indices.size())),
+          _index_offset{data.vertices.size_bytes()}
     {
         {
             auto writer = BufferWriter{_vbo};
-            writer.write(vertex_data);
-            writer.write(indices);
+            writer.write(data.vertices);
+            writer.write(data.indices);
         }
 
         ::glCreateVertexArrays(1, &_vao);
@@ -80,12 +34,12 @@ namespace game
         ::glVertexArrayElementBuffer(_vao, _vbo.native_handle());
 
         ::glEnableVertexArrayAttrib(_vao, 0); // position
-        ::glEnableVertexArrayAttrib(_vao, 1); // uv
-        ::glEnableVertexArrayAttrib(_vao, 2); // normal
+        ::glEnableVertexArrayAttrib(_vao, 1); // normal
+        ::glEnableVertexArrayAttrib(_vao, 2); // uv
 
         ::glVertexArrayAttribFormat(_vao, 0, 3, GL_FLOAT, GL_FALSE, offsetof(VertexData, position));
-        ::glVertexArrayAttribFormat(_vao, 1, 2, GL_FLOAT, GL_FALSE, offsetof(VertexData, uv));
         ::glVertexArrayAttribFormat(_vao, 2, 3, GL_FLOAT, GL_FALSE, offsetof(VertexData, normal));
+        ::glVertexArrayAttribFormat(_vao, 1, 2, GL_FLOAT, GL_FALSE, offsetof(VertexData, uv));
 
         ::glVertexArrayAttribBinding(_vao, 0, 0);
         ::glVertexArrayAttribBinding(_vao, 1, 0);

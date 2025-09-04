@@ -65,7 +65,7 @@ namespace game
                 const auto location = ::glGetUniformLocation(_handle, name.c_str());
                 _uniforms[name] = location;
 
-                log::debug("found uniform: {}", name);
+                // log::debug("found uniform: {}", name);
             }
         }
     }

@@ -18,6 +18,7 @@
 #include "key_event.h"
 #include "log.h"
 #include "material.h"
+#include "model_loader.h"
 #include "mouse_event.h"
 #include "renderer.h"
 #include "resource_loader.h"
@@ -44,6 +45,7 @@ auto main(int argc, char **argv) -> int
         auto window = game::Window{width, height};
 
         auto resource_loader = game::ResourceLoader{argv[1]};
+        auto model_loader = game::ModelLoader{};
 
         auto albedo_tex = game::Texture{resource_loader.load_binary("container2.png"), 500u, 500u};
         auto spec_map = game::Texture{resource_loader.load_binary("container2_specular.png"), 500u, 500u};
@@ -56,7 +58,7 @@ auto main(int argc, char **argv) -> int
         const auto vertex_shader = game::Shader{resource_loader.load_string("simple.vert"), game::ShaderType::VERTEX};
         const auto fragment_shader = game::Shader{resource_loader.load_string("simple.frag"), game::ShaderType::FRAGMENT};
         auto material = game::Material{vertex_shader, fragment_shader};
-        const auto mesh = game::Mesh{};
+        const auto mesh = game::Mesh{model_loader.cube()};
 
         const auto renderer = game::Renderer{};
 
@@ -105,7 +107,7 @@ auto main(int argc, char **argv) -> int
 
         auto key_state = std::unordered_map<game::Key, bool>{};
 
-        auto show_debug = true;
+        auto show_debug = false;
         const auto debug_ui = game::DebugUi(window.native_handle(), scene, camera);
 
         auto running = true;

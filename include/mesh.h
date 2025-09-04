@@ -4,6 +4,7 @@
 
 #include "auto_release.h"
 #include "buffer.h"
+#include "model_loader.h"
 #include "opengl.h"
 
 namespace game
@@ -12,7 +13,7 @@ namespace game
     class Mesh
     {
     public:
-        Mesh();
+        Mesh(const ModelData &data);
 
         auto bind() const -> void;
         auto unbind() const -> void;
