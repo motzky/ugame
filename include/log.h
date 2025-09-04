@@ -50,7 +50,7 @@ namespace game::log
         }
     };
 
-    template <Level L, class... Args>
+    template <Level L = {}, class... Args>
     Print(std::format_string<Args...>, Args &&...) -> Print<L, Args...>;
 
     template <class... Args>
