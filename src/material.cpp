@@ -98,7 +98,7 @@ namespace game
         ::glBindSampler(gl_index, sampler->native_handle());
 
         const auto uniform_name = std::format("tex{}", index);
-        set_uniform(uniform_name, 0);
+        set_uniform(uniform_name, index);
     }
 
     auto Material::bind_textures(std::span<const std::tuple<const Texture *, const TextureSampler *>> tex_samps) const -> void
