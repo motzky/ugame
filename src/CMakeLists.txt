@@ -6,6 +6,7 @@ add_executable(
     cube_map.cpp
     entity.cpp
     exception.cpp
+    frame_buffer.cpp
     key_event.cpp
     main.cpp
     material.cpp

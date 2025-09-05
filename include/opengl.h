@@ -56,6 +56,8 @@
     DO(::PFNGLDELETESAMPLERSPROC, glDeleteSamplers)                     \
     DO(::PFNGLBINDTEXTUREUNITPROC, glBindTextureUnit)                   \
     DO(::PFNGLBINDSAMPLERPROC, glBindSampler)                           \
+    DO(::PFNGLCREATEFRAMEBUFFERSPROC, glCreateFrameBuffers)             \
+    DO(::PFNGLDELETEFRAMEBUFFERSPROC, glDeleteFrameBuffers)             \
     DO(::PFNGLGETACTIVEUNIFORMPROC, glGetActiveUniform)                 \
     DO(::PFNGLDRAWARRAYSEXTPROC, glDrawArraysExt)
 
