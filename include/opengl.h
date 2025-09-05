@@ -36,6 +36,7 @@
     DO(::PFNGLDEBUGMESSAGECALLBACKPROC, glDebugMessageCallback)         \
     DO(::PFNGLGETUNIFORMLOCATIONPROC, glGetUniformLocation)             \
     DO(::PFNGLUNIFORMMATRIX4FVPROC, glUniformMatrix4fv)                 \
+    DO(::PFNGLGETACTIVEUNIFORMPROC, glGetActiveUniform)                 \
     DO(::PFNGLUNIFORM1IPROC, glUniform1i)                               \
     DO(::PFNGLCREATEBUFFERSPROC, glCreateBuffers)                       \
     DO(::PFNGLNAMEDBUFFERSTORAGEPROC, glNamedBufferStorage)             \
@@ -56,9 +57,11 @@
     DO(::PFNGLDELETESAMPLERSPROC, glDeleteSamplers)                     \
     DO(::PFNGLBINDTEXTUREUNITPROC, glBindTextureUnit)                   \
     DO(::PFNGLBINDSAMPLERPROC, glBindSampler)                           \
-    DO(::PFNGLCREATEFRAMEBUFFERSPROC, glCreateFrameBuffers)             \
-    DO(::PFNGLDELETEFRAMEBUFFERSPROC, glDeleteFrameBuffers)             \
-    DO(::PFNGLGETACTIVEUNIFORMPROC, glGetActiveUniform)                 \
+    DO(::PFNGLCREATEFRAMEBUFFERSPROC, glCreateFramebuffers)             \
+    DO(::PFNGLDELETEFRAMEBUFFERSPROC, glDeleteFramebuffers)             \
+    DO(::PFNGLBINDFRAMEBUFFERPROC, glBindFramebuffer)                   \
+    DO(::PFNGLNAMEDFRAMEBUFFERTEXTUREPROC, glNamedFramebufferTexture)   \
+    DO(::PFNGLBLITNAMEDFRAMEBUFFERPROC, glBlitNamedFramebuffer)         \
     DO(::PFNGLDRAWARRAYSEXTPROC, glDrawArraysExt)
 
 #define DO_INLINE(TYPE, NAME) inline TYPE NAME;

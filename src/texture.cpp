@@ -12,8 +12,64 @@
 #include "log.h"
 #include "opengl.h"
 
+namespace
+{
+    auto get_storage_format(std::int32_t num_channels) -> ::GLenum
+    {
+        switch (num_channels)
+        {
+        case 1:
+            return GL_R8;
+            break;
+        case 3:
+            return GL_RGB8;
+            break;
+        case 4:
+            return GL_RGBA8;
+        default:
+            game::ensure(false, "unhandled num_channels {}", num_channels);
+            return 0u;
+        }
+    }
+
+    auto get_sub_image_format(std::int32_t num_channels) -> ::GLenum
+    {
+        switch (num_channels)
+        {
+        case 1:
+            return GL_RED;
+            break;
+        case 3:
+            return GL_RGB;
+            break;
+        case 4:
+            return GL_RGBA;
+        default:
+            game::ensure(false, "unhandled num_channels {}", num_channels);
+            return 0u;
+        }
+    }
+}
+
 namespace game
 {
+    Texture::Texture(TextureUsage usage, std::uint32_t width, std::uint32_t height)
+        : _handle{0u, [](auto texture)
+                  { ::glDeleteTextures(1u, &texture); }}
+    {
+        ::glCreateTextures(GL_TEXTURE_2D, 1u, &_handle);
+        switch (usage)
+        {
+            using enum TextureUsage;
+        case FRAMEBUFFER:
+            ::glTextureStorage2D(_handle, 1, get_storage_format(3), width, height);
+            break;
+        case DEPTH:
+            ::glTextureStorage2D(_handle, 1, GL_DEPTH_COMPONENT24, width, height);
+            break;
+        }
+    }
+
     Texture::Texture(std::span<const std::byte> data, std::uint32_t /*width*/, std::uint32_t /*height*/)
         : _handle{0u, [](auto texture)
                   { ::glDeleteTextures(1u, &texture); }}
@@ -32,34 +88,15 @@ namespace game
             ::stbi_image_free};
 
         ensure(raw_data, "failed to load texture date");
-        // ensure(static_cast<std::uint32_t>(w) == width, "width is different {}", w);
-        // ensure(static_cast<std::uint32_t>(h) == height, "height is different {}", h);
-        // ensure(num_channels == 4, "num_channels is different: {}", num_channels);
+
         log::info("loaded image width {}", w);
         log::info("loaded image height {}", h);
         log::info("loaded image channels {}", num_channels);
 
         ::glCreateTextures(GL_TEXTURE_2D, 1u, &_handle);
 
-        switch (num_channels)
-        {
-        case 1:
-            ::glTextureStorage2D(_handle, 1, GL_R8, w, h);
-            ::glTextureSubImage2D(_handle, 0, 0, 0, w, h, GL_RED, GL_UNSIGNED_BYTE, raw_data.get());
-            break;
-        case 3:
-            ::glTextureStorage2D(_handle, 1, GL_RGB8, w, h);
-            ::glTextureSubImage2D(_handle, 0, 0, 0, w, h, GL_RGB, GL_UNSIGNED_BYTE, raw_data.get());
-            break;
-        case 4:
-            ::glTextureStorage2D(_handle, 1, GL_RGBA8, w, h);
-            ::glTextureSubImage2D(_handle, 0, 0, 0, w, h, GL_RGBA, GL_UNSIGNED_BYTE, raw_data.get());
-            break;
-
-        default:
-            ensure(false, "unhandled num_channels {}", num_channels);
-            break;
-        }
+        ::glTextureStorage2D(_handle, 1, get_storage_format(num_channels), w, h);
+        ::glTextureSubImage2D(_handle, 0, 0, 0, w, h, get_sub_image_format(num_channels), GL_UNSIGNED_BYTE, raw_data.get());
     }
 
     auto Texture::native_handle() const -> ::GLuint

@@ -1,5 +1,6 @@
 #include "renderer.h"
 
+#include <cstdint>
 #include <ranges>
 
 #include "buffer_writer.h"
@@ -8,6 +9,7 @@
 #include "cube_map.h"
 #include "ensure.h"
 #include "entity.h"
+#include "frame_buffer.h"
 #include "material.h"
 #include "mesh.h"
 #include "mesh_loader.h"
@@ -55,16 +57,19 @@ namespace
 
 namespace game
 {
-    Renderer::Renderer(ResourceLoader &resource_loader, MeshLoader &mesh_loader)
+    Renderer::Renderer(ResourceLoader &resource_loader, MeshLoader &mesh_loader, std::uint32_t width, std::uint32_t height)
         : _camera_buffer(sizeof(Matrix4) * 2u + sizeof(Vector3)),
           _light_buffer(10240u),
           _skybox_cube(mesh_loader.cube()),
-          _skybox_material(create_skybox_material(resource_loader))
+          _skybox_material(create_skybox_material(resource_loader)),
+          _fb{width, height}
     {
     }
 
-    auto Renderer::render(const Camera &camera, const Scene &scene, const CubeMap &skybox, const TextureSampler &skybox_sampler) const -> void
+    auto Renderer::render(const Camera &camera, const Scene &scene, const CubeMap &skybox, const TextureSampler &skybox_sampler) -> void
     {
+        _fb.bind();
+
         ::glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         {
@@ -120,5 +125,12 @@ namespace game
             ::glDrawElements(GL_TRIANGLES, mesh->index_count(), GL_UNSIGNED_INT, reinterpret_cast<void *>(mesh->index_offset()));
             mesh->unbind();
         }
+
+        _fb.unbind();
+
+        ::glBlitNamedFramebuffer(_fb.native_handle(), 0,
+                                 0, 0, _fb.width(), _fb.height(),
+                                 0, 0, _fb.width(), _fb.height(),
+                                 GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT, GL_NEAREST);
     }
 }

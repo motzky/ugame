@@ -1,7 +1,7 @@
+#include <cmath>
 #include <format>
 #include <iostream>
 #include <numbers>
-#include <cmath>
 #include <print>
 #include <random>
 #include <ranges>
@@ -12,8 +12,8 @@
 #include "camera.h"
 #include "cube_map.h"
 #include "debug_ui.h"
-#include "entity.h"
 #include "ensure.h"
+#include "entity.h"
 #include "event.h"
 #include "exception.h"
 #include "key_event.h"
@@ -23,11 +23,11 @@
 #include "mouse_event.h"
 #include "renderer.h"
 #include "resource_loader.h"
-#include "texture.h"
-#include "texture_sampler.h"
 #include "scene.h"
 #include "shader.h"
 #include "stop_event.h"
+#include "texture.h"
+#include "texture_sampler.h"
 #include "window.h"
 
 auto main(int argc, char **argv) -> int
@@ -64,7 +64,7 @@ auto main(int argc, char **argv) -> int
         // const auto mesh = game::Mesh{model_loader.cube()};
         const auto mesh = game::Mesh{mesh_loader.load("wine_barrel.fbx", "Cylinder.014")};
 
-        const auto renderer = game::Renderer{resource_loader, mesh_loader};
+        auto renderer = game::Renderer{resource_loader, mesh_loader, width, height};
 
         auto entities = std::vector<game::Entity>{};
 
