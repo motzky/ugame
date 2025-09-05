@@ -10,7 +10,6 @@ out vec2 tex_coord;
 out vec4 frag_position;
 out mat3 tbn;
 
-
 uniform mat4 model;
 
 layout(std140, binding = 0) uniform camera
