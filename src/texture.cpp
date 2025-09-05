@@ -62,7 +62,7 @@ namespace game
         {
             using enum TextureUsage;
         case FRAMEBUFFER:
-            ::glTextureStorage2D(_handle, 1, get_storage_format(3), width, height);
+            ::glTextureStorage2D(_handle, 1, GL_RGB16F, width, height);
             break;
         case DEPTH:
             ::glTextureStorage2D(_handle, 1, GL_DEPTH_COMPONENT24, width, height);

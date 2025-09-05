@@ -79,8 +79,8 @@ auto main(int argc, char **argv) -> int
                 entities.emplace_back(game::Entity{
                     &mesh,
                     &material,
-                    game::Vector3{static_cast<float>(i) * 2.5f, dis(gen), static_cast<float>(j) * 2.5f},
-                    // game::Vector3{static_cast<float>(i) * 2.5f, 0.f, static_cast<float>(j) * 2.5f},
+                    // game::Vector3{static_cast<float>(i) * 2.5f, dis(gen), static_cast<float>(j) * 2.5f},
+                    game::Vector3{static_cast<float>(i) * 2.5f, 0.f, static_cast<float>(j) * 2.5f},
                     game::Vector3{.4f},
                     tex_samp});
             }

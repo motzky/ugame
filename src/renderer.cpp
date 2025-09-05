@@ -53,6 +53,13 @@ namespace
         return game::Material{vertex_shader, fragment_shader};
     }
 
+    auto create_post_process_material(game::ResourceLoader &resource_loader) -> game::Material
+    {
+        const auto vertex_shader = game::Shader{resource_loader.load_string("post_process.vert"), game::ShaderType::VERTEX};
+        const auto fragment_shader = game::Shader{resource_loader.load_string("post_process.frag"), game::ShaderType::FRAGMENT};
+        return game::Material{vertex_shader, fragment_shader};
+    }
+
 }
 
 namespace game
@@ -62,11 +69,13 @@ namespace game
           _light_buffer(10240u),
           _skybox_cube(mesh_loader.cube()),
           _skybox_material(create_skybox_material(resource_loader)),
-          _fb{width, height}
+          _fb{width, height},
+          _post_process_sprite{mesh_loader.sprite()},
+          _post_process_material{create_post_process_material(resource_loader)}
     {
     }
 
-    auto Renderer::render(const Camera &camera, const Scene &scene, const CubeMap &skybox, const TextureSampler &skybox_sampler) -> void
+    auto Renderer::render(const Camera &camera, const Scene &scene, const CubeMap &skybox, const TextureSampler &skybox_sampler) const -> void
     {
         _fb.bind();
 
@@ -110,6 +119,7 @@ namespace game
         _skybox_material.bind_cube_map(&skybox, &skybox_sampler);
 
         _skybox_cube.unbind();
+
         ::glDepthMask(GL_TRUE);
 
         for (const auto *entity : scene.entities)
@@ -128,9 +138,12 @@ namespace game
 
         _fb.unbind();
 
-        ::glBlitNamedFramebuffer(_fb.native_handle(), 0,
-                                 0, 0, _fb.width(), _fb.height(),
-                                 0, 0, _fb.width(), _fb.height(),
-                                 GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+        ::glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        _post_process_material.use();
+        _post_process_material.bind_texture(0, &_fb.color_texture(), &skybox_sampler);
+
+        _post_process_sprite.bind();
+        ::glDrawElements(GL_TRIANGLES, _post_process_sprite.index_count(), GL_UNSIGNED_INT, reinterpret_cast<void *>(_post_process_sprite.index_offset()));
+        _post_process_sprite.unbind();
     }
 }

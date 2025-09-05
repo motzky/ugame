@@ -12,9 +12,9 @@
 #include <assimp/scene.h>
 #include <assimp/vector3.h>
 
-#include "resource_loader.h"
 #include "ensure.h"
 #include "log.h"
+#include "resource_loader.h"
 #include "string_unordered_map.h"
 #include "vector3.h"
 #include "vertex_data.h"
@@ -118,6 +118,34 @@ namespace game
 
         ensure(false, "failed to load {} from {}. Model not found", model_name, model_file);
         return {};
+    }
+
+    auto MeshLoader::sprite() -> MeshData
+    {
+        const auto loaded = _loaded_meshes.find("sprite");
+
+        if (loaded != std::ranges::cend(_loaded_meshes))
+        {
+            return {.vertices = loaded->second.vertices, .indices = loaded->second.indices};
+        }
+
+        const Vector3 positions[] = {
+            {-1.f, 1.f, 0.f},
+            {-1.f, -1.f, 0.f},
+            {1.f, -1.f, 0.f},
+            {1.f, 1.f, 0.f}};
+
+        const UV texture_coords[] = {
+            {0.f, 1.f},
+            {0.f, 0.f},
+            {1.f, 0.f},
+            {1.f, 1.f}};
+
+        auto indices = std::vector<std::uint32_t>{0, 1, 2, 0, 2, 3};
+
+        const auto new_item = _loaded_meshes.emplace("sprite", LoadedMeshData{vertices(positions, positions, positions, texture_coords), std::move(indices)});
+
+        return {.vertices = new_item.first->second.vertices, .indices = new_item.first->second.indices};
     }
 
     auto MeshLoader::cube() -> MeshData
