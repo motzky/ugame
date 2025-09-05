@@ -198,7 +198,7 @@ namespace game
         ::resolve_global_gl_functions();
         ::setup_debug();
 
-        ::glEnable(GL_CULL_FACE);
+        // ::glEnable(GL_CULL_FACE);
         ::glEnable(GL_DEPTH_TEST);
 
         auto vendor_str = ::glGetString(GL_VENDOR);
