@@ -13,12 +13,14 @@ namespace game
     public:
         FrameBuffer(std::uint32_t width, std::uint32_t height);
 
-        auto native_handle() -> ::GLuint;
-        auto bind() -> void;
-        auto unbind() -> void;
+        auto native_handle() const -> ::GLuint;
+        auto bind() const -> void;
+        auto unbind() const -> void;
 
-        auto width() -> std::uint32_t;
-        auto height() -> std::uint32_t;
+        auto width() const -> std::uint32_t;
+        auto height() const -> std::uint32_t;
+
+        auto color_texture() const -> const Texture &;
 
     private:
         AutoRelease<::GLuint> _handle;
