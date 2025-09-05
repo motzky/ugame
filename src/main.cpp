@@ -10,6 +10,7 @@
 #include <variant>
 
 #include "camera.h"
+#include "cube_map.h"
 #include "debug_ui.h"
 #include "entity.h"
 #include "ensure.h"
@@ -45,17 +46,12 @@ auto main(int argc, char **argv) -> int
         auto window = game::Window{width, height};
 
         auto resource_loader = game::ResourceLoader{argv[1]};
-        auto model_loader = game::MeshLoader{resource_loader};
+        auto mesh_loader = game::MeshLoader{resource_loader};
 
-        // auto albedo_tex = game::Texture{resource_loader.load_binary("container2.png"), 500u, 500u};
-        // auto spec_map = game::Texture{resource_loader.load_binary("container2_specular.png"), 500u, 500u};
+        auto sampler = game::TextureSampler{};
         auto albedo_tex = game::Texture{resource_loader.load_binary("barrel_Base_Color.png"), 4096u, 4096u};
         auto spec_map = game::Texture{resource_loader.load_binary("barrel_Metallic.png"), 4096u, 4096u};
         auto normal_map = game::Texture{resource_loader.load_binary("barrel_Normal_OpenGL.png"), 4096u, 4096u};
-        // auto albedo_tex = game::Texture{resource_loader.load_binary("metal-studs_albedo.png"), 2048u, 2048u};
-        // auto spec_map = game::Texture{resource_loader.load_binary("metal-studs_metallic.png"), 2048u, 2048u};
-        // auto normal_map = game::Texture{resource_loader.load_binary("metal-studs_normal-ogl.png"), 2048u, 2048u};
-        auto sampler = game::TextureSampler{};
 
         const game::Texture *textures[]{&albedo_tex, &spec_map, &normal_map};
         const game::TextureSampler *samplers[]{&sampler, &sampler, &sampler};
@@ -66,9 +62,9 @@ auto main(int argc, char **argv) -> int
         auto material = game::Material{vertex_shader, fragment_shader};
 
         // const auto mesh = game::Mesh{model_loader.cube()};
-        const auto mesh = game::Mesh{model_loader.load("wine_barrel.fbx", "Cylinder.014")};
+        const auto mesh = game::Mesh{mesh_loader.load("wine_barrel.fbx", "Cylinder.014")};
 
-        const auto renderer = game::Renderer{};
+        const auto renderer = game::Renderer{resource_loader, mesh_loader};
 
         auto entities = std::vector<game::Entity>{};
 
@@ -83,8 +79,8 @@ auto main(int argc, char **argv) -> int
                 entities.emplace_back(game::Entity{
                     &mesh,
                     &material,
-                    // game::Vector3{static_cast<float>(i) * 1.5f, dis(gen), static_cast<float>(j) * 1.5f},
-                    game::Vector3{static_cast<float>(i) * 2.5f, 0.f, static_cast<float>(j) * 2.5f},
+                    game::Vector3{static_cast<float>(i) * 2.5f, dis(gen), static_cast<float>(j) * 2.5f},
+                    // game::Vector3{static_cast<float>(i) * 2.5f, 0.f, static_cast<float>(j) * 2.5f},
                     game::Vector3{.4f},
                     tex_samp});
             }
@@ -114,6 +110,17 @@ auto main(int argc, char **argv) -> int
                                    static_cast<float>(window.height()),
                                    0.001f,
                                    100.f};
+
+        auto skybox = game::CubeMap{{resource_loader.load_binary("right.jpg"),
+                                     resource_loader.load_binary("left.jpg"),
+                                     resource_loader.load_binary("top.jpg"),
+                                     resource_loader.load_binary("bottom.jpg"),
+                                     resource_loader.load_binary("front.jpg"),
+                                     resource_loader.load_binary("back.jpg")},
+                                    2048u,
+                                    2048u};
+
+        auto skybox_sampler = game::TextureSampler{};
 
         auto key_state = std::unordered_map<game::Key, bool>{};
 
@@ -200,7 +207,7 @@ auto main(int argc, char **argv) -> int
             // scene.point.position.x = std::sin(t) * 10.f;
             // scene.point.position.z = std::cos(t) * 10.f;
 
-            renderer.render(camera, scene);
+            renderer.render(camera, scene, skybox, sampler);
             if (show_debug)
             {
                 debug_ui.render();

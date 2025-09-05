@@ -91,6 +91,15 @@ namespace game
         ::glUniform1i(uniform->second, obj);
     }
 
+    auto Material::bind_cube_map(const CubeMap *texture, const TextureSampler *sampler) const -> void
+    {
+        ::glBindTextureUnit(0, texture->native_handle());
+        ::glBindSampler(0, sampler->native_handle());
+
+        const auto uniform_name = std::format("tex{}", 0);
+        set_uniform(uniform_name, 0);
+    }
+
     auto Material::bind_texture(std::uint32_t index, const Texture *texture, const TextureSampler *sampler) const -> void
     {
         const auto gl_index = static_cast<::GLuint>(index);

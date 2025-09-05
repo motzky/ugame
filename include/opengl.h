@@ -50,6 +50,8 @@
     DO(::PFNGLCREATETEXTURESPROC, glCreateTextures)                     \
     DO(::PFNGLTEXTURESTORAGE2DPROC, glTextureStorage2D)                 \
     DO(::PFNGLTEXTURESUBIMAGE2DPROC, glTextureSubImage2D)               \
+    DO(::PFNGLTEXTURESTORAGE3DPROC, glTextureStorage3D)                 \
+    DO(::PFNGLTEXTURESUBIMAGE3DPROC, glTextureSubImage3D)               \
     DO(::PFNGLCREATESAMPLERSPROC, glCreateSamplers)                     \
     DO(::PFNGLDELETESAMPLERSPROC, glDeleteSamplers)                     \
     DO(::PFNGLBINDTEXTUREUNITPROC, glBindTextureUnit)                   \

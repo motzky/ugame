@@ -5,11 +5,14 @@
 #include "buffer_writer.h"
 #include "camera.h"
 #include "color.h"
+#include "cube_map.h"
+#include "ensure.h"
 #include "entity.h"
 #include "material.h"
 #include "mesh.h"
-#include "ensure.h"
+#include "mesh_loader.h"
 #include "opengl.h"
+#include "resource_loader.h"
 #include "scene.h"
 #include "texture.h"
 #include "texture_sampler.h"
@@ -40,17 +43,27 @@ namespace
 #if defined(_MSC_VER)
 #pragma warning(pop)
 #endif
+
+    auto create_skybox_material(game::ResourceLoader &resource_loader) -> game::Material
+    {
+        const auto vertex_shader = game::Shader{resource_loader.load_string("cube.vert"), game::ShaderType::VERTEX};
+        const auto fragment_shader = game::Shader{resource_loader.load_string("cube.frag"), game::ShaderType::FRAGMENT};
+        return game::Material{vertex_shader, fragment_shader};
+    }
+
 }
 
 namespace game
 {
-    Renderer::Renderer()
+    Renderer::Renderer(ResourceLoader &resource_loader, MeshLoader &mesh_loader)
         : _camera_buffer(sizeof(Matrix4) * 2u + sizeof(Vector3)),
-          _light_buffer(10240u)
+          _light_buffer(10240u),
+          _skybox_cube(mesh_loader.cube()),
+          _skybox_material(create_skybox_material(resource_loader))
     {
     }
 
-    auto Renderer::render(const Camera &camera, const Scene &scene) const -> void
+    auto Renderer::render(const Camera &camera, const Scene &scene, const CubeMap &skybox, const TextureSampler &skybox_sampler) const -> void
     {
         ::glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -81,6 +94,18 @@ namespace game
         }
 
         ::glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, _light_buffer.native_handle());
+
+        ::glDepthMask(GL_FALSE);
+
+        _skybox_material.use();
+        _skybox_cube.bind();
+
+        ::glDrawElements(GL_TRIANGLES, _skybox_cube.index_count(), GL_UNSIGNED_INT, reinterpret_cast<void *>(_skybox_cube.index_offset()));
+
+        _skybox_material.bind_cube_map(&skybox, &skybox_sampler);
+
+        _skybox_cube.unbind();
+        ::glDepthMask(GL_TRUE);
 
         for (const auto *entity : scene.entities)
         {

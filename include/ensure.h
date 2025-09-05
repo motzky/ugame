@@ -5,6 +5,7 @@
 #include <string_view>
 
 #include "auto_release.h"
+#include "log.h"
 #include "exception.h"
 
 namespace game
