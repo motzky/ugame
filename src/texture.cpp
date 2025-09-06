@@ -1,8 +1,10 @@
 #include "texture.h"
 
+#include <algorithm>
 #include <cstddef>
 #include <cstdint>
 #include <memory>
+#include <ranges>
 #include <span>
 
 #define STB_IMAGE_IMPLEMENTATION
@@ -14,18 +16,34 @@
 
 namespace
 {
-    auto get_storage_format(std::int32_t num_channels) -> ::GLenum
+    auto get_storage_format(game::TextureUsage usage, std::int32_t num_channels) -> ::GLenum
     {
         switch (num_channels)
         {
+            using enum game::TextureUsage;
         case 1:
-            return GL_R8;
-            break;
+            return GL_RED;
         case 3:
-            return GL_RGB8;
-            break;
+            switch (usage)
+            {
+            case SRGB:
+                return GL_SRGB8;
+            case DATA:
+                return GL_RGB8;
+            default:
+                return GL_RGB8;
+            }
         case 4:
-            return GL_RGBA8;
+            switch (usage)
+            {
+            case SRGB:
+                return GL_SRGB8_ALPHA8;
+            case DATA:
+                return GL_RGBA8;
+            default:
+                return GL_RGBA8;
+            }
+
         default:
             game::ensure(false, "unhandled num_channels {}", num_channels);
             return 0u;
@@ -38,10 +56,8 @@ namespace
         {
         case 1:
             return GL_RED;
-            break;
         case 3:
             return GL_RGB;
-            break;
         case 4:
             return GL_RGBA;
         default:
@@ -67,13 +83,19 @@ namespace game
         case DEPTH:
             ::glTextureStorage2D(_handle, 1, GL_DEPTH_COMPONENT24, width, height);
             break;
+        default:
+            ensure(false, "invalid usage");
+            break;
         }
     }
 
-    Texture::Texture(std::span<const std::byte> data, std::uint32_t /*width*/, std::uint32_t /*height*/)
+    Texture::Texture(TextureUsage usage, std::span<const std::byte> data, std::uint32_t /*width*/, std::uint32_t /*height*/)
         : _handle{0u, [](auto texture)
                   { ::glDeleteTextures(1u, &texture); }}
     {
+        TextureUsage valid_usage[] = {TextureUsage::SRGB, TextureUsage::DATA};
+        ensure(std::ranges::contains(valid_usage, usage), "invalid usage");
+
         auto w = int{0};
         auto h = int{0};
         auto num_channels = int{0};
@@ -95,7 +117,7 @@ namespace game
 
         ::glCreateTextures(GL_TEXTURE_2D, 1u, &_handle);
 
-        ::glTextureStorage2D(_handle, 1, get_storage_format(num_channels), w, h);
+        ::glTextureStorage2D(_handle, 1, get_storage_format(usage, num_channels), w, h);
         ::glTextureSubImage2D(_handle, 0, 0, 0, w, h, get_sub_image_format(num_channels), GL_UNSIGNED_BYTE, raw_data.get());
     }
 

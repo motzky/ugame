@@ -12,7 +12,7 @@ namespace game
     class DebugUi
     {
     public:
-        DebugUi(Window::HandleType window, Scene &_scene, Camera &camera);
+        DebugUi(Window::HandleType window, Scene &_scene, Camera &camera, float &gamma);
         ~DebugUi();
 
         auto render() const -> void;
@@ -21,5 +21,6 @@ namespace game
     private:
         Scene &_scene;
         Camera &_camera;
+        float &_gamma;
     };
 }

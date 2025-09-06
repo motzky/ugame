@@ -49,9 +49,9 @@ auto main(int argc, char **argv) -> int
         auto mesh_loader = game::MeshLoader{resource_loader};
 
         auto sampler = game::TextureSampler{};
-        auto albedo_tex = game::Texture{resource_loader.load_binary("barrel_Base_Color.png"), 4096u, 4096u};
-        auto spec_map = game::Texture{resource_loader.load_binary("barrel_Metallic.png"), 4096u, 4096u};
-        auto normal_map = game::Texture{resource_loader.load_binary("barrel_Normal_OpenGL.png"), 4096u, 4096u};
+        auto albedo_tex = game::Texture{game::TextureUsage::SRGB, resource_loader.load_binary("barrel_Base_Color.png"), 4096u, 4096u};
+        auto spec_map = game::Texture{game::TextureUsage::DATA, resource_loader.load_binary("barrel_Metallic.png"), 4096u, 4096u};
+        auto normal_map = game::Texture{game::TextureUsage::DATA, resource_loader.load_binary("barrel_Normal_OpenGL.png"), 4096u, 4096u};
 
         const game::Texture *textures[]{&albedo_tex, &spec_map, &normal_map};
         const game::TextureSampler *samplers[]{&sampler, &sampler, &sampler};
@@ -124,8 +124,10 @@ auto main(int argc, char **argv) -> int
 
         auto key_state = std::unordered_map<game::Key, bool>{};
 
+        auto gamma = 2.2f;
+
         auto show_debug = false;
-        const auto debug_ui = game::DebugUi(window.native_handle(), scene, camera);
+        const auto debug_ui = game::DebugUi(window.native_handle(), scene, camera, gamma);
 
         auto running = true;
 
@@ -207,7 +209,7 @@ auto main(int argc, char **argv) -> int
             // scene.point.position.x = std::sin(t) * 10.f;
             // scene.point.position.z = std::cos(t) * 10.f;
 
-            renderer.render(camera, scene, skybox, sampler);
+            renderer.render(camera, scene, skybox, sampler, gamma);
             if (show_debug)
             {
                 debug_ui.render();

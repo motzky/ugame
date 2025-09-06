@@ -91,6 +91,14 @@ namespace game
         ::glUniform1i(uniform->second, obj);
     }
 
+    auto Material::set_uniform(std::string_view name, float obj) const -> void
+    {
+        const auto uniform = _uniforms.find(name);
+        ensure(uniform != std::ranges::cend(_uniforms), "uniform not found: {}", name);
+
+        ::glUniform1f(uniform->second, obj);
+    }
+
     auto Material::bind_cube_map(const CubeMap *texture, const TextureSampler *sampler) const -> void
     {
         ::glBindTextureUnit(0, texture->native_handle());
@@ -107,7 +115,7 @@ namespace game
         ::glBindSampler(gl_index, sampler->native_handle());
 
         const auto uniform_name = std::format("tex{}", index);
-        set_uniform(uniform_name, index);
+        set_uniform(uniform_name, static_cast<std::int32_t>(index));
     }
 
     auto Material::bind_textures(std::span<const std::tuple<const Texture *, const TextureSampler *>> tex_samps) const -> void

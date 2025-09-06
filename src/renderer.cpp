@@ -75,7 +75,7 @@ namespace game
     {
     }
 
-    auto Renderer::render(const Camera &camera, const Scene &scene, const CubeMap &skybox, const TextureSampler &skybox_sampler) const -> void
+    auto Renderer::render(const Camera &camera, const Scene &scene, const CubeMap &skybox, const TextureSampler &skybox_sampler, float gamma) const -> void
     {
         _fb.bind();
 
@@ -141,6 +141,7 @@ namespace game
         ::glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         _post_process_material.use();
         _post_process_material.bind_texture(0, &_fb.color_texture(), &skybox_sampler);
+        _post_process_material.set_uniform("gamma", gamma);
 
         _post_process_sprite.bind();
         ::glDrawElements(GL_TRIANGLES, _post_process_sprite.index_count(), GL_UNSIGNED_INT, reinterpret_cast<void *>(_post_process_sprite.index_offset()));

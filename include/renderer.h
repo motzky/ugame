@@ -17,7 +17,7 @@ namespace game
     {
     public:
         Renderer(ResourceLoader &resource_loader, MeshLoader &mesh_loader, std::uint32_t width, std::uint32_t height);
-        auto render(const Camera &camera, const Scene &scene, const CubeMap &skybox, const TextureSampler &skybox_sampler) const -> void;
+        auto render(const Camera &camera, const Scene &scene, const CubeMap &skybox, const TextureSampler &skybox_sampler, float gamma) const -> void;
 
     private:
         Buffer _camera_buffer;

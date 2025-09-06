@@ -9,10 +9,10 @@
 #include <ranges>
 #include <string>
 
+#include "ImGuizmo.h"
 #include "backends/imgui_impl_glfw.h"
 #include "backends/imgui_impl_opengl3.h"
 #include "imgui.h"
-#include "ImGuizmo.h"
 
 #include "camera.h"
 #include "matrix4.h"
@@ -21,8 +21,10 @@
 
 namespace game
 {
-    DebugUi::DebugUi(Window::HandleType window, Scene &scene, Camera &camera)
-        : _scene(scene), _camera(camera)
+    DebugUi::DebugUi(Window::HandleType window, Scene &scene, Camera &camera, float &gamma)
+        : _scene(scene),
+          _camera(camera),
+          _gamma(gamma)
     {
         IMGUI_CHECKVERSION();
         ::ImGui::CreateContext();
@@ -65,6 +67,8 @@ namespace game
         }
 
         ::ImGui::LabelText("FPS", "%0.1f", io.Framerate);
+
+        ::ImGui::SliderFloat("gamma", &_gamma, 0.f, 5.f);
 
         if (::ImGui::CollapsingHeader("ambient"))
         {

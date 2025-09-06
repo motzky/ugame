@@ -8,6 +8,7 @@ in mat3 tbn;
 out vec4 frag_color;
 
 uniform sampler2D tex0;
+uniform float gamma;
 
 void main()
 {
@@ -15,6 +16,6 @@ void main()
 
     vec3 mappeed = hdr_color / (hdr_color + vec3(1.0));
 
-    mappeed = pow(mappeed, vec3(1.0/2.2));
+    mappeed = pow(mappeed, vec3(1.0 / gamma));
     frag_color = vec4(mappeed, 1.0);
 }
