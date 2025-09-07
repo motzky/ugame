@@ -48,6 +48,16 @@ namespace game
             std::ranges::swap(_deleter, other._deleter);
         }
 
+        auto reset(T obj) -> void
+        {
+            if ((_obj != Invalid) && _deleter)
+            {
+                _deleter(_obj);
+            }
+
+            _obj = obj;
+        }
+
         T get() const { return _obj; }
         operator T() const { return _obj; }
 
