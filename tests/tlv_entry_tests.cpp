@@ -66,9 +66,24 @@ TEST(tlv_entry, string_value)
 
 TEST(tlv_entry, string_value_invalid_type)
 {
-
     const auto bytes = std::vector<std::byte>{create_binary_vector('h', 'e', 'l', 'l', 'o')};
     const auto entry = game::TlvEntry{game::TlvType::UINT32, bytes};
 
     ASSERT_THROW(entry.string_value(), game::Exception);
+}
+
+TEST(tlv_entry, byte_array_value)
+{
+    const auto bytes = std::vector<std::byte>{create_binary_vector(0xaa, 0xbb, 0xcc)};
+    const auto entry = game::TlvEntry{game::TlvType::BYTE_ARRAY, bytes};
+
+    ASSERT_EQ(entry.byte_array_value(), bytes);
+}
+
+TEST(tlv_entry, byte_array_value_invalid)
+{
+    const auto bytes = std::vector<std::byte>{create_binary_vector(0xaa, 0xbb, 0xcc)};
+    const auto entry = game::TlvEntry{game::TlvType::UINT32, bytes};
+
+    ASSERT_THROW(entry.byte_array_value(), game::Exception);
 }

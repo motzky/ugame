@@ -45,4 +45,10 @@ namespace game
         return std::string(ptr, ptr + _value.size());
     }
 
+    auto TlvEntry::byte_array_value() const -> std::vector<std::byte>
+    {
+        ensure(_type == TlvType::BYTE_ARRAY, "incorrect type");
+        const auto *ptr = reinterpret_cast<const std::byte *>(_value.data());
+        return std::vector<std::byte>(ptr, ptr + _value.size());
+    }
 }

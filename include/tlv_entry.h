@@ -4,13 +4,16 @@
 #include <cstdint>
 #include <span>
 #include <string>
+#include <vector>
 
 namespace game
 {
     enum class TlvType : std::uint32_t
     {
         UINT32,
-        STRING
+        STRING,
+        BYTE_ARRAY,
+
     };
 
     class TlvEntry
@@ -22,6 +25,7 @@ namespace game
 
         auto uint32_value() const -> std::uint32_t;
         auto string_value() const -> std::string;
+        auto byte_array_value() const -> std::vector<std::byte>;
 
         auto size() const -> std::uint32_t;
 
