@@ -36,7 +36,7 @@ namespace game
         auto texture_usage_value() const -> TextureUsage;
         auto texture_format_value() const -> TextureFormat;
         auto texture_data_value() const -> TextureData;
-        auto is_texture(std::string_view name) -> bool;
+        auto is_texture(std::string_view name) const -> bool;
 
         auto size() const -> std::uint32_t;
 

@@ -39,7 +39,7 @@ namespace game
     {
     }
 
-    auto MeshLoader::load(std::string_view model_file, std::string_view model_name) -> MeshData
+    auto MeshLoader::load(std::string_view model_file_name, std::string_view model_name) -> MeshData
     {
         const auto loaded = _loaded_meshes.find(model_name);
 
@@ -51,17 +51,19 @@ namespace game
         auto stream = ::aiGetPredefinedLogStream(::aiDefaultLogStream_STDOUT, NULL);
         ::aiAttachLogStream(&stream);
 
-        const auto model_file_data = _resource_loader.load_binary(model_file);
-        log::debug("loaded file {} with {} bytes", model_file, model_file_data.size());
+        const auto model_file = _resource_loader.load(model_file_name);
+        const auto model_file_data = model_file.as_bytes();
+
+        log::debug("loaded file {} with {} bytes", model_file_name, model_file_data.size());
 
         auto importer = ::Assimp::Importer{};
         const auto *scene = importer.ReadFileFromMemory(model_file_data.data(),
                                                         model_file_data.size(),
                                                         ::aiProcess_Triangulate | ::aiProcess_FlipUVs | ::aiProcess_CalcTangentSpace,
-                                                        model_file.data());
+                                                        model_file_name.data());
 
-        ensure(scene != nullptr, "failed to load model {} from {}", model_file, model_name);
-        ensure(!(scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE), "failed to load model {} from {}", model_file, model_name);
+        ensure(scene != nullptr, "failed to load model {} from {}", model_file_name, model_name);
+        ensure(!(scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE), "failed to load model {} from {}", model_file_name, model_name);
 
         const auto loaded_meshes = std::span<::aiMesh *>{scene->mMeshes, scene->mMeshes + scene->mNumMeshes};
 
@@ -116,7 +118,7 @@ namespace game
             return {.vertices = loaded2->second.vertices, .indices = loaded2->second.indices};
         }
 
-        ensure(false, "failed to load {} from {}. Model not found", model_name, model_file);
+        ensure(false, "failed to load {} from {}. Model not found", model_name, model_file_name);
         return {};
     }
 

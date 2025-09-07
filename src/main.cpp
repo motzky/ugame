@@ -28,6 +28,8 @@
 #include "stop_event.h"
 #include "texture.h"
 #include "texture_sampler.h"
+#include "tlv/tlv_entry.h"
+#include "tlv/tlv_reader.h"
 #include "window.h"
 
 auto main(int argc, char **argv) -> int
@@ -45,24 +47,66 @@ auto main(int argc, char **argv) -> int
         // auto height = 720u;
         auto window = game::Window{width, height};
 
+        game::log::debug("window done");
+
         auto resource_loader = game::ResourceLoader{argv[1]};
+
+        game::log::debug("resource_loader done");
         auto mesh_loader = game::MeshLoader{resource_loader};
 
+        game::log::debug("MeshLoader done");
+
+        auto tex_data = std::optional<game::TextureData>{};
+
+        game::log::info("loading resources...");
+        const auto tlv_file = resource_loader.load("resource");
+
+        game::log::debug("load_binary done");
+
+        game::log::debug("reading tlv...");
+        const auto reader = game::TlvReader{tlv_file.as_bytes()};
+        for (const auto &entry : reader)
+        {
+            if (entry.is_texture("barrel_base_albedo"))
+            {
+                tex_data = entry.texture_data_value();
+                break;
+            }
+        }
+
+        game::ensure(!!tex_data, "failed to load texture from resource");
+
+        game::log::debug("done.");
+
+        game::log::info("Creating GL textures...");
+
+        const auto spec_map_file = resource_loader.load("barrel_metallic.data.png");
+        const auto normal_map_file = resource_loader.load("barrel_normal_ogl.data.png");
+
         auto sampler = game::TextureSampler{};
-        auto albedo_tex = game::Texture{game::TextureUsage::SRGB, resource_loader.load_binary("barrel_Base_Color.png"), 4096u, 4096u};
-        auto spec_map = game::Texture{game::TextureUsage::DATA, resource_loader.load_binary("barrel_Metallic.png"), 4096u, 4096u};
-        auto normal_map = game::Texture{game::TextureUsage::DATA, resource_loader.load_binary("barrel_Normal_OpenGL.png"), 4096u, 4096u};
+        auto albedo_tex = game::Texture{*tex_data};
+        auto spec_map = game::Texture{game::TextureUsage::DATA, spec_map_file.as_bytes(), 4096u, 4096u};
+        auto normal_map = game::Texture{game::TextureUsage::DATA, normal_map_file.as_bytes(), 4096u, 4096u};
+        game::log::debug("done.");
+
+        game::log::info("Creating materials...");
 
         const game::Texture *textures[]{&albedo_tex, &spec_map, &normal_map};
         const game::TextureSampler *samplers[]{&sampler, &sampler, &sampler};
         auto tex_samp = std::views::zip(textures, samplers) | std::ranges::to<std::vector>();
 
-        const auto vertex_shader = game::Shader{resource_loader.load_string("simple.vert"), game::ShaderType::VERTEX};
-        const auto fragment_shader = game::Shader{resource_loader.load_string("simple.frag"), game::ShaderType::FRAGMENT};
+        const auto vertex_shader_file = resource_loader.load("simple.vert");
+        const auto fragment_shader_file = resource_loader.load("simple.frag");
+
+        const auto vertex_shader = game::Shader{vertex_shader_file.as_string(), game::ShaderType::VERTEX};
+        const auto fragment_shader = game::Shader{fragment_shader_file.as_string(), game::ShaderType::FRAGMENT};
         auto material = game::Material{vertex_shader, fragment_shader};
 
-        // const auto mesh = game::Mesh{model_loader.cube()};
+        game::log::debug("done.");
+
+        game::log::info("Loading meshes...");
         const auto mesh = game::Mesh{mesh_loader.load("wine_barrel.fbx", "Cylinder.014")};
+        game::log::debug("done.");
 
         auto renderer = game::Renderer{resource_loader, mesh_loader, width, height};
 
@@ -111,14 +155,22 @@ auto main(int argc, char **argv) -> int
                                    0.001f,
                                    100.f};
 
-        auto skybox = game::CubeMap{{resource_loader.load_binary("right.jpg"),
-                                     resource_loader.load_binary("left.jpg"),
-                                     resource_loader.load_binary("top.jpg"),
-                                     resource_loader.load_binary("bottom.jpg"),
-                                     resource_loader.load_binary("front.jpg"),
-                                     resource_loader.load_binary("back.jpg")},
-                                    2048u,
-                                    2048u};
+        const auto skybox_right_file = resource_loader.load("right.srgb.jpg");
+        const auto skybox_left_file = resource_loader.load("left.srgb.jpg");
+        const auto skybox_top_file = resource_loader.load("top.srgb.jpg");
+        const auto skybox_bottom_file = resource_loader.load("bottom.srgb.jpg");
+        const auto skybox_front_file = resource_loader.load("front.srgb.jpg");
+        const auto skybox_back_file = resource_loader.load("back.srgb.jpg");
+
+        auto skybox = game::CubeMap{
+            {skybox_right_file.as_bytes(),
+             skybox_left_file.as_bytes(),
+             skybox_top_file.as_bytes(),
+             skybox_bottom_file.as_bytes(),
+             skybox_front_file.as_bytes(),
+             skybox_back_file.as_bytes()},
+            2048u,
+            2048u};
 
         auto skybox_sampler = game::TextureSampler{};
 

@@ -109,7 +109,7 @@ namespace game
         return {name, format, usage, width, height, data};
     }
 
-    auto TlvEntry::is_texture(std::string_view name) -> bool
+    auto TlvEntry::is_texture(std::string_view name) const -> bool
     {
         ensure(_type == TlvType::TEXTURE_DATA, "incorrect type");
 

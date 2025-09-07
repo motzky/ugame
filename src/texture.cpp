@@ -22,7 +22,7 @@ namespace
         {
             using enum game::TextureUsage;
         case 1:
-            return GL_RED;
+            return GL_R8;
         case 3:
             switch (usage)
             {
@@ -65,13 +65,39 @@ namespace
             return 0u;
         }
     }
+
+    auto num_channels_from_format(game::TextureFormat format) -> std::int32_t
+    {
+        switch (format)
+        {
+            using enum game::TextureFormat;
+        case R:
+            return 1;
+        case RGB:
+            return 3;
+        case RGBA:
+            return 4;
+        default:
+            game::ensure(false, "unhandled format {}", format);
+            return 0u;
+        }
+    }
 }
 
 namespace game
 {
     Texture::Texture(const TextureData &data)
-        : Texture(data.usage, data.data, data.width, data.height)
+        : _handle{0u, [](auto texture)
+                  { ::glDeleteTextures(1u, &texture); }}
     {
+        log::info("creating texture with: {}", data);
+
+        ::glCreateTextures(GL_TEXTURE_2D, 1u, &_handle);
+
+        auto num_channels = num_channels_from_format(data.format);
+
+        ::glTextureStorage2D(_handle, 1, get_storage_format(data.usage, num_channels), data.width, data.height);
+        ::glTextureSubImage2D(_handle, 0, 0, 0, data.width, data.height, get_sub_image_format(num_channels), GL_UNSIGNED_BYTE, data.data.data());
     }
 
     Texture::Texture(TextureUsage usage, std::uint32_t width, std::uint32_t height)
@@ -116,9 +142,9 @@ namespace game
 
         ensure(raw_data, "failed to load texture date");
 
-        log::info("loaded image width {}", w);
-        log::info("loaded image height {}", h);
-        log::info("loaded image channels {}", num_channels);
+        // log::info("loaded image width {}", w);
+        // log::info("loaded image height {}", h);
+        // log::info("loaded image channels {}", num_channels);
 
         ::glCreateTextures(GL_TEXTURE_2D, 1u, &_handle);
 

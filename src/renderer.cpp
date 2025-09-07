@@ -48,15 +48,27 @@ namespace
 
     auto create_skybox_material(game::ResourceLoader &resource_loader) -> game::Material
     {
-        const auto vertex_shader = game::Shader{resource_loader.load_string("cube.vert"), game::ShaderType::VERTEX};
-        const auto fragment_shader = game::Shader{resource_loader.load_string("cube.frag"), game::ShaderType::FRAGMENT};
+        const auto vert_file = resource_loader.load("cube.vert");
+        const auto vert_data = vert_file.as_string();
+        const auto vertex_shader = game::Shader{vert_data, game::ShaderType::VERTEX};
+
+        const auto frag_file = resource_loader.load("cube.frag");
+        const auto frag_data = frag_file.as_string();
+        const auto fragment_shader = game::Shader{frag_data, game::ShaderType::FRAGMENT};
         return game::Material{vertex_shader, fragment_shader};
     }
 
     auto create_post_process_material(game::ResourceLoader &resource_loader) -> game::Material
     {
-        const auto vertex_shader = game::Shader{resource_loader.load_string("post_process.vert"), game::ShaderType::VERTEX};
-        const auto fragment_shader = game::Shader{resource_loader.load_string("post_process.frag"), game::ShaderType::FRAGMENT};
+        const auto vert_file = resource_loader.load("post_process.vert");
+        const auto vert_data = vert_file.as_string();
+
+        const auto vertex_shader = game::Shader{vert_data, game::ShaderType::VERTEX};
+
+        const auto frag_file = resource_loader.load("post_process.frag");
+        const auto frag_data = frag_file.as_string();
+
+        const auto fragment_shader = game::Shader{frag_data, game::ShaderType::FRAGMENT};
         return game::Material{vertex_shader, fragment_shader};
     }
 

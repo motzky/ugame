@@ -22,7 +22,7 @@ namespace game
     public:
         MeshLoader(ResourceLoader &resource_loader);
 
-        auto load(std::string_view model_file, std::string_view model_name) -> MeshData;
+        auto load(std::string_view model_file_name, std::string_view model_name) -> MeshData;
         auto sprite() -> MeshData;
         auto cube() -> MeshData;
 
