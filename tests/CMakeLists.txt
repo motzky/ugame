@@ -6,9 +6,11 @@ mark_as_advanced(BUILD_GMOCK BUILD_GTEST gtest_hide_internal_symbols)
 
 add_executable(unit_tests
     matrix4_tests.cpp
+    tlv_entry_tests.cpp
+    tlv_reader_tests.cpp
     vector3_tests.cpp
 )
 
-target_link_libraries(unit_tests gmock_main)
+target_link_libraries(unit_tests gmock_main gamelib)
 gtest_discover_tests(unit_tests DISCOVERY_MODE PRE_TEST)
 

@@ -1,0 +1,50 @@
+#pragma once
+
+#include <cstddef>
+#include <iterator>
+#include <span>
+
+#include "tlv_entry.h"
+
+namespace game
+{
+    class TlvReader
+    {
+    public:
+        class Iterator
+        {
+        public:
+            using difference_type = std::ptrdiff_t;
+            using value_type = TlvEntry;
+
+            Iterator() = default;
+            Iterator(std::span<const std::byte> buffer);
+
+            auto operator*() const -> value_type;
+            auto operator++() -> Iterator &;
+            auto operator++(int) -> Iterator;
+            auto operator==(const Iterator &) const -> bool;
+
+        private:
+            std::span<const std::byte> _buffer;
+        };
+
+        static_assert(std::forward_iterator<Iterator>);
+
+        TlvReader(std::span<const std::byte> buffer);
+
+        auto begin(this auto &&self) -> Iterator
+        {
+            return {self._buffer};
+        }
+
+        auto end(this auto &&self) -> Iterator
+        {
+            return {{self._buffer.data() + self._buffer.size(), self._buffer.data() + self._buffer.size()}};
+        }
+
+    private:
+        std::span<const std::byte> _buffer;
+    };
+
+}

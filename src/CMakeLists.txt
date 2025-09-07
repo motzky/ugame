@@ -1,5 +1,5 @@
-add_executable(
-    nathan_stream
+add_library(
+    gamelib STATIC
     buffer_writer.cpp
     buffer.cpp
     camera.cpp
@@ -8,7 +8,6 @@ add_executable(
     exception.cpp
     frame_buffer.cpp
     key_event.cpp
-    main.cpp
     material.cpp
     mesh.cpp
     mesh_loader.cpp
@@ -19,7 +18,8 @@ add_executable(
     shader.cpp
     texture.cpp
     texture_sampler.cpp
-
+    tlv_entry.cpp
+    tlv_reader.cpp
 )
 
 add_library(imguilib STATIC
@@ -31,6 +31,11 @@ add_library(imguilib STATIC
     ${imgui_SOURCE_DIR}/backends/imgui_impl_opengl3.cpp
 
     ${imguizmo_SOURCE_DIR}/ImGuizmo.cpp
+)
+
+add_executable(
+    nathan_stream
+    main.cpp
 )
 
 IF(WIN32)
@@ -55,7 +60,16 @@ ENDIF()
 
 target_include_directories(imguilib PUBLIC ${imgui_SOURCE_DIR})
 target_include_directories(nathan_stream PUBLIC ${stb_lib_SOURCE_DIR} ${imgui_SOURCE_DIR} ${imguizmo_SOURCE_DIR} ${assimp_SOURCE_DIR}/include)
+target_include_directories(gamelib PUBLIC ${stb_lib_SOURCE_DIR} ${imgui_SOURCE_DIR} ${imguizmo_SOURCE_DIR} ${assimp_SOURCE_DIR}/include)
 
+target_compile_features(
+    gamelib
+    PUBLIC cxx_std_23
+)
+target_compile_options(
+    gamelib
+    PUBLIC -std=c++23 -Wall -Wextra -Wpedantic -Werror -pedantic-errors
+)
 target_compile_features(
     nathan_stream
     PUBLIC cxx_std_23
@@ -66,10 +80,20 @@ target_compile_options(
 )
 
 target_link_libraries(
-    nathan_stream
+    gamelib
     PUBLIC
         imguilib
         assimp
+    PRIVATE
+        GL
+        Backtrace::Backtrace
+        stdc++exp        
+)
+
+target_link_libraries(
+    nathan_stream
+    PUBLIC
+        gamelib
     PRIVATE
         glfw
         GL
