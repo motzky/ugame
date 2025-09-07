@@ -18,8 +18,9 @@ add_library(
     shader.cpp
     texture.cpp
     texture_sampler.cpp
-    tlv_entry.cpp
-    tlv_reader.cpp
+    tlv/tlv_entry.cpp
+    tlv/tlv_reader.cpp
+    tlv/tlv_writer.cpp
 )
 
 add_library(imguilib STATIC

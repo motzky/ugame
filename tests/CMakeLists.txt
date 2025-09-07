@@ -8,6 +8,7 @@ add_executable(unit_tests
     matrix4_tests.cpp
     tlv_entry_tests.cpp
     tlv_reader_tests.cpp
+    tlv_writer_tests.cpp
     vector3_tests.cpp
 )
 

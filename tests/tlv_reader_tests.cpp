@@ -9,8 +9,8 @@
 #include <gtest/gtest.h>
 
 #include "exception.h"
-#include "tlv_entry.h"
-#include "tlv_reader.h"
+#include "tlv/tlv_entry.h"
+#include "tlv/tlv_reader.h"
 
 namespace
 {

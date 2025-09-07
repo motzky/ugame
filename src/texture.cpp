@@ -69,6 +69,11 @@ namespace
 
 namespace game
 {
+    Texture::Texture(const TextureData &data)
+        : Texture(data.usage, data.data, data.width, data.height)
+    {
+    }
+
     Texture::Texture(TextureUsage usage, std::uint32_t width, std::uint32_t height)
         : _handle{0u, [](auto texture)
                   { ::glDeleteTextures(1u, &texture); }}
