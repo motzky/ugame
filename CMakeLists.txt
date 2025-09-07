@@ -72,6 +72,7 @@ set(FETCHCONTENT_QUIET FALSE)
 include_directories(include)
 
 add_subdirectory(src)
+add_subdirectory(tools)
 
 enable_testing()
 include(CTest)
