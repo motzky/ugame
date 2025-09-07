@@ -61,3 +61,6 @@ CMakeUserPresets.json
 *.dwo
 
 build/
+
+assets/resource
+assets_old/
