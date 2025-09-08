@@ -63,4 +63,5 @@ CMakeUserPresets.json
 build/
 
 assets/resource
+assets/resources
 assets_old/
