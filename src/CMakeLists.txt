@@ -41,7 +41,7 @@ add_executable(
 
 IF(WIN32)
     target_sources(
-        nathan_stream
+        gamelib
         PRIVATE win32/window.cpp win32/debug_ui.cpp win32/file.cpp
     )
     target_sources(
@@ -50,7 +50,7 @@ IF(WIN32)
     )
 ELSEIF(UNIX)
     target_sources(
-        nathan_stream
+        gamelib
         PRIVATE glfw/window.cpp glfw/debug_ui.cpp posix/file.cpp
     )
     target_sources(
