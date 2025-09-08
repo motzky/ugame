@@ -5,24 +5,18 @@
 #include <string_view>
 #include <vector>
 
+#include "mesh_data.h"
 #include "resource_loader.h"
 #include "string_unordered_map.h"
 #include "vertex_data.h"
 
 namespace game
 {
-    struct MeshData
-    {
-        std::span<const VertexData> vertices;
-        std::span<const std::uint32_t> indices;
-    };
-
     class MeshLoader
     {
     public:
         MeshLoader(ResourceLoader &resource_loader);
 
-        auto load(std::string_view model_file_name, std::string_view model_name) -> MeshData;
         auto sprite() -> MeshData;
         auto cube() -> MeshData;
 

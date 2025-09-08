@@ -88,7 +88,7 @@ namespace
 
 namespace game
 {
-    Texture::Texture(const TextureData &data)
+    Texture::Texture(const TextureDescription &data)
         : _handle{0u, [](auto texture)
                   { ::glDeleteTextures(1u, &texture); }}
     {
@@ -108,9 +108,9 @@ namespace game
     {
         const auto data = std::ranges::find_if(reader, [name](const auto &e)
                                                { return e.is_texture(name); });
-        ensure(data != std::ranges::end(reader), "failed to load texture");
+        ensure(data != std::ranges::end(reader), "failed to load texture '{}'", name);
 
-        auto tex = Texture{(*data).texture_data_value()};
+        auto tex = Texture{(*data).texture_description_value()};
 
         std::ranges::swap(_handle, tex._handle);
     }

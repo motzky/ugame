@@ -101,7 +101,7 @@ namespace game
                                                  const auto data = std::ranges::find_if(reader, [e](const auto &f)
                                                                                         { return f.is_texture(e); });
                                                  ensure(data != std::ranges::end(reader), "failed to load texture");
-                                                 return (*data).texture_data_value();
+                                                 return (*data).texture_description_value();
                                              });
 
         const auto width = datas.front().width;

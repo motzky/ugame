@@ -101,7 +101,7 @@ TEST(tlv_witer, write_texture_usage)
 TEST(tlv_witer, write_texture_data)
 {
     auto data = create_binary_vector(0xaa, 0xbb, 0xcc);
-    auto texture_data = game::TextureData{
+    auto texture_data = game::TextureDescription{
         .name = "Test texture",
         .format = game::TextureFormat::RGB,
         .usage = game::TextureUsage::DATA,
@@ -117,7 +117,7 @@ TEST(tlv_witer, write_texture_data)
     auto reader = game::TlvReader{buffer};
     const auto entry = std::ranges::begin(reader);
 
-    const auto tlv_tex = (*entry).texture_data_value();
+    const auto tlv_tex = (*entry).texture_description_value();
 
     ASSERT_EQ(texture_data.name, tlv_tex.name);
     ASSERT_EQ(texture_data.format, tlv_tex.format);

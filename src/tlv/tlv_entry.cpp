@@ -40,6 +40,15 @@ namespace game
         return value;
     }
 
+    auto TlvEntry::uint32_array_value() const -> std::vector<std::uint32_t>
+    {
+        ensure(_type == TlvType::UINT32_ARRAY, "incorrect type");
+        auto value = std::vector<std::uint32_t>(_value.size() / sizeof(std::uint32_t));
+        std::memcpy(value.data(), _value.data(), _value.size_bytes());
+
+        return value;
+    }
+
     auto TlvEntry::string_value() const -> std::string
     {
         ensure(_type == TlvType::STRING, "incorrect type");
@@ -77,9 +86,9 @@ namespace game
         return value;
     }
 
-    auto TlvEntry::texture_data_value() const -> TextureData
+    auto TlvEntry::texture_description_value() const -> TextureDescription
     {
-        ensure(_type == TlvType::TEXTURE_DATA, "incorrect type");
+        ensure(_type == TlvType::TEXTURE_DESCRIPTION, "incorrect type");
 
         auto reader = TlvReader(_value);
         auto reader_cursor = std::ranges::begin(reader);
@@ -111,7 +120,10 @@ namespace game
 
     auto TlvEntry::is_texture(std::string_view name) const -> bool
     {
-        ensure(_type == TlvType::TEXTURE_DATA, "incorrect type");
+        if (_type != TlvType::TEXTURE_DESCRIPTION)
+        {
+            return false;
+        }
 
         auto reader = TlvReader(_value);
         auto reader_cursor = std::ranges::begin(reader);
@@ -119,7 +131,73 @@ namespace game
         ensure((*reader_cursor).type() == TlvType::STRING, "first member not a string");
 
         const auto texture_name = (*reader_cursor).string_value();
-        return name == texture_name;
+        return texture_name == name;
+    }
+
+    auto TlvEntry::vertex_data_value() const -> VertexData
+    {
+        ensure(_type == TlvType::VERTEX_DATA, "incorrect type");
+        ensure(_value.size() == sizeof(VertexData), "incorrect size");
+
+        auto value = VertexData{};
+        std::memcpy(&value, _value.data(), sizeof(value));
+
+        return value;
+    }
+    auto TlvEntry::vertex_data_array_value() const -> std::vector<VertexData>
+    {
+        ensure(_type == TlvType::VERTEX_DATA_ARRAY, "incorrect type");
+        auto value = std::vector<VertexData>(_value.size() / sizeof(VertexData));
+        std::memcpy(value.data(), _value.data(), _value.size_bytes());
+
+        return value;
+    }
+
+    auto TlvEntry::mesh_value() const -> MeshData
+    {
+        ensure(_type == TlvType::MESH_DATA, "incorrect type");
+
+        auto reader = TlvReader(_value);
+        auto reader_cursor = std::ranges::begin(reader);
+        ensure(reader_cursor != std::ranges::end(reader), "texture TLV too small");
+        ensure((*reader_cursor).type() == TlvType::STRING, "first member not a string");
+
+        const auto name = (*reader_cursor).string_value();
+        ++reader_cursor;
+        ensure(reader_cursor != std::ranges::end(reader), "texture TLV too small");
+
+        ensure((*reader_cursor).type() == TlvType::VERTEX_DATA_ARRAY, "second member not vertex data array");
+        const auto vertex_data = std::span<const VertexData>{
+            reinterpret_cast<const VertexData *>((*reader_cursor)._value.data()),
+            static_cast<std::uint32_t>((*reader_cursor)._value.size() / sizeof(VertexData))};
+        ++reader_cursor;
+        ensure(reader_cursor != std::ranges::end(reader), "texture TLV too small");
+
+        ensure((*reader_cursor).type() == TlvType::UINT32_ARRAY, "third member not uint32 data array");
+        const auto index_data = std::span<const std::uint32_t>{
+            reinterpret_cast<const std::uint32_t *>((*reader_cursor)._value.data()),
+            static_cast<std::uint32_t>((*reader_cursor)._value.size()) / sizeof(std::uint32_t)};
+        ++reader_cursor;
+        ensure(reader_cursor == std::ranges::end(reader), "texture TLV too large");
+
+        log::debug("loaded mesh {} - {} verts, {} indices", name, vertex_data.size(), index_data.size());
+        return {vertex_data, index_data};
+    }
+
+    auto TlvEntry::is_mesh(std::string_view name) const -> bool
+    {
+        if (_type != TlvType::MESH_DATA)
+        {
+            return false;
+        }
+
+        auto reader = TlvReader(_value);
+        auto reader_cursor = std::ranges::begin(reader);
+        ensure(reader_cursor != std::ranges::end(reader), "texture TLV too small");
+        ensure((*reader_cursor).type() == TlvType::STRING, "first member not a string");
+
+        const auto mesh_name = (*reader_cursor).string_value();
+        return mesh_name == name;
     }
 
     auto TlvEntry::size() const -> std::uint32_t

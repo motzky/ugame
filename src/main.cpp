@@ -56,7 +56,7 @@ auto main(int argc, char **argv) -> int
 
         game::log::debug("MeshLoader done");
 
-        auto tex_data = std::optional<game::TextureData>{};
+        auto tex_data = std::optional<game::TextureDescription>{};
 
         game::log::info("loading resources...");
         const auto tlv_file = resource_loader.load("resources");
@@ -92,7 +92,7 @@ auto main(int argc, char **argv) -> int
         game::log::debug("done.");
 
         game::log::info("Loading meshes...");
-        const auto mesh = game::Mesh{mesh_loader.load("wine_barrel.fbx", "Cylinder.014")};
+        const auto mesh = game::Mesh{reader, "Cylinder.014"};
         game::log::debug("done.");
 
         auto renderer = game::Renderer{resource_loader, mesh_loader, width, height};

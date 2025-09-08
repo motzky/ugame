@@ -1,20 +1,38 @@
 #include "mesh.h"
 
 #include <ranges>
+#include <string_view>
 
 #include "auto_release.h"
-#include "buffer_writer.h"
 #include "buffer.h"
+#include "buffer_writer.h"
+#include "ensure.h"
 #include "mesh_loader.h"
 #include "opengl.h"
+#include "tlv/tlv_reader.h"
 #include "vertex_data.h"
-
-namespace
-{
-}
 
 namespace game
 {
+    Mesh::Mesh(const TlvReader &reader, std::string_view name)
+        : _vao{0u, [](auto vao)
+               { ::glDeleteVertexArrays(1, &vao); }},
+          _vbo{GL_CON_11_ATI},
+          _index_count{},
+          _index_offset{}
+    {
+        const auto data = std::ranges::find_if(reader, [name](const auto &e)
+                                               { return e.is_mesh(name); });
+        ensure(data != std::ranges::end(reader), "failed to load mesh '{}'", name);
+
+        auto mesh = Mesh{(*data).mesh_value()};
+
+        std::ranges::swap(_vao, mesh._vao);
+        std::ranges::swap(_vbo, mesh._vbo);
+        std::ranges::swap(_index_count, mesh._index_count);
+        std::ranges::swap(_index_offset, mesh._index_offset);
+    }
+
     Mesh::Mesh(const MeshData &data)
         : _vao{0u, [](auto vao)
                { ::glDeleteVertexArrays(1, &vao); }},

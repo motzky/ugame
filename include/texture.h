@@ -30,7 +30,7 @@ namespace game
         RGBA
     };
 
-    struct TextureData
+    struct TextureDescription
     {
         std::string name;
         TextureFormat format;
@@ -44,7 +44,7 @@ namespace game
     {
     public:
         Texture(TextureUsage usage, std::uint32_t width, std::uint32_t height);
-        Texture(const TextureData &data);
+        Texture(const TextureDescription &data);
         Texture(const TlvReader &reader, std::string_view name);
         Texture(TextureUsage usage, std::span<const std::byte> data, std::uint32_t width, std::uint32_t height);
 
@@ -109,14 +109,14 @@ struct std::formatter<game::TextureFormat>
 };
 
 template <>
-struct std::formatter<game::TextureData>
+struct std::formatter<game::TextureDescription>
 {
     constexpr auto parse(std::format_parse_context &ctx)
     {
         return std::begin(ctx);
     }
 
-    auto format(const game::TextureData &obj, std::format_context &ctx) const
+    auto format(const game::TextureDescription &obj, std::format_context &ctx) const
     {
         return std::format_to(ctx.out(), "width={} height={} format={} usage={} data={}",
                               obj.width,

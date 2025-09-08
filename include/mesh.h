@@ -10,10 +10,13 @@
 namespace game
 {
 
+    class TlvReader;
+
     class Mesh
     {
     public:
         Mesh(const MeshData &data);
+        Mesh(const TlvReader &reader, std::string_view name);
 
         auto bind() const -> void;
         auto unbind() const -> void;

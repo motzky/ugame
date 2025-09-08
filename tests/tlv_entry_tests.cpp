@@ -119,7 +119,7 @@ TEST(tlv_entry, texture_value)
     auto reader = game::TlvReader{data};
     const auto entry = std::ranges::begin(reader);
 
-    const auto tlv_tex = (*entry).texture_data_value();
+    const auto tlv_tex = (*entry).texture_description_value();
 
     const auto expected_bytes = std::vector<std::byte>{create_binary_vector(0xaa, 0xbb, 0xcc)};
     ASSERT_EQ(tlv_tex.name, "Test texture");

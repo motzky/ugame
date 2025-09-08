@@ -49,6 +49,14 @@ namespace game
         write_entry(_buffer, type, length, value_bytes);
     }
 
+    auto TlvWriter::write(std::span<const std::uint32_t> value) -> void
+    {
+        const auto type = TlvType::UINT32_ARRAY;
+        const auto length = static_cast<std::uint32_t>(value.size_bytes());
+        const auto value_bytes = std::span<const std::byte>{reinterpret_cast<const std::byte *>(value.data()), length};
+        write_entry(_buffer, type, length, value_bytes);
+    }
+
     auto TlvWriter::write(std::string_view value) -> void
     {
         const auto type = TlvType::STRING;
@@ -81,7 +89,7 @@ namespace game
         write_entry(_buffer, type, length, value_bytes);
     }
 
-    auto TlvWriter::write(TextureData &data) -> void
+    auto TlvWriter::write(TextureDescription &data) -> void
     {
         auto sub_writer = TlvWriter{};
         sub_writer.write(data.name);
@@ -91,7 +99,37 @@ namespace game
         sub_writer.write(data.usage);
         sub_writer.write(data.data);
 
-        const auto type = TlvType::TEXTURE_DATA;
+        const auto type = TlvType::TEXTURE_DESCRIPTION;
+        const auto value_bytes = sub_writer.yield();
+        const auto length = static_cast<std::uint32_t>(value_bytes.size());
+
+        write_entry(_buffer, type, length, value_bytes);
+    }
+
+    auto TlvWriter::write(const VertexData &value) -> void
+    {
+        const auto type = TlvType::VERTEX_DATA;
+        const auto length = static_cast<std::uint32_t>(sizeof(value));
+        const auto value_bytes = std::span<const std::byte>{reinterpret_cast<const std::byte *>(&value), length};
+        write_entry(_buffer, type, length, value_bytes);
+    }
+
+    auto TlvWriter::write(std::span<const VertexData> value) -> void
+    {
+        const auto type = TlvType::VERTEX_DATA_ARRAY;
+        const auto length = static_cast<std::uint32_t>(value.size_bytes());
+        const auto value_bytes = std::span<const std::byte>{reinterpret_cast<const std::byte *>(value.data()), length};
+        write_entry(_buffer, type, length, value_bytes);
+    }
+
+    auto TlvWriter::write(std::string_view name, const MeshData &value) -> void
+    {
+        auto sub_writer = TlvWriter{};
+        sub_writer.write(name);
+        sub_writer.write(value.vertices);
+        sub_writer.write(value.indices);
+
+        const auto type = TlvType::MESH_DATA;
         const auto value_bytes = sub_writer.yield();
         const auto length = static_cast<std::uint32_t>(value_bytes.size());
 
