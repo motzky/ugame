@@ -33,7 +33,7 @@ namespace game
 
         ensure(_mapping, "failed to map file");
 
-        _map_view.reset(::MapViewOfFile(_mapping, FILE_MAP_READ, 0, 0, 0));
+        _map_view.reset(::MapViewOfFile(_mapping, FILE_MAP_ALL_ACCESS, 0, 0, 0));
         ensure(_map_view, "failed to get map view");
 
         _filesize = ::GetFileSize(_handle, nullptr);
@@ -48,3 +48,5 @@ namespace game
     {
         return {reinterpret_cast<const std::byte *>(_map_view.get()), _filesize};
     }
+
+}
