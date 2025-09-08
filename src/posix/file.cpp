@@ -19,23 +19,40 @@
 
 namespace game
 {
-    File::File(const std::filesystem::path &path)
+    File::File(const std::filesystem::path &path, CreationMode mode)
         : _handle{-1, ::close},
           _map_view{nullptr, [this](void *view)
                     { ::munmap(view, this->_filesize); }},
           _filesize{0ul}
     {
-        _handle.reset(::open(path.string().c_str(), O_RDONLY | O_LARGEFILE));
+        if (mode == CreationMode::OPEN)
+        {
+            _handle.reset(::open(path.string().c_str(), O_RDONLY | O_LARGEFILE));
+        }
+        else
+        {
+            _handle.reset(::open(path.string().c_str(), O_CREAT | O_RDWR, S_IRUSR | S_IWUSR | S_IRGRP));
+        }
+        if (_handle == -1)
+        {
+            auto e = errno;
+            log::error("{}", e);
+        }
 
         ensure(_handle != -1, "failed to open file");
-        struct stat64 statInfo;
 
-        auto result = fstat64(_handle, &statInfo);
-        ensure(result >= 0, "failed to get file size");
+        get_file_size();
 
-        _filesize = statInfo.st_size;
+        if (_filesize == 0)
+        {
+            // file is new
+            ::truncate64(path.string().c_str(), 4096u);
+            get_file_size();
+        }
 
-        _map_view.reset(::mmap64(NULL, _filesize, PROT_READ, MAP_SHARED, _handle, 0ul));
+        ensure(_filesize > 0, "file has zero length");
+
+        _map_view.reset(::mmap64(NULL, _filesize, mode == CreationMode::OPEN ? PROT_READ : PROT_READ | PROT_WRITE, MAP_SHARED, _handle, 0ul));
         if (_map_view.get() == MAP_FAILED)
         {
             auto e = errno;
@@ -74,6 +91,16 @@ namespace game
     auto File::as_bytes() const -> std::span<const std::byte>
     {
         return {reinterpret_cast<const std::byte *>(_map_view.get()), _filesize};
+    }
+
+    auto File::get_file_size() -> void
+    {
+        struct stat64 statInfo;
+
+        auto result = fstat64(_handle, &statInfo);
+        ensure(result >= 0, "failed to get file size");
+
+        _filesize = statInfo.st_size;
     }
 
 }

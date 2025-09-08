@@ -15,6 +15,7 @@
 #include "auto_release.h"
 #include "ensure.h"
 #include "exception.h"
+#include "file.h"
 #include "log.h"
 #include "tlv/tlv_writer.h"
 
@@ -107,6 +108,8 @@ auto main(int argc, char **argv) -> int
             }
         }
         const auto resource_data = writer.yield();
+        // game::File out{argv[2], game::CreationMode::CREATE};
+        // out.write(resource_data);
         std::ofstream out{argv[2], std::ios::binary};
         out.write(reinterpret_cast<const char *>(resource_data.data()), resource_data.size());
     }

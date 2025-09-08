@@ -19,11 +19,16 @@
 
 namespace game
 {
+    enum class CreationMode
+    {
+        OPEN,
+        CREATE
+    };
+
     class File
     {
     public:
-        File(const std::filesystem::path &path);
-
+        File(const std::filesystem::path &path, CreationMode mode = CreationMode::OPEN);
         auto as_string() const -> std::string_view;
         auto as_bytes() const -> std::span<const std::byte>;
 
@@ -34,16 +39,10 @@ namespace game
 #ifdef _WIN32
             std::memcpy(_map_view.get(), std::ranges::data(data), std::ranges::size(data));
             ensure(::FlushViewOfFile(_map_view.get(), data.size()) != 0, "failed to flush file");
-
-            _filesize = ::GetFileSize(_handle, nullptr);
 #else
             std::memcpy(_map_view, std::ranges::data(data), std::ranges::size(data));
-            struct stat64 statInfo;
-            auto result = fstat64(_handle, &statInfo);
-            ensure(result >= 0, "failed to get file size");
-
-            _filesize = statInfo.st_size;
 #endif
+            get_file_size();
         }
 
     private:
@@ -58,5 +57,6 @@ namespace game
         AutoRelease<void *, nullptr> _map_view;
         std::size_t _filesize;
 #endif
+        auto get_file_size() -> void;
     };
 }

@@ -19,18 +19,16 @@
 
 namespace game
 {
-    File::File(const std::filesystem::path &path)
+    File::File(const std::filesystem::path &path, CreationMode mode)
         : _handle(INVALID_HANDLE_VALUE, ::CloseHandle),
           _mapping(NULL, ::CloaseHandle),
           _map_view{nullptr, ::UnmapViewOfFile},
           _filesize{}
     {
-        _handle.reset(::CreateFileA(path, GENERIC_READ | GENERIC_WRITE, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr));
-
+        _handle.reset(::CreateFileA(path, GENERIC_READ | GENERIC_WRITE, 0, nullptr, mode == CreationMode::OPEN ? OPEN_EXISTING : OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr));
         ensure(_handle, "failed to open file");
 
         _mapping.reset(::CreateFileMappingA(_handle, nullptr, PAGE_READWRITE, 0, 0, nullptr));
-
         ensure(_mapping, "failed to map file");
 
         _map_view.reset(::MapViewOfFile(_mapping, FILE_MAP_ALL_ACCESS, 0, 0, 0));
@@ -47,6 +45,11 @@ namespace game
     auto File::as_bytes() const -> std::span<const std::byte>
     {
         return {reinterpret_cast<const std::byte *>(_map_view.get()), _filesize};
+    }
+
+    auto File::get_file_size() -> void
+    {
+        _filesize = ::GetFileSize(_handle, nullptr);
     }
 
 }
