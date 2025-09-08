@@ -1,10 +1,12 @@
 #include "cube_map.h"
 
+#include <algorithm>
 #include <array>
 #include <cstddef>
 #include <cstdint>
 #include <ranges>
 #include <span>
+#include <tuple>
 #include <vector>
 
 #include <stb_image.h>
@@ -104,6 +106,14 @@ namespace game
 
         const auto width = datas.front().width;
         const auto height = datas.front().height;
+
+        ensure(
+            std::ranges::all_of(
+                datas | std::views::transform([](const auto &e)
+                                              { return std::make_tuple(e.width, e.height); }),
+                [width, height](const auto &e2)
+                { return e2 == std::make_tuple(width, height); }),
+            "all widths and heights have to be the same");
 
         ::glCreateTextures(GL_TEXTURE_CUBE_MAP, 1u, &_handle);
         ::glTextureStorage2D(_handle, 1, GL_SRGB8, width, height);

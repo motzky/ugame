@@ -157,10 +157,6 @@ namespace game
 
         ensure(raw_data, "failed to load texture date");
 
-        // log::info("loaded image width {}", w);
-        // log::info("loaded image height {}", h);
-        // log::info("loaded image channels {}", num_channels);
-
         ::glCreateTextures(GL_TEXTURE_2D, 1u, &_handle);
 
         ::glTextureStorage2D(_handle, 1, get_storage_format(usage, num_channels), w, h);
