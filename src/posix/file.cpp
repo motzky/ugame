@@ -97,7 +97,7 @@ namespace game
     {
         struct stat64 statInfo;
 
-        auto result = fstat64(_handle, &statInfo);
+        auto result = ::fstat64(_handle, &statInfo);
         ensure(result >= 0, "failed to get file size");
 
         _filesize = statInfo.st_size;
