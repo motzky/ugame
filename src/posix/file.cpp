@@ -1,4 +1,4 @@
-#include "mapped_file.h"
+#include "file.h"
 
 #include <cstddef>
 #include <cstdint>
@@ -19,7 +19,7 @@
 
 namespace game
 {
-    MappedFile::MappedFile(const std::filesystem::path &path)
+    File::File(const std::filesystem::path &path)
         : _handle{-1, ::close},
           _map_view{nullptr, [this](void *view)
                     { ::munmap(view, this->_filesize); }},
@@ -66,12 +66,12 @@ namespace game
         // ::madvise(_map_view, 0, linuxHint);
     }
 
-    auto MappedFile::as_string() const -> std::string_view
+    auto File::as_string() const -> std::string_view
     {
         return {reinterpret_cast<const char *>(_map_view.get()), _filesize};
     }
 
-    auto MappedFile::as_bytes() const -> std::span<const std::byte>
+    auto File::as_bytes() const -> std::span<const std::byte>
     {
         return {reinterpret_cast<const std::byte *>(_map_view.get()), _filesize};
     }

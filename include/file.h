@@ -17,10 +17,10 @@
 
 namespace game
 {
-    class MappedFile
+    class File
     {
     public:
-        MappedFile(const std::filesystem::path &path);
+        File(const std::filesystem::path &path);
 
         auto as_string() const -> std::string_view;
         auto as_bytes() const -> std::span<const std::byte>;

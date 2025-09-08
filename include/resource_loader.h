@@ -6,7 +6,7 @@
 #include <string_view>
 #include <vector>
 
-#include "mapped_file.h"
+#include "file.h"
 
 namespace game
 {
@@ -15,7 +15,7 @@ namespace game
     public:
         ResourceLoader(const std::filesystem::path &root);
 
-        auto load(std::string_view name) const -> MappedFile;
+        auto load(std::string_view name) const -> File;
 
     private:
         std::filesystem::path _root;

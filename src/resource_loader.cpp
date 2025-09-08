@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "ensure.h"
-#include "mapped_file.h"
+#include "file.h"
 
 namespace game
 {
@@ -19,7 +19,7 @@ namespace game
     {
     }
 
-    auto ResourceLoader::load(std::string_view name) const -> MappedFile
+    auto ResourceLoader::load(std::string_view name) const -> File
     {
         // return {_root / name, std::ios::in};
         return {_root / name};
