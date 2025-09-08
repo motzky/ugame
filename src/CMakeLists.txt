@@ -60,8 +60,8 @@ ELSEIF(UNIX)
 ENDIF()
 
 target_include_directories(imguilib PUBLIC ${imgui_SOURCE_DIR})
-target_include_directories(nathan_stream PUBLIC ${stb_lib_SOURCE_DIR} ${imgui_SOURCE_DIR} ${imguizmo_SOURCE_DIR} ${assimp_SOURCE_DIR}/include)
-target_include_directories(gamelib PUBLIC ${stb_lib_SOURCE_DIR} ${imgui_SOURCE_DIR} ${imguizmo_SOURCE_DIR} ${assimp_SOURCE_DIR}/include)
+target_include_directories(nathan_stream PUBLIC ${stb_lib_SOURCE_DIR} ${imgui_SOURCE_DIR} ${imguizmo_SOURCE_DIR})
+target_include_directories(gamelib PUBLIC ${stb_lib_SOURCE_DIR} ${imgui_SOURCE_DIR} ${imguizmo_SOURCE_DIR})
 
 target_compile_features(
     gamelib
@@ -84,7 +84,6 @@ target_link_libraries(
     gamelib
     PUBLIC
         imguilib
-        assimp
     PRIVATE
         GL
         Backtrace::Backtrace
