@@ -7,7 +7,8 @@
         "${workspaceFolder}/build/_deps/stb_lib-src/**",
         "${workspaceFolder}/build/_deps/imgui-src/**",
         "${workspaceFolder}/build/_deps/imguizmo-src/**",
-        "${workspaceFolder}/build/_deps/assimp-src/include/**"
+        "${workspaceFolder}/build/_deps/assimp-src/include/**",
+        "${workspaceFolder}/build/_deps/jolt-src/**"
       ],
       "defines": [],
       "compilerPath": "/usr/bin/g++",
