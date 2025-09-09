@@ -9,8 +9,8 @@
 #include "ensure.h"
 #include "mesh_loader.h"
 #include "opengl.h"
+#include "primitives/vertex_data.h"
 #include "tlv/tlv_reader.h"
-#include "vertex_data.h"
 
 namespace game
 {

@@ -6,9 +6,9 @@
 #include <vector>
 
 #include "mesh_data.h"
+#include "primitives/vertex_data.h"
 #include "resource_loader.h"
 #include "string_unordered_map.h"
-#include "vertex_data.h"
 
 namespace game
 {

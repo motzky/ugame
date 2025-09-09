@@ -3,11 +3,11 @@
 #include <cstdint>
 #include <span>
 
-#include "vertex_data.h"
+#include "primitives/vertex_data.h"
 
 namespace game
 {
-        struct MeshData
+    struct MeshData
     {
         std::span<const VertexData> vertices;
         std::span<const std::uint32_t> indices;

@@ -4,7 +4,6 @@ add_library(
     buffer.cpp
     camera.cpp
     cube_map.cpp
-    entity.cpp
     exception.cpp
     frame_buffer.cpp
     key_event.cpp
@@ -14,6 +13,7 @@ add_library(
     mouse_button_event.cpp
     mouse_event.cpp
     physics/physics_system.cpp
+    primitives/entity.cpp
     renderer.cpp
     resource_loader.cpp
     shader.cpp

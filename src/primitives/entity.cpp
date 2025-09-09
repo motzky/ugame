@@ -1,4 +1,4 @@
-#include "entity.h"
+#include "primitives/entity.h"
 
 #include <span>
 #include <tuple>

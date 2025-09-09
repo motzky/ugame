@@ -9,9 +9,9 @@
 #include <vector>
 
 #include "mesh_data.h"
+#include "primitives/vertex_data.h"
 #include "texture.h"
 #include "tlv/tlv_entry.h"
-#include "vertex_data.h"
 
 namespace game
 {
