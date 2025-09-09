@@ -39,7 +39,7 @@ add_executable(
     main.cpp
 )
 
-IF(WIN32)
+if(WIN32)
     target_sources(
         gamelib
         PRIVATE win32/window.cpp win32/debug_ui.cpp win32/file.cpp
@@ -48,7 +48,7 @@ IF(WIN32)
         imguilib
         PRIVATE ${imgui_SOURCE_DIR}/backends/imgui_impl_win32.cpp
     )
-ELSEIF(UNIX)
+elseif(UNIX)
     target_sources(
         gamelib
         PRIVATE glfw/window.cpp glfw/debug_ui.cpp posix/file.cpp
@@ -57,7 +57,7 @@ ELSEIF(UNIX)
         imguilib
         PRIVATE ${imgui_SOURCE_DIR}/backends/imgui_impl_glfw.cpp
     )
-ENDIF()
+endif()
 
 target_include_directories(imguilib PUBLIC ${imgui_SOURCE_DIR})
 target_include_directories(nathan_stream PUBLIC ${stb_lib_SOURCE_DIR} ${imgui_SOURCE_DIR} ${imguizmo_SOURCE_DIR})

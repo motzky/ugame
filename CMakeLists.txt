@@ -41,6 +41,12 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(imguizmo)
 
+if (MSVC)
+    set(USE_STATIC_MSVC_RUNTIME_LIBRARY ON CACHE BOOL "" FORCE)
+	if (USE_STATIC_MSVC_RUNTIME_LIBRARY)
+		set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+	endif()
+endif()
 
 FetchContent_Declare(
     JoltPhysics
