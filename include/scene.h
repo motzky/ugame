@@ -2,9 +2,9 @@
 
 #include <vector>
 
-#include "color.h"
 #include "entity.h"
 #include "math_primitives/vector3.h"
+#include "primitives/color.h"
 
 namespace game
 {

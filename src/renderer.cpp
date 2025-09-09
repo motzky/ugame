@@ -5,7 +5,6 @@
 
 #include "buffer_writer.h"
 #include "camera.h"
-#include "color.h"
 #include "cube_map.h"
 #include "ensure.h"
 #include "entity.h"
@@ -14,6 +13,7 @@
 #include "mesh.h"
 #include "mesh_loader.h"
 #include "opengl.h"
+#include "primitives/color.h"
 #include "resource_loader.h"
 #include "scene.h"
 #include "texture.h"
