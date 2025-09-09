@@ -110,10 +110,8 @@ auto main(int argc, char **argv) -> int
             }
         }
         const auto resource_data = writer.yield();
-        // game::File out{argv[2], game::CreationMode::CREATE};
-        // out.write(resource_data);
-        std::ofstream out{argv[2], std::ios::binary};
-        out.write(reinterpret_cast<const char *>(resource_data.data()), resource_data.size());
+        game::File out{argv[2], game::CreationMode::CREATE};
+        out.write(resource_data);
     }
     catch (const game::Exception &err)
     {
