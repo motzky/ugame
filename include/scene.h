@@ -1,10 +1,14 @@
 #pragma once
 
+#include <optional>
 #include <vector>
 
+#include "buffer.h"
 #include "math_primitives/vector3.h"
 #include "primitives/color.h"
+#include "primitives/debug_lines.h"
 #include "primitives/entity.h"
+#include "primitives/line_data.h"
 
 namespace game
 {
@@ -29,5 +33,6 @@ namespace game
         Color ambient;
         DirectionalLight directional;
         std::vector<PointLight> points;
+        std::optional<DebugLines> debug_lines;
     };
 }

@@ -17,7 +17,7 @@ namespace game
     Mesh::Mesh(const TlvReader &reader, std::string_view name)
         : _vao{0u, [](auto vao)
                { ::glDeleteVertexArrays(1, &vao); }},
-          _vbo{GL_CON_11_ATI},
+          _vbo{1u},
           _index_count{},
           _index_offset{}
     {

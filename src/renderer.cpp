@@ -72,6 +72,18 @@ namespace
         return game::Material{vertex_shader, fragment_shader};
     }
 
+    auto create_line_material(game::ResourceLoader &resource_loader) -> game::Material
+    {
+        const auto vert_file = resource_loader.load("line.vert");
+        const auto vert_data = vert_file.as_string();
+        const auto vertex_shader = game::Shader{vert_data, game::ShaderType::VERTEX};
+
+        const auto frag_file = resource_loader.load("line.frag");
+        const auto frag_data = frag_file.as_string();
+        const auto fragment_shader = game::Shader{frag_data, game::ShaderType::FRAGMENT};
+        return game::Material{vertex_shader, fragment_shader};
+    }
+
 }
 
 namespace game
@@ -81,6 +93,7 @@ namespace game
           _light_buffer(10240u),
           _skybox_cube(mesh_loader.cube()),
           _skybox_material(create_skybox_material(resource_loader)),
+          _debug_line_material(create_line_material(resource_loader)),
           _fb{width, height},
           _post_process_sprite{mesh_loader.sprite()},
           _post_process_material{create_post_process_material(resource_loader)}
@@ -146,6 +159,14 @@ namespace game
             mesh->bind();
             ::glDrawElements(GL_TRIANGLES, mesh->index_count(), GL_UNSIGNED_INT, reinterpret_cast<void *>(mesh->index_offset()));
             mesh->unbind();
+        }
+
+        if (const auto &dbl = scene.debug_lines; dbl)
+        {
+            _debug_line_material.use();
+            dbl->bind();
+            ::glDrawArrays(GL_LINES, 0u, dbl->count());
+            dbl->unbind();
         }
 
         _fb.unbind();

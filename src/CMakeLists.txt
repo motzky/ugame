@@ -13,6 +13,8 @@ add_library(
     mouse_button_event.cpp
     mouse_event.cpp
     physics/physics_system.cpp
+    physics/debug_renderer.cpp
+    primitives/debug_lines.cpp
     primitives/entity.cpp
     renderer.cpp
     resource_loader.cpp

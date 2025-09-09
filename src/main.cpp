@@ -13,7 +13,6 @@
 #include "cube_map.h"
 #include "debug_ui.h"
 #include "ensure.h"
-#include "entity.h"
 #include "event.h"
 #include "exception.h"
 #include "key_event.h"
@@ -21,6 +20,9 @@
 #include "material.h"
 #include "mesh_loader.h"
 #include "mouse_event.h"
+#include "physics/debug_renderer.h"
+#include "physics/physics_sytem.h"
+#include "primitives/entity.h"
 #include "renderer.h"
 #include "resource_loader.h"
 #include "scene.h"
@@ -131,9 +133,10 @@ auto main(int argc, char **argv) -> int
                        {.position = {-5.f, 5.f, 0.f}, .color = {.r = 1.f, .g = 0.f, .b = 0.f}, //
                         .const_attenuation = 1.f,
                         .linear_attenuation = .07,
-                        .quad_attenuation = 0.017}}};
+                        .quad_attenuation = 0.017}},
+            .debug_lines = {}};
 
-        auto camera = game::Camera{{0.f, 2.f, 5.f},
+        auto camera = game::Camera{{-30.f, 5.f, 0.f},
                                    {0.f, 0.f, 0.f},
                                    {0.f, 1.f, 0.f},
                                    std::numbers::pi_v<float> / 4.f,
@@ -154,6 +157,8 @@ auto main(int argc, char **argv) -> int
 
         auto show_debug = false;
         const auto debug_ui = game::DebugUi(window.native_handle(), scene, camera, gamma);
+
+        auto ps = game::PhysicsSystem{};
 
         auto running = true;
 
@@ -230,10 +235,8 @@ auto main(int argc, char **argv) -> int
             camera.translate(game::Vector3::normalize(walk_direction) * (speed / 60.f));
             camera.update();
 
-            // static auto t = 0.f;
-            // t += 0.05f;
-            // scene.point.position.x = std::sin(t) * 10.f;
-            // scene.point.position.z = std::cos(t) * 10.f;
+            ps.update();
+            scene.debug_lines = {ps.debug_renderer().lines()};
 
             renderer.render(camera, scene, skybox, sampler, gamma);
             if (show_debug)
