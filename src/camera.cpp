@@ -5,8 +5,7 @@
 #include <span>
 
 #include "log.h"
-#include "matrix4.h"
-#include "vector3.h"
+#include "math_primitives/vector3.h"
 
 namespace
 {

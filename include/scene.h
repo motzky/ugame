@@ -4,7 +4,7 @@
 
 #include "color.h"
 #include "entity.h"
-#include "vector3.h"
+#include "math_primitives/vector3.h"
 
 namespace game
 {

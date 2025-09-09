@@ -4,7 +4,7 @@
 #include <format>
 #include <span>
 
-#include "vector3.h"
+#include "math_primitives/vector3.h"
 
 namespace game
 {

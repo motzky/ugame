@@ -7,9 +7,9 @@
 
 #include "ensure.h"
 #include "log.h"
+#include "math_primitives/vector3.h"
 #include "resource_loader.h"
 #include "string_unordered_map.h"
-#include "vector3.h"
 #include "vertex_data.h"
 
 namespace

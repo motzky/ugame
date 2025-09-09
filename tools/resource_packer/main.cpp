@@ -25,10 +25,10 @@
 #include "exception.h"
 #include "file.h"
 #include "log.h"
+#include "math_primitives/vector3.h"
 #include "mesh_data.h"
 #include "tlv/tlv_writer.h"
 #include "uv.h"
-#include "vector3.h"
 #include "vertex_data.h"
 
 namespace

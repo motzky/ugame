@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "vector3.h"
+#include "math_primitives/vector3.h"
 
 TEST(vector3, negate)
 {
