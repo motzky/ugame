@@ -40,6 +40,7 @@ namespace game
             std::memcpy(_map_view.get(), std::ranges::data(data), std::ranges::size(data));
             ensure(::FlushViewOfFile(_map_view.get(), data.size()) != 0, "failed to flush file");
 #else
+            resize_and_remap(std::ranges::size(data));
             std::memcpy(_map_view, std::ranges::data(data), std::ranges::size(data));
 #endif
             get_file_size();
@@ -51,11 +52,14 @@ namespace game
         AutoRelease<HANDLE, INVALID_HANDLE_VALUE> _handle;
         AutoRelease<HANDLE, reinterpret_cast<HANDLE>(NULL)> _mapping;
         std::unique_ptr<void, decltype(&::UnmapViewOfFile)> _map_view;
+
 #else
         using FileHandle = int;
         AutoRelease<int, -1> _handle;
         AutoRelease<void *, nullptr> _map_view;
         std::size_t _filesize;
+
+        auto resize_and_remap(std::size_t new_size) -> void;
 #endif
         auto get_file_size() -> void;
     };

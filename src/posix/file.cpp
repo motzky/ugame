@@ -1,3 +1,7 @@
+#ifdef _WIN32
+#error This code unit is NOT for Windows !
+#endif
+
 #include "file.h"
 
 #include <cstddef>
@@ -101,6 +105,29 @@ namespace game
         ensure(result >= 0, "failed to get file size");
 
         _filesize = statInfo.st_size;
+    }
+
+    auto File::resize_and_remap(std::size_t new_size) -> void
+    {
+        if (new_size <= _filesize)
+        {
+            return;
+        }
+
+        ::munmap(_map_view, _filesize);
+
+        auto res = ::ftruncate64(_handle, new_size);
+        ensure(res == 0, "fialed to extens file size");
+
+        get_file_size();
+
+        _map_view.reset(::mmap64(NULL, _filesize, PROT_READ | PROT_WRITE, MAP_SHARED, _handle, 0ul));
+        if (_map_view.get() == MAP_FAILED)
+        {
+            auto e = errno;
+            log::error("{}", e);
+        }
+        ensure(_map_view.get() != MAP_FAILED, "failed to map file");
     }
 
 }
