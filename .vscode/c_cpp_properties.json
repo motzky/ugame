@@ -8,9 +8,9 @@
         "${workspaceFolder}/build/_deps/imgui-src/**",
         "${workspaceFolder}/build/_deps/imguizmo-src/**",
         "${workspaceFolder}/build/_deps/assimp-src/include/**",
-        "${workspaceFolder}/build/_deps/jolt-src/**"
+        "${workspaceFolder}/build/_deps/joltphysics-src/**"
       ],
-      "defines": [],
+      "defines": ["JPH_DEBUG_RENDERER"],
       "compilerPath": "/usr/bin/g++",
       "cStandard": "c23",
       "cppStandard": "c++23",
