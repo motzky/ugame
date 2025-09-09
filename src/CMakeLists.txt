@@ -13,6 +13,7 @@ add_library(
     mesh_loader.cpp
     mouse_button_event.cpp
     mouse_event.cpp
+    physics/physics_system.cpp
     renderer.cpp
     resource_loader.cpp
     shader.cpp
