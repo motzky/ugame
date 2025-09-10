@@ -10,24 +10,15 @@
 
 #include "ensure.h"
 #include "log.h"
+#include "physics/jolt_utils.h"
 #include "primitives/line_data.h"
-
-namespace
-{
-    auto to_native(::JPH::RVec3Arg v) -> game::Vector3
-    {
-        return {v.GetX(), v.GetY(), v.GetZ()};
-    }
-
-    auto to_native(::JPH::ColorArg c) -> game::Color
-    {
-        const auto v = c.ToVec4();
-        return {v.GetX(), v.GetY(), v.GetZ()};
-    }
-}
 
 namespace game
 {
+    DebugRenderer::DebugRenderer(PassKey<PhysicsSystem>)
+    {
+    }
+
     auto DebugRenderer::DrawLine(::JPH::RVec3Arg from, ::JPH::RVec3Arg to, ::JPH::ColorArg color) -> void
     {
         _lines.push_back({to_native(from), to_native(color)});

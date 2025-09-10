@@ -11,13 +11,15 @@
 #include <Jolt/Core/TempAllocator.h>
 #include <Jolt/Physics/Body/BodyCreationSettings.h>
 #include <Jolt/Physics/Collision/BroadPhase/BroadPhaseLayer.h>
-#include <Jolt/Physics/Collision/Shape/BoxShape.h>
 #include <Jolt/Physics/Collision/Shape/SphereShape.h>
 #include <Jolt/Physics/PhysicsSystem.h>
 #include <Jolt/RegisterTypes.h>
 
 #include "ensure.h"
 #include "log.h"
+#include "physics/box_shape.h"
+#include "physics/debug_renderer.h"
+#include "physics/sphere_shape.h"
 
 using namespace ::JPH::literals;
 
@@ -115,7 +117,7 @@ namespace game
             static_cast<int>(std::thread::hardware_concurrency() - 1u)};
         ::JPH::PhysicsSystem physics_system;
         ::JPH::BodyID sphere_id;
-        DebugRenderer debug_renderer;
+        DebugRenderer debug_renderer = {{}};
     };
 
     PhysicsSystem::PhysicsSystem()
@@ -153,20 +155,14 @@ namespace game
 
         auto &body_interface = (_impl->physics_system).GetBodyInterface();
 
-        auto floor_shape_settings = ::JPH::BoxShapeSettings{::JPH::Vec3{100.f, 1.f, 100.f}};
-        floor_shape_settings.SetEmbedded();
-
-        auto floor_shape_result = floor_shape_settings.Create();
-        ensure(floor_shape_result.IsValid(), "invalid shape");
-
-        auto floor_shape = floor_shape_result.Get();
-
-        auto floor_settings = ::JPH::BodyCreationSettings{floor_shape, ::JPH::RVec3{0.0_r, -1.0_r, 0.0_r}, ::JPH::Quat::sIdentity(), ::JPH::EMotionType::Static, 0};
+        auto floor_shape = BoxShape{{50.f, 1.f, 50.f}, {}};
+        auto floor_settings = ::JPH::BodyCreationSettings{floor_shape.native_handle(), ::JPH::RVec3{0.0_r, 0.0_r, 0.0_r}, ::JPH::Quat::sIdentity(), ::JPH::EMotionType::Static, 0};
 
         auto floor = body_interface.CreateBody(floor_settings);
         body_interface.AddBody(floor->GetID(), ::JPH::EActivation::DontActivate);
 
-        auto sphere_settings = ::JPH::BodyCreationSettings{new JPH::SphereShape(5.f), ::JPH::RVec3{0.0_r, 100.0_r, -10.0_r}, ::JPH::Quat::sIdentity(), ::JPH::EMotionType::Dynamic, 1};
+        auto sphere_shape = SphereShape{5.f, {}};
+        auto sphere_settings = ::JPH::BodyCreationSettings{sphere_shape.native_handle(), ::JPH::RVec3{0.0_r, 0.0_r, -10.0_r}, ::JPH::Quat::sIdentity(), ::JPH::EMotionType::Dynamic, 1};
 
         _impl->sphere_id = body_interface.CreateAndAddBody(sphere_settings, ::JPH::EActivation::Activate);
 
@@ -185,6 +181,7 @@ namespace game
         static const auto settings = ::JPH::BodyManager::DrawSettings{};
         _impl->physics_system.DrawBodies(settings, &_impl->debug_renderer);
     }
+
     auto PhysicsSystem::debug_renderer() const -> const DebugRenderer &
     {
         return _impl->debug_renderer;

@@ -12,8 +12,12 @@ add_library(
     mesh_loader.cpp
     mouse_button_event.cpp
     mouse_event.cpp
-    physics/physics_system.cpp
+    physics/box_shape.cpp
     physics/debug_renderer.cpp
+    physics/jolt_utils.cpp
+    physics/physics_system.cpp
+    physics/shape.cpp
+    physics/sphere_shape.cpp
     primitives/debug_lines.cpp
     primitives/entity.cpp
     renderer.cpp

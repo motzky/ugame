@@ -15,14 +15,18 @@
 
 #include "ensure.h"
 #include "log.h"
+#include "pass_key.h"
 #include "primitives/line_data.h"
 
 namespace game
 {
+    class PhysicsSystem;
 
     class DebugRenderer : public ::JPH::DebugRendererSimple
     {
     public:
+        DebugRenderer(PassKey<PhysicsSystem>);
+
         virtual auto DrawLine(::JPH::RVec3Arg from, ::JPH::RVec3Arg to, ::JPH::ColorArg color) -> void override;
         virtual auto DrawTriangle(::JPH::RVec3Arg v1, ::JPH::RVec3Arg v2, ::JPH::RVec3Arg v3, ::JPH::ColorArg color, ::JPH::DebugRenderer::ECastShadow castShadow) -> void override;
         virtual auto DrawText3D(::JPH::RVec3Arg position, const std::string_view &string, ::JPH::ColorArg color, float height) -> void override;
