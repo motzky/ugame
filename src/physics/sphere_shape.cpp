@@ -23,7 +23,7 @@ namespace game
         _shape_settings.SetEmbedded();
     }
 
-    auto SphereShape::radius() const -> Vector3
+    auto SphereShape::radius() const -> float
     {
         return _radius;
     }

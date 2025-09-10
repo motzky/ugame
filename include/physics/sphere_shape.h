@@ -21,7 +21,7 @@ namespace game
     public:
         SphereShape(float radius, PassKey<PhysicsSystem>);
 
-        auto radius() const -> Vector3;
+        auto radius() const -> float;
 
         virtual auto native_handle() const -> const ::JPH::ShapeSettings * override;
 
