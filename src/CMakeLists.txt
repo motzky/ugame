@@ -16,6 +16,7 @@ add_library(
     physics/debug_renderer.cpp
     physics/jolt_utils.cpp
     physics/physics_system.cpp
+    physics/rigid_body.cpp
     physics/shape.cpp
     physics/sphere_shape.cpp
     primitives/debug_lines.cpp
