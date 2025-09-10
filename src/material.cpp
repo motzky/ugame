@@ -49,7 +49,6 @@ namespace game
         {
             auto max_name_length = ::GLint{};
             ::glGetProgramiv(_handle, GL_ACTIVE_UNIFORM_MAX_LENGTH, &max_name_length);
-            log::debug("max uniform legnth: {}", max_name_length);
 
             auto length = ::GLsizei{};
             auto count = ::GLsizei{};
@@ -64,8 +63,6 @@ namespace game
 
                 const auto location = ::glGetUniformLocation(_handle, name.c_str());
                 _uniforms[name] = location;
-
-                // log::debug("found uniform: {}", name);
             }
         }
     }

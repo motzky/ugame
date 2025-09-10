@@ -10,18 +10,18 @@
 #include <queue>
 #include <ranges>
 
-#include <hidusage.h>
 #include <Windows.h>
 #include <Windowsx.h>
+#include <hidusage.h>
 
 #include "auto_release.h"
 #include "ensure.h"
 #include "event.h"
 #include "key.h"
 #include "key_event.h"
-#include "mouse_event.h"
-#include "mouse_button_event.h"
 #include "log.h"
+#include "mouse_button_event.h"
+#include "mouse_event.h"
 #include "opengl.h"
 #include "stop_event.h"
 
@@ -94,8 +94,6 @@ namespace
                 const auto y = raw.data.mouse.lLastY;
 
                 g_event_queue.emplace(game::MouseEvent{static_cast<float>(x), static_cast<float>(y)});
-
-                // game::log::debug("mouse event");
             }
             break;
         }

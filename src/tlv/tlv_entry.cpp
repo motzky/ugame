@@ -180,7 +180,7 @@ namespace game
         ++reader_cursor;
         ensure(reader_cursor == std::ranges::end(reader), "texture TLV too large");
 
-        log::debug("loaded mesh {} - {} verts, {} indices", name, vertex_data.size(), index_data.size());
+        // log::debug("loaded mesh {} - {} verts, {} indices", name, vertex_data.size(), index_data.size());
         return {vertex_data, index_data};
     }
 

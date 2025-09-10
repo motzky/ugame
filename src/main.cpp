@@ -50,27 +50,19 @@ auto main(int argc, char **argv) -> int
         auto height = 1080u;
         // auto width = 1280u;
         // auto height = 720u;
+        game::log::info("Creating Window {}x{}...", width, height);
         auto window = game::Window{width, height};
-
-        game::log::debug("window done");
 
         auto resource_loader = game::ResourceLoader{argv[1]};
 
-        game::log::debug("resource_loader done");
         auto mesh_loader = game::MeshLoader{resource_loader};
-
-        game::log::debug("MeshLoader done");
 
         auto tex_data = std::optional<game::TextureDescription>{};
 
         game::log::info("loading resources...");
         const auto tlv_file = resource_loader.load("resources");
 
-        game::log::debug("load_binary done");
-
-        game::log::debug("reading tlv...");
         const auto reader = game::TlvReader{tlv_file.as_bytes()};
-        game::log::debug("done.");
 
         game::log::info("Creating GL textures...");
 
@@ -78,8 +70,6 @@ auto main(int argc, char **argv) -> int
         auto albedo_tex = game::Texture{reader, "barrel_base_albedo"};
         auto spec_map = game::Texture{reader, "barrel_metallic"};
         auto normal_map = game::Texture{reader, "barrel_normal_ogl"};
-
-        game::log::debug("done.");
 
         game::log::info("Creating materials...");
 
@@ -94,11 +84,8 @@ auto main(int argc, char **argv) -> int
         const auto fragment_shader = game::Shader{fragment_shader_file.as_string(), game::ShaderType::FRAGMENT};
         auto material = game::Material{vertex_shader, fragment_shader};
 
-        game::log::debug("done.");
-
         game::log::info("Loading meshes...");
         const auto mesh = game::Mesh{reader, "Cylinder.014"};
-        game::log::debug("done.");
 
         auto renderer = game::Renderer{resource_loader, mesh_loader, width, height};
 

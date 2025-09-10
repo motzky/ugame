@@ -17,9 +17,9 @@
 #include "event.h"
 #include "key.h"
 #include "key_event.h"
-#include "mouse_event.h"
-#include "mouse_button_event.h"
 #include "log.h"
+#include "mouse_button_event.h"
+#include "mouse_event.h"
 #include "opengl.h"
 #include "stop_event.h"
 
@@ -94,8 +94,6 @@ namespace
             glfwGetCursorPos(window, &xpos, &ypos);
 
             g_event_queue.emplace(game::MouseButtonEvent{static_cast<float>(xpos), static_cast<float>(ypos), state});
-
-            // game::log::debug("Mouse button event: {} @ {} {}", action == GLFW_PRESS ? "DOWN" : "UP", xpos, ypos);
         }
     }
 
@@ -123,12 +121,8 @@ namespace
         auto xf = static_cast<float>(xpos);
         auto yf = static_cast<float>(ypos);
 
-        // game::log::debug("Mouse pos: {} {}", xpos, ypos);
-
         auto dx = last_x - xf;
         auto dy = last_y - yf;
-
-        // game::log::debug("Mouse delta: {} {}", dx, dy);
 
         g_event_queue.emplace(game::MouseEvent{dx, dy});
 
