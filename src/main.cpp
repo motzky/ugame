@@ -20,8 +20,11 @@
 #include "material.h"
 #include "mesh_loader.h"
 #include "mouse_event.h"
+#include "physics/box_shape.h"
 #include "physics/debug_renderer.h"
 #include "physics/physics_sytem.h"
+#include "physics/rigid_body.h"
+#include "physics/sphere_shape.h"
 #include "primitives/entity.h"
 #include "renderer.h"
 #include "resource_loader.h"
@@ -159,6 +162,14 @@ auto main(int argc, char **argv) -> int
         const auto debug_ui = game::DebugUi(window.native_handle(), scene, camera, gamma);
 
         auto ps = game::PhysicsSystem{};
+
+        const auto floor_shape = ps.create_shape<game::BoxShape>(game::Vector3{50.f, 1.f, 50.f});
+        [[maybe_unused]] auto floor = ps.create_rigid_body(floor_shape, {0.f, -1.f, 0.f}, game::RigidBodyType::STATIC);
+
+        const auto sphere_shape = ps.create_shape<game::SphereShape>(5.f);
+        [[maybe_unused]] auto sphere = ps.create_rigid_body(sphere_shape, {0.f, 100.f, 0.f}, game::RigidBodyType::DYNAMIC);
+
+        ps.optimize();
 
         auto running = true;
 

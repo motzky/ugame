@@ -19,6 +19,7 @@
 #include "log.h"
 #include "physics/box_shape.h"
 #include "physics/debug_renderer.h"
+#include "physics/rigid_body.h"
 #include "physics/sphere_shape.h"
 
 using namespace ::JPH::literals;
@@ -153,25 +154,21 @@ namespace game
             _impl->object_vs_broad_phase_layer,
             _impl->object_layer_pair_filter);
 
-        auto &body_interface = (_impl->physics_system).GetBodyInterface();
+        _impl->physics_system.SetGravity({0.f, -9.80665f, 0.f});
+    }
 
-        auto floor_shape = BoxShape{{50.f, 1.f, 50.f}, {}};
-        auto floor_settings = ::JPH::BodyCreationSettings{floor_shape.native_handle(), ::JPH::RVec3{0.0_r, 0.0_r, 0.0_r}, ::JPH::Quat::sIdentity(), ::JPH::EMotionType::Static, 0};
-
-        auto floor = body_interface.CreateBody(floor_settings);
-        body_interface.AddBody(floor->GetID(), ::JPH::EActivation::DontActivate);
-
-        auto sphere_shape = SphereShape{5.f, {}};
-        auto sphere_settings = ::JPH::BodyCreationSettings{sphere_shape.native_handle(), ::JPH::RVec3{0.0_r, 0.0_r, -10.0_r}, ::JPH::Quat::sIdentity(), ::JPH::EMotionType::Dynamic, 1};
-
-        _impl->sphere_id = body_interface.CreateAndAddBody(sphere_settings, ::JPH::EActivation::Activate);
-
-        body_interface.SetLinearVelocity(_impl->sphere_id, ::JPH::Vec3(0.f, -.01f, 0.f));
-
+    auto PhysicsSystem::optimize() const -> void
+    {
         _impl->physics_system.OptimizeBroadPhase();
     }
 
     PhysicsSystem::~PhysicsSystem() = default;
+
+    auto PhysicsSystem::create_rigid_body(const Shape &shape, const Vector3 &position, RigidBodyType type) const -> RigidBody
+    {
+        auto &body_interface = _impl->physics_system.GetBodyInterface();
+        return {shape, position, type, body_interface, {}};
+    }
 
     auto PhysicsSystem::update() -> void
     {
@@ -186,4 +183,5 @@ namespace game
     {
         return _impl->debug_renderer;
     }
+
 }
