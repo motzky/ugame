@@ -4,7 +4,7 @@
 #include <vector>
 
 #include "material.h"
-#include "math_primitives/vector3.h"
+#include "math/vector3.h"
 #include "mesh.h"
 #include "texture.h"
 #include "texture_sampler.h"

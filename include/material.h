@@ -7,7 +7,7 @@
 
 #include "auto_release.h"
 #include "cube_map.h"
-#include "math_primitives/matrix4.h"
+#include "math/matrix4.h"
 #include "opengl.h"
 #include "shader.h"
 #include "string_unordered_map.h"

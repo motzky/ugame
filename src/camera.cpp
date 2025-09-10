@@ -5,7 +5,7 @@
 #include <span>
 
 #include "log.h"
-#include "math_primitives/vector3.h"
+#include "math/vector3.h"
 
 namespace
 {

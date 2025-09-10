@@ -3,8 +3,8 @@
 #include <numbers>
 #include <print>
 
-#include "math_primitives/matrix4.h"
-#include "math_primitives/vector3.h"
+#include "math/matrix4.h"
+#include "math/vector3.h"
 
 TEST(matrx4, multiply_by_identity)
 {

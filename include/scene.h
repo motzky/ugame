@@ -4,7 +4,7 @@
 #include <vector>
 
 #include "buffer.h"
-#include "math_primitives/vector3.h"
+#include "math/vector3.h"
 #include "primitives/color.h"
 #include "primitives/debug_lines.h"
 #include "primitives/entity.h"

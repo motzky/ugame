@@ -1,6 +1,6 @@
 #pragma once
 
-#include "math_primitives/vector3.h"
+#include "math/vector3.h"
 #include "primitives/color.h"
 
 namespace game

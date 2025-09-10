@@ -25,7 +25,7 @@
 #include "exception.h"
 #include "file.h"
 #include "log.h"
-#include "math_primitives/vector3.h"
+#include "math/vector3.h"
 #include "mesh_data.h"
 #include "primitives/vertex_data.h"
 #include "tlv/tlv_writer.h"

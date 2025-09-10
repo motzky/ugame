@@ -2,8 +2,8 @@
 
 #include <span>
 
-#include "math_primitives/matrix4.h"
-#include "math_primitives/vector3.h"
+#include "math/matrix4.h"
+#include "math/vector3.h"
 
 namespace game
 {

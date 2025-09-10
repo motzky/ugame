@@ -17,7 +17,7 @@
 #include "imgui.h"
 
 #include "camera.h"
-#include "math_primitives/vector3.h"
+#include "math/vector3.h"
 #include "scene.h"
 #include "window.h"
 
