@@ -13,6 +13,7 @@ add_library(
     mouse_button_event.cpp
     mouse_event.cpp
     physics/box_shape.cpp
+    physics/cylinder_shape.cpp
     physics/debug_renderer.cpp
     physics/jolt_utils.cpp
     physics/physics_system.cpp
