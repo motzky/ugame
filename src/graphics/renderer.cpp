@@ -153,7 +153,9 @@ namespace game
             const auto *material = entity->material();
 
             material->use();
-            material->set_uniform("model", entity->model());
+            const auto model = Matrix4{entity->transform()};
+            // const auto model_local_transform = Matrix4{entity->local_transform()};
+            material->set_uniform("model", model);
             material->bind_textures(entity->textures());
 
             mesh->bind();

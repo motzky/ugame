@@ -110,13 +110,13 @@ auto main(int argc, char **argv) -> int
 
         for (auto i = 0; i < 1; ++i)
         {
-            for (auto j = 0; j < 5; ++j)
+            for (auto j = 0; j < 50; ++j)
             {
                 auto x = static_cast<float>(i) * 2.5f;
                 // auto y = 0.f;
                 // auto y = 1.f + dis(gen);
-                auto y = 20.f + (j * 3.5f);
-                auto z = static_cast<float>(j) * .5f;
+                auto y = 30.f + (j * 2.5f);
+                auto z = static_cast<float>(j) * .3f;
                 const auto start_pos = game::Vector3{x, y, z};
 
                 entities.push_back({{&mesh,
@@ -145,7 +145,7 @@ auto main(int argc, char **argv) -> int
                         .quad_attenuation = 0.017}},
             .debug_lines = {}};
 
-        auto camera = game::Camera{{0.f, 5.f, 20.f},
+        auto camera = game::Camera{{0.f, 5.f, 40.f},
                                    {0.f, 0.f, 0.f},
                                    {0.f, 1.f, 0.f},
                                    std::numbers::pi_v<float> / 4.f,
@@ -250,9 +250,10 @@ auto main(int argc, char **argv) -> int
             ps.update();
             for (auto &[render, physics] : entities)
             {
-                auto pos = physics.position();
-                render.set_position(pos);
+                render.set_position(physics.position());
+                render.set_rotation(physics.rotation());
             }
+
             if (show_debug)
             {
                 scene.debug_lines = {ps.debug_renderer().lines()};

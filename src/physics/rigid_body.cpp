@@ -8,6 +8,7 @@
 #include <Jolt/Physics/Body/BodyCreationSettings.h>
 #include <Jolt/Physics/Body/BodyInterface.h>
 
+#include "math/quaternion.h"
 #include "math/vector3.h"
 #include "physics/jolt_utils.h"
 #include "utils/pass_key.h"
@@ -33,6 +34,12 @@ namespace game
     auto RigidBody::position() const -> Vector3
     {
         auto pos = _body_interface->GetPosition(_body->GetID());
+        return to_native(pos);
+    }
+
+    auto RigidBody::rotation() const -> Quaternion
+    {
+        auto pos = _body_interface->GetRotation(_body->GetID());
         return to_native(pos);
     }
 

@@ -8,12 +8,16 @@
 #include "graphics/mesh.h"
 #include "graphics/texture.h"
 #include "graphics/texture_sampler.h"
+#include "math/quaternion.h"
 #include "math/vector3.h"
 
 namespace game
 {
     Entity::Entity(const Mesh *mesh, const Material *material, const Vector3 &position, const Vector3 &scale, std::vector<std::tuple<const Texture *, const TextureSampler *>> &textures)
-        : _mesh(mesh), _material(material), _model(position, scale), _textures(textures)
+        : _mesh(mesh),
+          _material(material),
+          _transform(position, scale),
+          _textures(textures)
     {
     }
 
@@ -25,18 +29,20 @@ namespace game
     {
         return _material;
     }
-    auto Entity::model() const -> const Matrix4 &
-    {
-        return _model;
-    }
     auto Entity::set_position(const Vector3 &position) -> void
     {
-        _model[12] = position.x;
-        _model[13] = position.y;
-        _model[14] = position.z;
+        _transform.position = position;
+    }
+    auto Entity::set_rotation(const Quaternion &rotation) -> void
+    {
+        _transform.rotation = rotation;
     }
     auto Entity::textures() const -> std::span<const std::tuple<const Texture *, const TextureSampler *>>
     {
         return _textures;
+    }
+    auto Entity::transform() const -> const Transform &
+    {
+        return _transform;
     }
 }

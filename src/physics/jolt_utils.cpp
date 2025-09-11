@@ -22,6 +22,11 @@ namespace game
         return {v.GetX(), v.GetY(), v.GetZ()};
     }
 
+    auto to_native(::JPH::QuatArg &q) -> Quaternion
+    {
+        return {q.GetX(), q.GetY(), q.GetZ(), q.GetW()};
+    }
+
     auto to_native(::JPH::ColorArg c) -> Color
     {
         const auto v = c.ToVec4();
