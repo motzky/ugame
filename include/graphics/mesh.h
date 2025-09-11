@@ -5,7 +5,7 @@
 #include "events/key_event.h"
 #include "graphics/buffer.h"
 #include "graphics/opengl.h"
-#include "mesh_loader.h"
+#include "loaders/mesh_loader.h"
 #include "utils/auto_release.h"
 
 namespace game

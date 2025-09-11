@@ -9,7 +9,7 @@
 #include "graphics/buffer.h"
 #include "graphics/opengl.h"
 #include "graphics/vertex_data.h"
-#include "mesh_loader.h"
+#include "loaders/mesh_loader.h"
 #include "tlv/tlv_reader.h"
 #include "utils/auto_release.h"
 

@@ -14,9 +14,9 @@
 #include "graphics/opengl.h"
 #include "graphics/texture.h"
 #include "graphics/texture_sampler.h"
-#include "mesh_loader.h"
+#include "loaders/mesh_loader.h"
+#include "loaders/resource_loader.h"
 #include "primitives/entity.h"
-#include "resource_loader.h"
 #include "scene.h"
 
 namespace

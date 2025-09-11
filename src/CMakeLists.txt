@@ -3,10 +3,8 @@ add_library(
     buffer_writer.cpp
     camera.cpp
     exception.cpp
-    mesh_loader.cpp
     primitives/debug_lines.cpp
     primitives/entity.cpp
-    resource_loader.cpp
 )
 
 add_library(imguilib STATIC
@@ -22,6 +20,7 @@ add_library(imguilib STATIC
 
 add_subdirectory(events)
 add_subdirectory(graphics)
+add_subdirectory(loaders)
 add_subdirectory(physics)
 add_subdirectory(tlv)
 

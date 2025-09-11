@@ -7,7 +7,7 @@
 #include "ensure.h"
 #include "graphics/line_data.h"
 #include "graphics/opengl.h"
-#include "mesh_loader.h"
+#include "loaders/mesh_loader.h"
 #include "utils/auto_release.h"
 
 namespace game
