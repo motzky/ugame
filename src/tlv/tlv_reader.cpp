@@ -30,8 +30,8 @@ namespace game
         auto length = std::uint32_t{};
         std::memcpy(&length, _buffer.data() + sizeof(type), sizeof(length));
 
-        // const auto needed_bytes = sizeof(TlvType) + sizeof(std::uint32_t) + length;
-        // ensure(remaining_byes >= sizeof(TlvType) + sizeof(std::uint32_t) + length, "invalid entry size. Remaining {}, need {}", remaining_byes, needed_bytes);
+        auto needed_bytes = sizeof(TlvType) + sizeof(std::uint32_t) + length;
+        ensure(remaining_byes >= needed_bytes, "invalid entry size. Remaining {}, need {}", remaining_byes, needed_bytes);
 
         return {type, _buffer.subspan(sizeof(type) + sizeof(length), length)};
     }

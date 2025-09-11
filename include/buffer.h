@@ -1,8 +1,8 @@
 #pragma once
 
+#include <cstddef>
 #include <cstdint>
 #include <span>
-#include <cstddef>
 
 #include "auto_release.h"
 #include "opengl.h"
@@ -20,5 +20,6 @@ namespace game
 
     private:
         AutoRelease<::GLuint> _buffer;
+        std::uint32_t _size;
     };
 }
