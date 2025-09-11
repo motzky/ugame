@@ -101,7 +101,7 @@ auto main(int argc, char **argv) -> int
 
         auto entities = std::vector<GameEntity>{};
 
-        const auto cylinder_shape = ps.create_shape<game::CylinderShape>(1.f, .5f);
+        const auto cylinder_shape = ps.create_shape<game::CylinderShape>(.75f, .58f);
 
         [[maybe_unused]] auto rd = std::random_device{};
         [[maybe_unused]] auto gen = std::mt19937{rd()};
@@ -123,6 +123,7 @@ auto main(int argc, char **argv) -> int
                                      &material,
                                      start_pos,
                                      game::Vector3{.4f},
+                                     {{0.f}, {1.f}, {{-0.7071f, 0.f, 0.f}, -0.7071f}},
                                      tex_samp},
                                     ps.create_rigid_body(cylinder_shape, start_pos, game::RigidBodyType::DYNAMIC)});
             }
@@ -145,7 +146,7 @@ auto main(int argc, char **argv) -> int
                         .quad_attenuation = 0.017}},
             .debug_lines = {}};
 
-        auto camera = game::Camera{{0.f, 5.f, 40.f},
+        auto camera = game::Camera{{0.f, 5.f, 20.f},
                                    {0.f, 0.f, 0.f},
                                    {0.f, 1.f, 0.f},
                                    std::numbers::pi_v<float> / 4.f,
