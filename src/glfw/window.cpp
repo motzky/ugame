@@ -17,10 +17,10 @@
 #include "events/key_event.h"
 #include "events/mouse_button_event.h"
 #include "events/mouse_event.h"
+#include "events/stop_event.h"
 #include "graphics/opengl.h"
 #include "key.h"
 #include "log.h"
-#include "stop_event.h"
 #include "utils/auto_release.h"
 
 namespace
