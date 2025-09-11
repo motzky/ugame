@@ -2,10 +2,10 @@
 
 #include <cstdint>
 
-#include "auto_release.h"
 #include "ensure.h"
 #include "graphics/opengl.h"
 #include "graphics/texture.h"
+#include "utils/auto_release.h"
 
 namespace game
 {

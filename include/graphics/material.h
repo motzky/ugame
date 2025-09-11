@@ -5,7 +5,6 @@
 #include <string_view>
 #include <tuple>
 
-#include "auto_release.h"
 #include "cube_map.h"
 #include "graphics/shader.h"
 #include "math/matrix4.h"
@@ -13,6 +12,7 @@
 #include "string_unordered_map.h"
 #include "texture.h"
 #include "texture_sampler.h"
+#include "utils/auto_release.h"
 
 namespace game
 {

@@ -10,8 +10,8 @@
 #include <GLFW/glfw3.h>
 #endif
 
-#include "auto_release.h"
 #include "events/event.h"
+#include "utils/auto_release.h"
 
 namespace game
 {

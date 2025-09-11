@@ -18,8 +18,8 @@
 #include <unistd.h>
 #endif
 
-#include "auto_release.h"
 #include "ensure.h"
+#include "utils/auto_release.h"
 
 namespace game
 {

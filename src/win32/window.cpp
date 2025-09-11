@@ -14,7 +14,6 @@
 #include <Windowsx.h>
 #include <hidusage.h>
 
-#include "auto_release.h"
 #include "ensure.h"
 #include "events/event.h"
 #include "events/key_event.h"
@@ -24,6 +23,7 @@
 #include "mouse_button_event.h"
 #include "opengl.h"
 #include "stop_event.h"
+#include "utils/auto_release.h"
 
 #pragma comment(lib, "opengl32.lib")
 

@@ -20,7 +20,6 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
-#include "auto_release.h"
 #include "ensure.h"
 #include "exception.h"
 #include "file.h"
@@ -29,6 +28,7 @@
 #include "log.h"
 #include "math/vector3.h"
 #include "tlv/tlv_writer.h"
+#include "utils/auto_release.h"
 
 namespace
 {

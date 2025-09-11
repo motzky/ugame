@@ -3,7 +3,6 @@
 #include <ranges>
 #include <string_view>
 
-#include "auto_release.h"
 #include "buffer_writer.h"
 #include "ensure.h"
 #include "events/key_event.h"
@@ -12,6 +11,7 @@
 #include "graphics/vertex_data.h"
 #include "mesh_loader.h"
 #include "tlv/tlv_reader.h"
+#include "utils/auto_release.h"
 
 namespace game
 {

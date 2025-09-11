@@ -1,7 +1,7 @@
 #include "graphics/texture_sampler.h"
 
-#include "auto_release.h"
 #include "graphics/opengl.h"
+#include "utils/auto_release.h"
 
 namespace game
 {

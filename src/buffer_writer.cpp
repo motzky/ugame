@@ -4,9 +4,9 @@
 #include <cstdint>
 #include <span>
 
-#include "auto_release.h"
 #include "graphics/buffer.h"
 #include "graphics/opengl.h"
+#include "utils/auto_release.h"
 
 namespace game
 {

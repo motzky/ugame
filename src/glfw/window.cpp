@@ -12,7 +12,6 @@
 
 #include <GLFW/glfw3.h>
 
-#include "auto_release.h"
 #include "ensure.h"
 #include "events/event.h"
 #include "events/key_event.h"
@@ -22,6 +21,7 @@
 #include "key.h"
 #include "log.h"
 #include "stop_event.h"
+#include "utils/auto_release.h"
 
 namespace
 {

@@ -6,13 +6,13 @@
 #include <string>
 #include <string_view>
 
-#include "auto_release.h"
 #include "ensure.h"
 #include "graphics/opengl.h"
 #include "graphics/shader.h"
 #include "graphics/texture.h"
 #include "graphics/texture_sampler.h"
 #include "log.h"
+#include "utils/auto_release.h"
 
 namespace game
 {

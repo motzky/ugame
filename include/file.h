@@ -15,7 +15,7 @@
 #include <sys/mman.h>
 #endif
 
-#include "auto_release.h"
+#include "utils/auto_release.h"
 
 namespace game
 {

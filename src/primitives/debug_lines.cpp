@@ -3,12 +3,12 @@
 #include <ranges>
 #include <string_view>
 
-#include "auto_release.h"
 #include "buffer_writer.h"
 #include "ensure.h"
 #include "graphics/line_data.h"
 #include "graphics/opengl.h"
 #include "mesh_loader.h"
+#include "utils/auto_release.h"
 
 namespace game
 {

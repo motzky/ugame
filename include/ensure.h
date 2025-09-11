@@ -4,9 +4,9 @@
 #include <memory>
 #include <string_view>
 
-#include "auto_release.h"
-#include "log.h"
 #include "exception.h"
+#include "log.h"
+#include "utils/auto_release.h"
 
 namespace game
 {

@@ -7,8 +7,8 @@
 #include <string_view>
 #include <vector>
 
-#include "auto_release.h"
 #include "graphics/opengl.h"
+#include "utils/auto_release.h"
 
 namespace game
 {
