@@ -160,6 +160,8 @@ namespace game
     Window::Window(std::uint32_t width, std::uint32_t height)
         : _windowHandle{}, _width(width), _height(height)
     {
+        log::info("Running on *nix, crating window with GLFW");
+
         game::ensure(glfwInit(), "failed to initialize GLFW");
 
         ::glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);

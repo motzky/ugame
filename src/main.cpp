@@ -46,18 +46,17 @@ struct GameEntity
 
 auto main(int argc, char **argv) -> int
 {
+    game::log::info("starting game...");
 
     try
     {
         game::ensure(argc >= 2, "{} <root_path>", argv[0]);
 
-        game::log::info("hello world");
-
         auto width = 1920u;
         auto height = 1080u;
         // auto width = 1280u;
         // auto height = 720u;
-        game::log::info("Creating Window {}x{}...", width, height);
+        game::log::info("Creating Window {} x {}...", width, height);
         auto window = game::Window{width, height};
 
         auto ps = game::PhysicsSystem{};

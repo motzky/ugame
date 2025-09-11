@@ -254,6 +254,8 @@ namespace game
           //
           _wc({}), _dc({})
     {
+        log::info("running on Windows...");
+
         _wc = {
             .style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC,
             .lpfnWndProc = ::window_proc,
