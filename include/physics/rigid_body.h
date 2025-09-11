@@ -6,8 +6,8 @@
 #include <Jolt/Physics/Body/BodyInterface.h>
 
 #include "math/vector3.h"
-#include "pass_key.h"
 #include "physics/shape.h"
+#include "utils/pass_key.h"
 
 namespace game
 {

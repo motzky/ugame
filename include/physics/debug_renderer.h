@@ -16,7 +16,7 @@
 #include "ensure.h"
 #include "graphics/line_data.h"
 #include "log.h"
-#include "pass_key.h"
+#include "utils/pass_key.h"
 
 namespace game
 {

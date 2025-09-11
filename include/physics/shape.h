@@ -5,7 +5,7 @@
 #include <Jolt/Core/Reference.h>
 #include <Jolt/Physics/Collision/Shape/Shape.h>
 
-#include "pass_key.h"
+#include "utils/pass_key.h"
 
 namespace game
 {
