@@ -4,6 +4,7 @@
 #include <format>
 #include <span>
 
+#include "math/quaternion.h"
 #include "math/vector3.h"
 
 namespace game
@@ -11,6 +12,9 @@ namespace game
     class Matrix4
     {
     public:
+        struct Scale
+        {
+        };
         // initialize to identity
         constexpr Matrix4()
             : _elements({1.f,
@@ -75,6 +79,53 @@ namespace game
                          translation.z,
                          1.f})
         {
+        }
+
+        constexpr Matrix4(const Vector3 &scale, Scale)
+            : _elements({scale.x,
+                         0.f,
+                         0.f,
+                         0.f,
+                         0.f,
+                         scale.y,
+                         0.f,
+                         0.f,
+                         0.f,
+                         0.f,
+                         scale.z,
+                         0.f,
+                         0.f,
+                         0.f,
+                         0.f,
+                         1.f})
+        {
+        }
+
+        constexpr Matrix4(const Quaternion &rotation)
+            : Matrix4{}
+        {
+            // // Note default initalized to identity(mat4)
+            float xx = rotation.x * rotation.x;
+            float yy = rotation.y * rotation.y;
+            float zz = rotation.z * rotation.z;
+            float xy = rotation.x * rotation.y;
+            float xz = rotation.x * rotation.z;
+            float yz = rotation.y * rotation.z;
+            float wx = rotation.w * rotation.x;
+            float wy = rotation.w * rotation.y;
+            float wz = rotation.w * rotation.z;
+
+            _elements[0] = 1.0f - 2.0f * (yy + zz);
+            _elements[1] = 2.0f * (xy - wz);
+            _elements[2] = 2.0f * (xz + wy);
+
+            _elements[4] = 2.0f * (xy + wz);
+            _elements[5] = 1.0f - 2.0f * (xx + zz);
+            _elements[6] = 2.0f * (yz - wx);
+
+            _elements[8] = 2.0f * (xz - wy);
+            _elements[9] = 2.0f * (yz + wx);
+            _elements[10] = 1.0f - 2.0f * (xx + yy);
         }
 
         static auto look_at(const Vector3 &eye, const Vector3 &look_at, const Vector3 &up) -> Matrix4;

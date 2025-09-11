@@ -113,7 +113,7 @@ struct std::formatter<game::Vector3>
 
     auto format(const game::Vector3 &obj, std::format_context &ctx) const
     {
-        return std::format_to(ctx.out(), "{} {} {}",
+        return std::format_to(ctx.out(), "x={} y={} z={}",
                               obj.x,
                               obj.y,
                               obj.z);
