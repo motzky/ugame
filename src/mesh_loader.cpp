@@ -10,7 +10,7 @@
 #include "log.h"
 #include "math/vector3.h"
 #include "resource_loader.h"
-#include "string_unordered_map.h"
+#include "utils/string_unordered_map.h"
 
 namespace
 {

@@ -9,10 +9,10 @@
 #include "graphics/shader.h"
 #include "math/matrix4.h"
 #include "opengl.h"
-#include "string_unordered_map.h"
 #include "texture.h"
 #include "texture_sampler.h"
 #include "utils/auto_release.h"
+#include "utils/string_unordered_map.h"
 
 namespace game
 {
