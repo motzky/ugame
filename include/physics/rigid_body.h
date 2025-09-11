@@ -5,6 +5,7 @@
 #include <Jolt/Physics/Body/Body.h>
 #include <Jolt/Physics/Body/BodyInterface.h>
 
+#include "math/quaternion.h"
 #include "math/vector3.h"
 #include "physics/shape.h"
 #include "utils/pass_key.h"
@@ -29,6 +30,8 @@ namespace game
         auto operator=(RigidBody &&) -> RigidBody & = default;
 
         auto position() const -> Vector3;
+        auto rotation() const -> Quaternion;
+
         auto type() const -> RigidBodyType;
         auto native_handle() const -> ::JPH::Body *;
 

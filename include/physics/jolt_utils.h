@@ -11,6 +11,7 @@
 #include "graphics/color.h"
 #include "graphics/line_data.h"
 #include "log.h"
+#include "math/quaternion.h"
 #include "math/vector3.h"
 #include "physics/physics_sytem.h"
 #include "physics/rigid_body.h"
@@ -18,6 +19,7 @@
 namespace game
 {
     auto to_native(::JPH::RVec3Arg v) -> Vector3;
+    auto to_native(::JPH::QuatArg &q) -> Quaternion;
     auto to_native(::JPH::ColorArg c) -> Color;
 
     auto to_jolt(const Vector3 &v) -> ::JPH::RVec3;
