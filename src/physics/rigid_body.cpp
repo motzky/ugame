@@ -1,5 +1,7 @@
 #include "physics/rigid_body.h"
 
+#include <memory>
+
 #include <Jolt/Jolt.h>
 
 #include <Jolt/Physics/Body/Body.h>
@@ -14,13 +16,20 @@ namespace game
 {
     RigidBody::RigidBody(const Shape &shape, const Vector3 &position, RigidBodyType type, ::JPH::BodyInterface &body_interface, PassKey<PhysicsSystem>)
         : _body{},
-          _type(type)
+          _type(type),
+          _body_interface(std::addressof(body_interface))
     {
         const auto body_settings = ::JPH::BodyCreationSettings{
             shape.native_handle(), to_jolt(position), ::JPH::Quat::sIdentity(), to_jolt(_type), to_layer(_type)};
 
         _body = body_interface.CreateBody(body_settings);
         body_interface.AddBody(_body->GetID(), to_activation(_type));
+    }
+
+    auto RigidBody::position() const -> Vector3
+    {
+        auto pos = _body_interface->GetPosition(_body->GetID());
+        return to_native(pos);
     }
 
     auto RigidBody::type() const -> RigidBodyType

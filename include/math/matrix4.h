@@ -85,10 +85,14 @@ namespace game
             return {v1};
         }
 
-        constexpr auto
-        data() const -> std::span<const float>
+        constexpr auto data() const -> std::span<const float>
         {
             return _elements;
+        }
+
+        auto operator[](this auto &&self, std::size_t index) -> float &
+        {
+            return self._elements[index];
         }
 
         friend constexpr auto operator*=(Matrix4 &m1, const Matrix4 &m2) -> Matrix4 &;

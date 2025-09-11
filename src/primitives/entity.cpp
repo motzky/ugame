@@ -29,6 +29,12 @@ namespace game
     {
         return _model;
     }
+    auto Entity::set_position(const Vector3 &position) -> void
+    {
+        _model[12] = position.x;
+        _model[13] = position.y;
+        _model[14] = position.z;
+    }
     auto Entity::textures() const -> std::span<const std::tuple<const Texture *, const TextureSampler *>>
     {
         return _textures;

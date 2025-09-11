@@ -21,6 +21,7 @@
 #include "mesh_loader.h"
 #include "mouse_event.h"
 #include "physics/box_shape.h"
+#include "physics/cylinder_shape.h"
 #include "physics/debug_renderer.h"
 #include "physics/physics_sytem.h"
 #include "physics/rigid_body.h"
@@ -37,6 +38,12 @@
 #include "tlv/tlv_reader.h"
 #include "window.h"
 
+struct GameEntity
+{
+    game::Entity render_entity;
+    game::RigidBody physics_entity;
+};
+
 auto main(int argc, char **argv) -> int
 {
 
@@ -52,6 +59,10 @@ auto main(int argc, char **argv) -> int
         // auto height = 720u;
         game::log::info("Creating Window {}x{}...", width, height);
         auto window = game::Window{width, height};
+
+        auto ps = game::PhysicsSystem{};
+        const auto floor_shape = ps.create_shape<game::BoxShape>(game::Vector3{50.f, 1.f, 50.f});
+        [[maybe_unused]] auto floor = ps.create_rigid_body(floor_shape, {0.f, -1.f, 0.f}, game::RigidBodyType::STATIC);
 
         auto resource_loader = game::ResourceLoader{argv[1]};
 
@@ -89,30 +100,37 @@ auto main(int argc, char **argv) -> int
 
         auto renderer = game::Renderer{resource_loader, mesh_loader, width, height};
 
-        auto entities = std::vector<game::Entity>{};
+        auto entities = std::vector<GameEntity>{};
+
+        const auto cylinder_shape = ps.create_shape<game::CylinderShape>(1.f, .5f);
 
         [[maybe_unused]] auto rd = std::random_device{};
         [[maybe_unused]] auto gen = std::mt19937{rd()};
-        [[maybe_unused]] auto dis = std::uniform_real_distribution(-5.f, 5.f);
+        // [[maybe_unused]] auto dis = std::uniform_real_distribution(-5.f, 5.f);
+        [[maybe_unused]] auto dis = std::uniform_real_distribution(1.f, 11.f);
 
         for (auto i = -10; i < 10; ++i)
         {
             for (auto j = -10; j < 10; ++j)
             {
-                entities.emplace_back(game::Entity{
-                    &mesh,
-                    &material,
-                    // game::Vector3{static_cast<float>(i) * 2.5f, dis(gen), static_cast<float>(j) * 2.5f},
-                    game::Vector3{static_cast<float>(i) * 2.5f, 0.f, static_cast<float>(j) * 2.5f},
-                    game::Vector3{.4f},
-                    tex_samp});
+                auto x = static_cast<float>(i) * 2.5f;
+                // auto y = 0.f;
+                auto y = 1.f + dis(gen);
+                auto z = static_cast<float>(j) * 2.5f;
+                entities.push_back({{&mesh,
+                                     &material,
+                                     // game::Vector3{static_cast<float>(i) * 2.5f, dis(gen), static_cast<float>(j) * 2.5f},
+                                     game::Vector3{x, y, z},
+                                     game::Vector3{.4f},
+                                     tex_samp},
+                                    ps.create_rigid_body(cylinder_shape, {x, y, z}, game::RigidBodyType::DYNAMIC)});
             }
         }
 
         auto scene = game::Scene{
             .entities = entities |
                         std::views::transform([](const auto &e)
-                                              { return &e; }) |
+                                              { return &e.render_entity; }) |
                         std::ranges::to<std::vector>(),
             .ambient = {.r = .2f, .g = .2f, .b = .2f},
             .directional = {.direction = {-1.f, -1.f, -1.f}, .color = {.r = .3f, .g = .3f, .b = .3f}},
@@ -148,13 +166,8 @@ auto main(int argc, char **argv) -> int
         auto show_debug = false;
         const auto debug_ui = game::DebugUi(window.native_handle(), scene, camera, gamma);
 
-        auto ps = game::PhysicsSystem{};
-
-        const auto floor_shape = ps.create_shape<game::BoxShape>(game::Vector3{50.f, 1.f, 50.f});
-        [[maybe_unused]] auto floor = ps.create_rigid_body(floor_shape, {0.f, -1.f, 0.f}, game::RigidBodyType::STATIC);
-
-        const auto sphere_shape = ps.create_shape<game::SphereShape>(5.f);
-        [[maybe_unused]] auto sphere = ps.create_rigid_body(sphere_shape, {0.f, 100.f, 0.f}, game::RigidBodyType::DYNAMIC);
+        // const auto sphere_shape = ps.create_shape<game::SphereShape>(5.f);
+        // [[maybe_unused]] auto sphere = ps.create_rigid_body(sphere_shape, {0.f, 100.f, 0.f}, game::RigidBodyType::DYNAMIC);
 
         ps.optimize();
 
@@ -234,7 +247,19 @@ auto main(int argc, char **argv) -> int
             camera.update();
 
             ps.update();
-            scene.debug_lines = {ps.debug_renderer().lines()};
+            for (auto &[render, physics] : entities)
+            {
+                auto pos = physics.position();
+                render.set_position(pos);
+            }
+            if (show_debug)
+            {
+                scene.debug_lines = {ps.debug_renderer().lines()};
+            }
+            else
+            {
+                scene.debug_lines.reset();
+            }
 
             renderer.render(camera, scene, skybox, sampler, gamma);
             if (show_debug)
