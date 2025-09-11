@@ -1,7 +1,7 @@
 #include "graphics/shader.h"
 
+#include "core/exception.h"
 #include "ensure.h"
-#include "exception.h"
 
 namespace
 {

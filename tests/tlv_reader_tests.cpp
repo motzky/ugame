@@ -8,7 +8,7 @@
 
 #include <gtest/gtest.h>
 
-#include "exception.h"
+#include "core/exception.h"
 #include "tlv/tlv_entry.h"
 #include "tlv/tlv_reader.h"
 

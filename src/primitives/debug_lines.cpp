@@ -3,7 +3,7 @@
 #include <ranges>
 #include <string_view>
 
-#include "buffer_writer.h"
+#include "core/buffer_writer.h"
 #include "ensure.h"
 #include "graphics/line_data.h"
 #include "graphics/opengl.h"

@@ -1,8 +1,6 @@
 add_library(
     gamelib STATIC
-    buffer_writer.cpp
     camera.cpp
-    exception.cpp
     primitives/debug_lines.cpp
     primitives/entity.cpp
 )
@@ -18,6 +16,7 @@ add_library(imguilib STATIC
     ${imguizmo_SOURCE_DIR}/ImGuizmo.cpp
 )
 
+add_subdirectory(core)
 add_subdirectory(events)
 add_subdirectory(graphics)
 add_subdirectory(loaders)

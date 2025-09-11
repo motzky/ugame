@@ -20,8 +20,8 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
+#include "core/exception.h"
 #include "ensure.h"
-#include "exception.h"
 #include "file.h"
 #include "graphics/mesh_data.h"
 #include "graphics/vertex_data.h"

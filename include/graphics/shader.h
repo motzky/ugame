@@ -3,8 +3,8 @@
 #include <format>
 #include <string_view>
 
-#include "exception.h"
-#include "opengl.h"
+#include "core/exception.h"
+#include "graphics/opengl.h"
 #include "utils/auto_release.h"
 
 namespace game

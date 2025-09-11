@@ -1,6 +1,6 @@
 #include "events/key_event.h"
 
-#include "key.h"
+#include "core/key.h"
 
 namespace game
 {

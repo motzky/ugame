@@ -10,13 +10,13 @@
 #include <variant>
 
 #include "camera.h"
+#include "core/exception.h"
 #include "debug_ui.h"
 #include "ensure.h"
 #include "events/event.h"
 #include "events/key_event.h"
 #include "events/mouse_event.h"
 #include "events/stop_event.h"
-#include "exception.h"
 #include "graphics/cube_map.h"
 #include "graphics/material.h"
 #include "graphics/renderer.h"

@@ -12,6 +12,7 @@
 
 #include <GLFW/glfw3.h>
 
+#include "core/key.h"
 #include "ensure.h"
 #include "events/event.h"
 #include "events/key_event.h"
@@ -19,7 +20,6 @@
 #include "events/mouse_event.h"
 #include "events/stop_event.h"
 #include "graphics/opengl.h"
-#include "key.h"
 #include "log.h"
 #include "utils/auto_release.h"
 

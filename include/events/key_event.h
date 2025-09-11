@@ -1,8 +1,8 @@
 #pragma once
 
-#include "key.h"
-
 #include <format>
+
+#include "core/key.h"
 
 namespace game
 {
