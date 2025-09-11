@@ -3,9 +3,10 @@
 #include <cstdint>
 
 #include "auto_release.h"
-#include "buffer.h"
+#include "events/key_event.h"
+#include "graphics/buffer.h"
+#include "graphics/opengl.h"
 #include "mesh_loader.h"
-#include "opengl.h"
 
 namespace game
 {

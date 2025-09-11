@@ -1,15 +1,15 @@
 #pragma once
 
-#include "buffer.h"
 #include "camera.h"
-#include "cube_map.h"
-#include "frame_buffer.h"
-#include "material.h"
-#include "mesh.h"
+#include "events/key_event.h"
+#include "graphics/cube_map.h"
+#include "graphics/frame_buffer.h"
+#include "graphics/material.h"
+#include "graphics/mesh.h"
+#include "graphics/texture_sampler.h"
 #include "mesh_loader.h"
 #include "resource_loader.h"
 #include "scene.h"
-#include "texture_sampler.h"
 
 namespace game
 {

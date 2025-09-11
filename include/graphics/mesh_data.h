@@ -3,7 +3,7 @@
 #include <cstdint>
 #include <span>
 
-#include "primitives/vertex_data.h"
+#include "graphics/vertex_data.h"
 
 namespace game
 {

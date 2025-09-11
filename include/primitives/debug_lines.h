@@ -4,8 +4,10 @@
 #include <span>
 
 #include "auto_release.h"
-#include "buffer.h"
-#include "primitives/line_data.h"
+#include "events/key_event.h"
+#include "graphics/buffer.h"
+#include "graphics/line_data.h"
+#include "graphics/opengl.h"
 
 namespace game
 {

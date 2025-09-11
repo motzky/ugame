@@ -3,12 +3,11 @@
 #include <optional>
 #include <vector>
 
-#include "buffer.h"
+#include "graphics/color.h"
+#include "graphics/line_data.h"
 #include "math/vector3.h"
-#include "primitives/color.h"
 #include "primitives/debug_lines.h"
 #include "primitives/entity.h"
-#include "primitives/line_data.h"
 
 namespace game
 {

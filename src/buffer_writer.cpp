@@ -1,11 +1,12 @@
 #include "buffer_writer.h"
 
+#include <cstddef>
 #include <cstdint>
 #include <span>
-#include <cstddef>
 
 #include "auto_release.h"
-#include "opengl.h"
+#include "graphics/buffer.h"
+#include "graphics/opengl.h"
 
 namespace game
 {

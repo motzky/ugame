@@ -24,12 +24,11 @@
 #include "ensure.h"
 #include "exception.h"
 #include "file.h"
+#include "graphics/mesh_data.h"
+#include "graphics/vertex_data.h"
 #include "log.h"
 #include "math/vector3.h"
-#include "mesh_data.h"
-#include "primitives/vertex_data.h"
 #include "tlv/tlv_writer.h"
-#include "uv.h"
 
 namespace
 {

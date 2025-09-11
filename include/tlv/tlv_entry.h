@@ -8,8 +8,8 @@
 #include <string_view>
 #include <vector>
 
-#include "mesh_data.h"
-#include "texture.h"
+#include "graphics/mesh_data.h"
+#include "graphics/texture.h"
 
 namespace game
 {

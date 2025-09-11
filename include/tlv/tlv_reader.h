@@ -4,7 +4,9 @@
 #include <iterator>
 #include <span>
 
-#include "tlv_entry.h"
+#include "graphics/mesh_data.h"
+#include "graphics/texture.h"
+#include "tlv/tlv_entry.h"
 
 namespace game
 {

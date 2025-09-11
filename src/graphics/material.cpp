@@ -1,4 +1,4 @@
-#include "material.h"
+#include "graphics/material.h"
 
 #include <format>
 #include <ranges>
@@ -8,11 +8,11 @@
 
 #include "auto_release.h"
 #include "ensure.h"
+#include "graphics/opengl.h"
+#include "graphics/shader.h"
+#include "graphics/texture.h"
+#include "graphics/texture_sampler.h"
 #include "log.h"
-#include "opengl.h"
-#include "shader.h"
-#include "texture.h"
-#include "texture_sampler.h"
 
 namespace game
 {

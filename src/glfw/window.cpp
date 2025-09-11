@@ -18,9 +18,9 @@
 #include "events/key_event.h"
 #include "events/mouse_button_event.h"
 #include "events/mouse_event.h"
+#include "graphics/opengl.h"
 #include "key.h"
 #include "log.h"
-#include "opengl.h"
 #include "stop_event.h"
 
 namespace

@@ -8,9 +8,9 @@
 #include <string_view>
 #include <vector>
 
-#include "mesh_data.h"
-#include "primitives/vertex_data.h"
-#include "texture.h"
+#include "graphics/mesh_data.h"
+#include "graphics/texture.h"
+#include "graphics/vertex_data.h"
 #include "tlv/tlv_entry.h"
 
 namespace game

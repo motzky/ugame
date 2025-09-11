@@ -4,13 +4,11 @@
 #include <string_view>
 
 #include "auto_release.h"
-#include "buffer.h"
 #include "buffer_writer.h"
 #include "ensure.h"
+#include "graphics/line_data.h"
+#include "graphics/opengl.h"
 #include "mesh_loader.h"
-#include "opengl.h"
-#include "primitives/line_data.h"
-#include "primitives/vertex_data.h"
 
 namespace game
 {

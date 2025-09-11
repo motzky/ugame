@@ -5,8 +5,8 @@
 #include <string_view>
 #include <vector>
 
-#include "mesh_data.h"
-#include "primitives/vertex_data.h"
+#include "graphics/mesh_data.h"
+#include "graphics/vertex_data.h"
 #include "resource_loader.h"
 #include "string_unordered_map.h"
 

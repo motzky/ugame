@@ -6,8 +6,9 @@
 #include <span>
 
 #include "auto_release.h"
-#include "buffer.h"
-#include "opengl.h"
+#include "events/key_event.h"
+#include "graphics/buffer.h"
+#include "graphics/opengl.h"
 
 namespace game
 {

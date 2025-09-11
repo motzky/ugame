@@ -4,11 +4,11 @@
 #include <tuple>
 #include <vector>
 
-#include "material.h"
+#include "graphics/material.h"
+#include "graphics/mesh.h"
+#include "graphics/texture.h"
+#include "graphics/texture_sampler.h"
 #include "math/vector3.h"
-#include "mesh.h"
-#include "texture.h"
-#include "texture_sampler.h"
 
 namespace game
 {

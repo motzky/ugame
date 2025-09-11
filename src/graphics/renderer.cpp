@@ -1,23 +1,23 @@
-#include "renderer.h"
+#include "graphics/renderer.h"
 
 #include <cstdint>
 #include <ranges>
 
 #include "buffer_writer.h"
 #include "camera.h"
-#include "cube_map.h"
 #include "ensure.h"
-#include "frame_buffer.h"
-#include "material.h"
-#include "mesh.h"
+#include "graphics/color.h"
+#include "graphics/cube_map.h"
+#include "graphics/frame_buffer.h"
+#include "graphics/material.h"
+#include "graphics/mesh.h"
+#include "graphics/opengl.h"
+#include "graphics/texture.h"
+#include "graphics/texture_sampler.h"
 #include "mesh_loader.h"
-#include "opengl.h"
-#include "primitives/color.h"
 #include "primitives/entity.h"
 #include "resource_loader.h"
 #include "scene.h"
-#include "texture.h"
-#include "texture_sampler.h"
 
 namespace
 {

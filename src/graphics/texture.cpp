@@ -1,4 +1,4 @@
-#include "texture.h"
+#include "graphics/texture.h"
 
 #include <algorithm>
 #include <cstddef>
@@ -8,12 +8,12 @@
 #include <ranges>
 #include <span>
 
-#define STB_IMAGE_IMPLEMENTATION
-#include <stb_image.h>
+// #define STB_IMAGE_IMPLEMENTATION
+// #include <stb_image.h>
 
 #include "ensure.h"
+#include "graphics/opengl.h"
 #include "log.h"
-#include "opengl.h"
 #include "tlv/tlv_reader.h"
 
 namespace
@@ -135,33 +135,33 @@ namespace game
         }
     }
 
-    Texture::Texture(TextureUsage usage, std::span<const std::byte> data, std::uint32_t /*width*/, std::uint32_t /*height*/)
-        : _handle{0u, [](auto texture)
-                  { ::glDeleteTextures(1u, &texture); }}
-    {
-        TextureUsage valid_usage[] = {TextureUsage::SRGB, TextureUsage::DATA};
-        ensure(std::ranges::contains(valid_usage, usage), "invalid usage");
+    // Texture::Texture(TextureUsage usage, std::span<const std::byte> data, std::uint32_t /*width*/, std::uint32_t /*height*/)
+    //     : _handle{0u, [](auto texture)
+    //               { ::glDeleteTextures(1u, &texture); }}
+    // {
+    //     TextureUsage valid_usage[] = {TextureUsage::SRGB, TextureUsage::DATA};
+    //     ensure(std::ranges::contains(valid_usage, usage), "invalid usage");
 
-        auto w = int{0};
-        auto h = int{0};
-        auto num_channels = int{0};
+    //     auto w = int{0};
+    //     auto h = int{0};
+    //     auto num_channels = int{0};
 
-        auto raw_data = std::unique_ptr<::stbi_uc, decltype(&::stbi_image_free)>{
-            ::stbi_load_from_memory(reinterpret_cast<const stbi_uc *>(data.data()),
-                                    static_cast<int>(data.size_bytes()),
-                                    &w,
-                                    &h,
-                                    &num_channels,
-                                    0),
-            ::stbi_image_free};
+    //     auto raw_data = std::unique_ptr<::stbi_uc, decltype(&::stbi_image_free)>{
+    //         ::stbi_load_from_memory(reinterpret_cast<const stbi_uc *>(data.data()),
+    //                                 static_cast<int>(data.size_bytes()),
+    //                                 &w,
+    //                                 &h,
+    //                                 &num_channels,
+    //                                 0),
+    //         ::stbi_image_free};
 
-        ensure(raw_data, "failed to load texture date");
+    //     ensure(raw_data, "failed to load texture date");
 
-        ::glCreateTextures(GL_TEXTURE_2D, 1u, &_handle);
+    //     ::glCreateTextures(GL_TEXTURE_2D, 1u, &_handle);
 
-        ::glTextureStorage2D(_handle, 1, get_storage_format(usage, num_channels), w, h);
-        ::glTextureSubImage2D(_handle, 0, 0, 0, w, h, get_sub_image_format(num_channels), GL_UNSIGNED_BYTE, raw_data.get());
-    }
+    //     ::glTextureStorage2D(_handle, 1, get_storage_format(usage, num_channels), w, h);
+    //     ::glTextureSubImage2D(_handle, 0, 0, 0, w, h, get_sub_image_format(num_channels), GL_UNSIGNED_BYTE, raw_data.get());
+    // }
 
     auto Texture::native_handle() const -> ::GLuint
     {

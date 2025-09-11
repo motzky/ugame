@@ -6,9 +6,9 @@
 #include <vector>
 
 #include "ensure.h"
+#include "graphics/vertex_data.h"
 #include "log.h"
 #include "math/vector3.h"
-#include "primitives/vertex_data.h"
 #include "resource_loader.h"
 #include "string_unordered_map.h"
 

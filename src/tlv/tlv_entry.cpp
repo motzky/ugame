@@ -8,7 +8,8 @@
 #include <string_view>
 
 #include "ensure.h"
-#include "texture.h"
+#include "graphics/mesh.h"
+#include "graphics/texture.h"
 #include "tlv/tlv_reader.h"
 
 namespace game

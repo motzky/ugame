@@ -14,9 +14,9 @@
 #include <Jolt/Renderer/DebugRendererSimple.h>
 
 #include "ensure.h"
+#include "graphics/line_data.h"
 #include "log.h"
 #include "pass_key.h"
-#include "primitives/line_data.h"
 
 namespace game
 {

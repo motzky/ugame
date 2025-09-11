@@ -8,11 +8,11 @@
 #include <Jolt/Renderer/DebugRendererSimple.h>
 
 #include "ensure.h"
+#include "graphics/color.h"
+#include "graphics/line_data.h"
 #include "log.h"
 #include "math/vector3.h"
 #include "physics/rigid_body.h"
-#include "primitives/color.h"
-#include "primitives/line_data.h"
 
 namespace game
 {

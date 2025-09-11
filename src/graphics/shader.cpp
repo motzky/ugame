@@ -1,4 +1,4 @@
-#include "shader.h"
+#include "graphics/shader.h"
 
 #include "ensure.h"
 #include "exception.h"

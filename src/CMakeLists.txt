@@ -1,35 +1,12 @@
 add_library(
     gamelib STATIC
     buffer_writer.cpp
-    buffer.cpp
     camera.cpp
-    cube_map.cpp
-    events/key_event.cpp
-    events/mouse_button_event.cpp
-    events/mouse_event.cpp
     exception.cpp
-    frame_buffer.cpp
-    material.cpp
-    mesh.cpp
     mesh_loader.cpp
-    physics/box_shape.cpp
-    physics/cylinder_shape.cpp
-    physics/debug_renderer.cpp
-    physics/jolt_utils.cpp
-    physics/physics_system.cpp
-    physics/rigid_body.cpp
-    physics/shape.cpp
-    physics/sphere_shape.cpp
     primitives/debug_lines.cpp
     primitives/entity.cpp
-    renderer.cpp
     resource_loader.cpp
-    shader.cpp
-    texture.cpp
-    texture_sampler.cpp
-    tlv/tlv_entry.cpp
-    tlv/tlv_reader.cpp
-    tlv/tlv_writer.cpp
 )
 
 add_library(imguilib STATIC
@@ -42,6 +19,11 @@ add_library(imguilib STATIC
 
     ${imguizmo_SOURCE_DIR}/ImGuizmo.cpp
 )
+
+add_subdirectory(events)
+add_subdirectory(graphics)
+add_subdirectory(physics)
+add_subdirectory(tlv)
 
 add_executable(
     nathan_stream

@@ -46,7 +46,7 @@ namespace game
         Texture(TextureUsage usage, std::uint32_t width, std::uint32_t height);
         Texture(const TextureDescription &data);
         Texture(const TlvReader &reader, std::string_view name);
-        Texture(TextureUsage usage, std::span<const std::byte> data, std::uint32_t width, std::uint32_t height);
+        // Texture(TextureUsage usage, std::span<const std::byte> data, std::uint32_t width, std::uint32_t height);
 
         auto native_handle() const -> ::GLuint;
 

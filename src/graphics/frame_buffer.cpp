@@ -1,11 +1,11 @@
-#include "frame_buffer.h"
+#include "graphics/frame_buffer.h"
 
 #include <cstdint>
 
 #include "auto_release.h"
 #include "ensure.h"
-#include "opengl.h"
-#include "texture.h"
+#include "graphics/opengl.h"
+#include "graphics/texture.h"
 
 namespace game
 {

@@ -1,4 +1,4 @@
-#include "buffer.h"
+#include "graphics/buffer.h"
 
 #include <cstddef>
 #include <cstdint>
@@ -6,7 +6,7 @@
 
 #include "auto_release.h"
 #include "ensure.h"
-#include "opengl.h"
+#include "graphics/opengl.h"
 
 namespace game
 {
