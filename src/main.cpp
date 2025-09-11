@@ -144,7 +144,7 @@ auto main(int argc, char **argv) -> int
                         .quad_attenuation = 0.017}},
             .debug_lines = {}};
 
-        auto camera = game::Camera{{-30.f, 5.f, 0.f},
+        auto camera = game::Camera{{0.f, 5.f, 50.f},
                                    {0.f, 0.f, 0.f},
                                    {0.f, 1.f, 0.f},
                                    std::numbers::pi_v<float> / 4.f,

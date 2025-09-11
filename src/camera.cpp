@@ -11,9 +11,9 @@ namespace
 {
     auto create_direction(float pitch, float yaw) -> game::Vector3
     {
-        return game::Vector3::normalize({std::sin(yaw) * std::cos(pitch),
+        return game::Vector3::normalize({std::cos(yaw) * std::cos(pitch),
                                          std::sin(pitch),
-                                         std::cos(yaw) * std::cos(pitch)});
+                                         std::sin(yaw) * std::cos(pitch)});
     }
 
 }
@@ -22,7 +22,13 @@ namespace game
 {
     Camera::Camera(const Vector3 &position, const Vector3 &look_at, const Vector3 &up,
                    float fov, float width, float height, float near_plane, float far_plane)
-        : _view(Matrix4::look_at(position, look_at, up)), _projection(Matrix4::perspective(fov, width, height, near_plane, far_plane)), _position(position), _direction(look_at), _up(up), _pitch{}, _yaw{}
+        : _view(Matrix4::look_at(position, look_at, up)),
+          _projection(Matrix4::perspective(fov, width, height, near_plane, far_plane)),
+          _position(position),
+          _direction(look_at),
+          _up(up),
+          _pitch{},
+          _yaw{-std::numbers::pi_v<float> / 2.f}
     {
     }
 
