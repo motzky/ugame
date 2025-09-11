@@ -13,10 +13,29 @@
 
 namespace game
 {
-    Entity::Entity(const Mesh *mesh, const Material *material, const Vector3 &position, const Vector3 &scale, std::vector<std::tuple<const Texture *, const TextureSampler *>> &textures)
+    Entity::Entity(const Mesh *mesh,
+                   const Material *material,
+                   const Vector3 &position,
+                   const Vector3 &scale,
+                   std::vector<std::tuple<const Texture *, const TextureSampler *>> &textures)
         : _mesh(mesh),
           _material(material),
           _transform(position, scale),
+          _local_transform(),
+          _textures(textures)
+    {
+    }
+
+    Entity::Entity(const Mesh *mesh,
+                   const Material *material,
+                   const Vector3 &position,
+                   const Vector3 &scale,
+                   const Transform &local_transform,
+                   std::vector<std::tuple<const Texture *, const TextureSampler *>> &textures)
+        : _mesh(mesh),
+          _material(material),
+          _transform(position, scale),
+          _local_transform(local_transform),
           _textures(textures)
     {
     }
@@ -44,5 +63,9 @@ namespace game
     auto Entity::transform() const -> const Transform &
     {
         return _transform;
+    }
+    auto Entity::local_transform() const -> const Transform &
+    {
+        return _local_transform;
     }
 }

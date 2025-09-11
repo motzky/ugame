@@ -21,11 +21,18 @@ namespace game
                const Vector3 &position,
                const Vector3 &scale,
                std::vector<std::tuple<const Texture *, const TextureSampler *>> &textures);
+        Entity(const Mesh *mesh,
+               const Material *material,
+               const Vector3 &position,
+               const Vector3 &scale,
+               const Transform &local_transform,
+               std::vector<std::tuple<const Texture *, const TextureSampler *>> &textures);
 
         auto mesh() const -> const Mesh *;
         auto material() const -> const Material *;
         auto textures() const -> std::span<const std::tuple<const Texture *, const TextureSampler *>>;
         auto transform() const -> const Transform &;
+        auto local_transform() const -> const Transform &;
 
         auto set_position(const Vector3 &position) -> void;
         auto set_rotation(const Quaternion &rotation) -> void;
@@ -34,6 +41,7 @@ namespace game
         const Mesh *_mesh;
         const Material *_material;
         Transform _transform;
+        Transform _local_transform;
         std::vector<std::tuple<const Texture *, const TextureSampler *>> _textures;
     };
 
