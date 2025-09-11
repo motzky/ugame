@@ -9,14 +9,14 @@
 #include <ranges>
 #include <string>
 
-#include "ImGuizmo.h"
-#include "backends/imgui_impl_glfw.h"
-#include "backends/imgui_impl_opengl3.h"
-#include "imgui.h"
+#include <ImGuizmo.h>
+#include <backends/imgui_impl_glfw.h>
+#include <backends/imgui_impl_opengl3.h>
+#include <imgui.h>
 
 #include "camera.h"
+#include "graphics/scene.h"
 #include "math/vector3.h"
-#include "scene.h"
 #include "window.h"
 
 namespace game

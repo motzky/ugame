@@ -4,7 +4,7 @@
 
 #include "camera.h"
 #include "events/mouse_button_event.h"
-#include "scene.h"
+#include "graphics/scene.h"
 #include "window.h"
 
 namespace game

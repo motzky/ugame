@@ -12,12 +12,12 @@
 #include "graphics/material.h"
 #include "graphics/mesh.h"
 #include "graphics/opengl.h"
+#include "graphics/scene.h"
 #include "graphics/texture.h"
 #include "graphics/texture_sampler.h"
 #include "loaders/mesh_loader.h"
 #include "loaders/resource_loader.h"
 #include "primitives/entity.h"
-#include "scene.h"
 
 namespace
 {
