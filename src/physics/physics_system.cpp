@@ -1,6 +1,9 @@
 #include "physics/physics_sytem.h"
 
+#include <algorithm>
 #include <cstdarg>
+#include <ranges>
+#include <set>
 #include <thread>
 
 #include <Jolt/Jolt.h>
@@ -42,7 +45,7 @@ namespace
     public:
         virtual auto GetNumBroadPhaseLayers() const -> ::JPH::uint override
         {
-            return 2;
+            return std::to_underlying(game::PhysicsLayer::MAX_LAYER);
         }
 
         virtual auto GetBroadPhaseLayer(::JPH::ObjectLayer layer) const -> ::JPH::BroadPhaseLayer override
@@ -51,13 +54,15 @@ namespace
         }
 
 #if defined(JPH_EXTERNAL_PROFILE) || defined(JPH_PROFILE_ENABLED)
-        virtual auto GetBroadPhaseLayerName(::JPH::BroadPhaseLayer inLayer) const -> const char * override
+        virtual auto GetBroadPhaseLayerName(::JPH::BroadPhaseLayer layer) const -> const char * override
         {
-            switch (inLayer.GetValue())
+            auto native_layer = game::PhysicsLayer{layer.GetValue()};
+            switch (native_layer)
             {
-            case 0:
+                using enum game::PhysicsLayer;
+            case NON_MOVING:
                 return "NON_MOVING";
-            case 1:
+            case MOVING:
                 return "MOVING";
             default:
                 game::ensure(false, "unknown broad phase layer");
@@ -70,36 +75,24 @@ namespace
     class SimpleObjectVsBroadPhaseLayerFilter : public ::JPH::ObjectVsBroadPhaseLayerFilter
     {
     public:
-        virtual auto ShouldCollide(::JPH::ObjectLayer inlayer1, ::JPH::BroadPhaseLayer inlayer2) const -> bool override
+        virtual auto ShouldCollide(::JPH::ObjectLayer layer1, ::JPH::BroadPhaseLayer layer2) const -> bool override
         {
-            switch (inlayer1)
-            {
-            case 0:
-                return inlayer2.GetValue() == 1;
-            case 1:
-                return true;
-            default:
-                game::ensure(false, "Not implemented lauer");
-                return false;
-            }
+            return std::ranges::any_of(
+                std::set{game::PhysicsLayer{layer1}, game::PhysicsLayer{layer2.GetValue()}},
+                [](const auto &e)
+                { return e == game::PhysicsLayer::MOVING; });
         }
     };
 
     class SimpleObjectLayerPairFilter : public ::JPH::ObjectLayerPairFilter
     {
     public:
-        virtual auto ShouldCollide(::JPH::ObjectLayer inLayer1, ::JPH::ObjectLayer inLayer2) const -> bool override
+        virtual auto ShouldCollide([[maybe_unused]] ::JPH::ObjectLayer layer1, [[maybe_unused]] ::JPH::ObjectLayer layer2) const -> bool override
         {
-            switch (inLayer1)
-            {
-            case 0:
-                return inLayer2 == 1;
-            case 1:
-                return true;
-            default:
-                game::ensure(false, "Not implemented leyer");
-                return false;
-            }
+            return std::ranges::any_of(
+                std::set{game::PhysicsLayer{layer1}, game::PhysicsLayer{layer2}},
+                [](const auto &e)
+                { return e == game::PhysicsLayer::MOVING; });
         }
     };
 }

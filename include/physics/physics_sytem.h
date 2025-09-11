@@ -8,6 +8,14 @@
 
 namespace game
 {
+    enum class PhysicsLayer
+    {
+        NON_MOVING,
+        MOVING,
+
+        MAX_LAYER
+    };
+
     class PhysicsSystem
     {
     public:

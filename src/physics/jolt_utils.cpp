@@ -12,16 +12,17 @@
 #include "graphics/line_data.h"
 #include "log.h"
 #include "math/vector3.h"
+#include "physics/physics_sytem.h"
 #include "physics/rigid_body.h"
 
 namespace game
 {
-    auto to_native(::JPH::RVec3Arg v) -> game::Vector3
+    auto to_native(::JPH::RVec3Arg v) -> Vector3
     {
         return {v.GetX(), v.GetY(), v.GetZ()};
     }
 
-    auto to_native(::JPH::ColorArg c) -> game::Color
+    auto to_native(::JPH::ColorArg c) -> Color
     {
         const auto v = c.ToVec4();
         return {v.GetX(), v.GetY(), v.GetZ()};
@@ -41,44 +42,49 @@ namespace game
     {
         switch (type)
         {
-            using enum game::RigidBodyType;
+            using enum RigidBodyType;
         case STATIC:
             return ::JPH::EMotionType::Static;
         case DYNAMIC:
             return ::JPH::EMotionType::Dynamic;
 
         default:
-            throw game::Exception("unknown RigidBodyType");
+            throw Exception("unknown RigidBodyType");
         }
     }
 
-    auto to_layer(game::RigidBodyType type) -> JPH::ObjectLayer
+    auto to_layer(RigidBodyType type) -> PhysicsLayer
     {
         switch (type)
         {
-            using enum game::RigidBodyType;
+            using enum RigidBodyType;
+            using enum PhysicsLayer;
         case STATIC:
-            return 1u;
+            return NON_MOVING;
         case DYNAMIC:
-            return 0u;
+            return MOVING;
 
         default:
-            throw game::Exception("unknown RigidBodyType");
+            throw Exception("unknown RigidBodyType");
         }
     }
+    auto to_jolt(PhysicsLayer layer) -> ::JPH::ObjectLayer
+    {
+        return static_cast<::JPH::ObjectLayer>(layer);
+    }
 
-    auto to_activation(game::RigidBodyType type) -> ::JPH::EActivation
+    auto to_activation(RigidBodyType type) -> ::JPH::EActivation
     {
         switch (type)
         {
-            using enum game::RigidBodyType;
+            using enum RigidBodyType;
         case STATIC:
             return ::JPH::EActivation::DontActivate;
         case DYNAMIC:
             return ::JPH::EActivation::Activate;
 
         default:
-            throw game::Exception("unknown RigidBodyType");
+            throw Exception("unknown RigidBodyType");
         }
     }
 }

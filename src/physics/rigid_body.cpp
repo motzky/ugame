@@ -20,7 +20,11 @@ namespace game
           _body_interface(std::addressof(body_interface))
     {
         const auto body_settings = ::JPH::BodyCreationSettings{
-            shape.native_handle(), to_jolt(position), ::JPH::Quat::sIdentity(), to_jolt(_type), to_layer(_type)};
+            shape.native_handle(),
+            to_jolt(position),
+            ::JPH::Quat::sIdentity(),
+            to_jolt(_type),
+            to_jolt(to_layer(_type))};
 
         _body = body_interface.CreateBody(body_settings);
         body_interface.AddBody(_body->GetID(), to_activation(_type));
