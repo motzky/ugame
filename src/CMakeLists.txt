@@ -4,14 +4,14 @@ add_library(
     buffer.cpp
     camera.cpp
     cube_map.cpp
+    events/key_event.cpp
+    events/mouse_button_event.cpp
+    events/mouse_event.cpp
     exception.cpp
     frame_buffer.cpp
-    key_event.cpp
     material.cpp
     mesh.cpp
     mesh_loader.cpp
-    mouse_button_event.cpp
-    mouse_event.cpp
     physics/box_shape.cpp
     physics/cylinder_shape.cpp
     physics/debug_renderer.cpp

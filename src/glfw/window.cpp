@@ -14,12 +14,12 @@
 
 #include "auto_release.h"
 #include "ensure.h"
-#include "event.h"
+#include "events/event.h"
+#include "events/key_event.h"
+#include "events/mouse_button_event.h"
+#include "events/mouse_event.h"
 #include "key.h"
-#include "key_event.h"
 #include "log.h"
-#include "mouse_button_event.h"
-#include "mouse_event.h"
 #include "opengl.h"
 #include "stop_event.h"
 

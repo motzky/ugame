@@ -1,4 +1,4 @@
-#include "mouse_button_event.h"
+#include "events/mouse_button_event.h"
 
 namespace game
 {
