@@ -105,11 +105,11 @@ auto main(int argc, char **argv) -> int
 
         for (auto i = 0; i < 1; ++i)
         {
-            for (auto j = 0; j < 50; ++j)
+            for (auto j = 0; j < 100; ++j)
             {
-                auto x = static_cast<float>(i) * 2.5f;
-                auto y = 30.f + (j * 2.5f);
-                auto z = static_cast<float>(j) * .3f;
+                auto x = static_cast<float>(i) * 3.5f;
+                auto y = 30.f + (j * 10.5f);
+                auto z = static_cast<float>(j) * .1f;
                 const auto start_pos = game::Vector3{x, y, z};
 
                 entities.push_back({{&mesh,
@@ -139,7 +139,7 @@ auto main(int argc, char **argv) -> int
                         .quad_attenuation = 0.017}},
             .debug_lines = {}};
 
-        auto camera = game::Camera{{0.f, 5.f, 30.f},
+        auto camera = game::Camera{{0.f, 5.f, 50.f},
                                    {0.f, 0.f, 0.f},
                                    {0.f, 1.f, 0.f},
                                    std::numbers::pi_v<float> / 4.f,
