@@ -4,8 +4,13 @@
 #include <format>
 #include <span>
 
+#include <Jolt/Jolt.h>
+#include <Jolt/Math/Mat44.h>
+#include <Jolt/Math/Quat.h>
+
 #include "math/quaternion.h"
 #include "math/vector3.h"
+#include "physics/jolt_utils.h"
 
 namespace game
 {
@@ -104,28 +109,37 @@ namespace game
         constexpr Matrix4(const Quaternion &rotation)
             : Matrix4{}
         {
-            // // Note default initalized to identity(mat4)
-            float xx = rotation.x * rotation.x;
-            float yy = rotation.y * rotation.y;
-            float zz = rotation.z * rotation.z;
-            float xy = rotation.x * rotation.y;
-            float xz = rotation.x * rotation.z;
-            float yz = rotation.y * rotation.z;
-            float wx = rotation.w * rotation.x;
-            float wy = rotation.w * rotation.y;
-            float wz = rotation.w * rotation.z;
+            // Note default initalized to identity(mat4)
+            auto x = rotation.x;
+            auto y = rotation.y;
+            auto z = rotation.z;
+            auto w = rotation.w;
 
-            _elements[0] = 1.0f - 2.0f * (yy + zz);
-            _elements[1] = 2.0f * (xy - wz);
-            _elements[2] = 2.0f * (xz + wy);
+            auto tx = x + x;
+            auto ty = y + y;
+            auto tz = z + z;
 
-            _elements[4] = 2.0f * (xy + wz);
-            _elements[5] = 1.0f - 2.0f * (xx + zz);
-            _elements[6] = 2.0f * (yz - wx);
+            auto xx = tx * x;
+            auto yy = ty * y;
+            auto zz = tz * z;
+            auto xy = tx * y;
+            auto xz = tx * z;
+            auto xw = tx * w;
+            auto yz = ty * z;
+            auto yw = ty * w;
+            auto zw = tz * w;
 
-            _elements[8] = 2.0f * (xz - wy);
-            _elements[9] = 2.0f * (yz + wx);
-            _elements[10] = 1.0f - 2.0f * (xx + yy);
+            _elements[0] = (1.f - yy) - zz;
+            _elements[1] = xy + zw;
+            _elements[2] = xz - yw;
+
+            _elements[4] = xy - zw,
+            _elements[5] = (1.f - zz) - xx;
+            _elements[6] = yz + xw;
+
+            _elements[8] = xz + yw;
+            _elements[9] = yz - xw;
+            _elements[10] = (1.f - xx) - yy;
         }
 
         static auto look_at(const Vector3 &eye, const Vector3 &look_at, const Vector3 &up) -> Matrix4;
