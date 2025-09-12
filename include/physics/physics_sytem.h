@@ -2,6 +2,7 @@
 
 #include <memory>
 
+#include "physics/character_controller.h"
 #include "physics/debug_renderer.h"
 #include "physics/rigid_body.h"
 #include "physics/shape.h"
@@ -34,6 +35,8 @@ namespace game
 
         auto create_rigid_body(const Shape &shape,
                                const Vector3 &position, RigidBodyType type) const -> RigidBody;
+
+        auto character_controller() const -> CharacterController &;
 
     private:
         struct Implementation;

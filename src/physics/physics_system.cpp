@@ -21,6 +21,7 @@
 #include "ensure.h"
 #include "log.h"
 #include "physics/box_shape.h"
+#include "physics/character_controller.h"
 #include "physics/debug_renderer.h"
 #include "physics/rigid_body.h"
 #include "physics/sphere_shape.h"
@@ -112,6 +113,7 @@ namespace game
         ::JPH::PhysicsSystem physics_system;
         ::JPH::BodyID sphere_id;
         DebugRenderer debug_renderer = {{}};
+        std::unique_ptr<CharacterController> character_controller;
     };
 
     PhysicsSystem::PhysicsSystem()
@@ -148,6 +150,8 @@ namespace game
             _impl->object_layer_pair_filter);
 
         _impl->physics_system.SetGravity({0.f, -9.80665f, 0.f});
+
+        _impl->character_controller = std::make_unique<CharacterController>(std::addressof(_impl->physics_system), PassKey<PhysicsSystem>{});
     }
 
     auto PhysicsSystem::optimize() const -> void
@@ -177,4 +181,8 @@ namespace game
         return _impl->debug_renderer;
     }
 
+    auto PhysicsSystem::character_controller() const -> CharacterController &
+    {
+        return *_impl->character_controller;
+    }
 }

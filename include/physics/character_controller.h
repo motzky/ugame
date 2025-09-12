@@ -3,8 +3,9 @@
 #include <Jolt/Jolt.h>
 
 #include <Jolt/Physics/Character/CharacterVirtual.h>
+#include <Jolt/Physics/PhysicsSystem.h>
 
-#include <utils/pass_key.h>
+#include "utils/pass_key.h"
 
 namespace game
 {
@@ -12,7 +13,7 @@ namespace game
     class CharacterController
     {
     public:
-        CharacterController(PassKey<PhysicsSystem>);
+        CharacterController(::JPH::PhysicsSystem *physics_system, PassKey<PhysicsSystem>);
 
     private:
         ::JPH::Ref<::JPH::CharacterVirtual> _character;
