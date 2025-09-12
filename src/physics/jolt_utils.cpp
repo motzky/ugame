@@ -43,6 +43,11 @@ namespace game
     //     return ::JPH::Color();
     // }
 
+    auto to_jolt(const Quaternion &q) -> ::JPH::Quat
+    {
+        return ::JPH::Quat{q.x, q.y, q.z, q.w};
+    }
+
     auto to_jolt(RigidBodyType type) -> ::JPH::EMotionType
     {
         switch (type)
