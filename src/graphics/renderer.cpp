@@ -154,8 +154,7 @@ namespace game
 
             material->use();
             const auto model = Matrix4{entity->transform()};
-            const auto local_transform = Matrix4{entity->local_transform()};
-            material->set_uniform("model", model * local_transform);
+            material->set_uniform("model", model);
             material->bind_textures(entity->textures());
 
             mesh->bind();

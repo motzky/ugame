@@ -54,7 +54,7 @@ namespace game
     }
     auto Entity::set_rotation(const Quaternion &rotation) -> void
     {
-        _transform.rotation = rotation;
+        _transform.rotation = rotation * _local_transform.rotation;
     }
     auto Entity::textures() const -> std::span<const std::tuple<const Texture *, const TextureSampler *>>
     {
