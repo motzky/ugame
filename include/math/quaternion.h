@@ -70,6 +70,6 @@ struct std::formatter<game::Quaternion>
                               obj.x,
                               obj.y,
                               obj.z,
-                              obj.y);
+                              obj.w);
     }
 };
