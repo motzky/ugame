@@ -50,7 +50,9 @@ namespace game
         if (_filesize == 0)
         {
             // file is new
-            ::truncate64(path.string().c_str(), 4096u);
+            auto res = ::truncate64(path.string().c_str(), 4096u);
+            ensure(res == 0, "failed to extend file size");
+
             get_file_size();
         }
 
@@ -117,7 +119,7 @@ namespace game
         ::munmap(_map_view, _filesize);
 
         auto res = ::ftruncate64(_handle, new_size);
-        ensure(res == 0, "fialed to extens file size");
+        ensure(res == 0, "failed to extend file size");
 
         get_file_size();
 

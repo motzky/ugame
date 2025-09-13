@@ -63,6 +63,12 @@ target_compile_features(
 )
 
 if(MSVC)
+target_include_directories(
+    gamelib
+    PUBLIC
+    third_party
+)
+
 target_compile_options(
     gamelib
     # PUBLIC /std:c++latest /Wall /WX

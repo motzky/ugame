@@ -95,11 +95,6 @@ set(FETCHCONTENT_QUIET FALSE)
 
 include_directories(include)
 
-if(MSVC)
-include_directories(third_party)
-endif()
-
-
 add_subdirectory(src)
 add_subdirectory(tools)
 
