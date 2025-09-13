@@ -33,7 +33,7 @@ namespace game
         return to_native(_character->GetPosition());
     }
 
-    auto CharacterController::draw(::JPH::DebugRenderer *debug_renderer, PassKey<PhysicsSystem>) const -> void
+    auto CharacterController::debug_draw(::JPH::DebugRenderer *debug_renderer, PassKey<PhysicsSystem>) const -> void
     {
         const auto transform = _character->GetCenterOfMassTransform();
         return _character->GetShape()->Draw(debug_renderer, transform, ::JPH::Vec3::sOne(), ::JPH::Color::sGreen, false, true);

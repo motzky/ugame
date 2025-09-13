@@ -19,7 +19,7 @@ namespace game
 
         auto position() const -> Vector3;
 
-        auto draw(::JPH::DebugRenderer *debug_renderer, PassKey<PhysicsSystem>) const -> void;
+        auto debug_draw(::JPH::DebugRenderer *debug_renderer, PassKey<PhysicsSystem>) const -> void;
 
     private:
         ::JPH::Ref<::JPH::CharacterVirtual> _character;
