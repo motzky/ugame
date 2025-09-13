@@ -27,6 +27,7 @@ namespace game
     auto to_jolt(const Quaternion &q) -> ::JPH::Quat;
     auto to_jolt(RigidBodyType type) -> ::JPH::EMotionType;
     auto to_jolt(PhysicsLayer) -> ::JPH::ObjectLayer;
+    auto to_jolt_layer(RigidBodyType type) -> ::JPH::ObjectLayer;
 
     auto to_layer(RigidBodyType type) -> PhysicsLayer;
     auto to_activation(RigidBodyType type) -> ::JPH::EActivation;

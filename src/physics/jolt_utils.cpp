@@ -83,6 +83,11 @@ namespace game
         return static_cast<::JPH::ObjectLayer>(layer);
     }
 
+    auto to_jolt_layer(RigidBodyType type) -> ::JPH::ObjectLayer
+    {
+        return to_jolt(to_layer(type));
+    }
+
     auto to_activation(RigidBodyType type) -> ::JPH::EActivation
     {
         switch (type)
