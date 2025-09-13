@@ -115,8 +115,8 @@ namespace
         {
             return;
         }
-        static auto last_x = float{};
-        static auto last_y = float{};
+        static auto last_x = float{static_cast<float>(xpos)};
+        static auto last_y = float{static_cast<float>(ypos)};
 
         auto xf = static_cast<float>(xpos);
         auto yf = static_cast<float>(ypos);
