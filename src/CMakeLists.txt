@@ -65,7 +65,8 @@ target_compile_features(
 if(MSVC)
 target_compile_options(
     gamelib
-    PUBLIC /std:c++latest /Wall /WX
+    # PUBLIC /std:c++latest /Wall /WX
+    PUBLIC /std:c++latest /Wall
 )
 target_compile_definitions(
     gamelib
@@ -74,7 +75,8 @@ target_compile_definitions(
 )
 target_compile_options(
     nathan_stream
-    PUBLIC /std:c++latest /Wall /WX
+    # PUBLIC /std:c++latest /Wall /WX
+    PUBLIC /std:c++latest /Wall
 )
 target_compile_definitions(
     nathan_stream
