@@ -18,7 +18,7 @@ namespace game
         TAB = 0x9,
         RETURN = 0xd,
 
-#ifdef WIN32
+#ifdef _WIN32
         LSHIFT = 0x10,
         LCTRL = 0x11,
 #else
@@ -33,7 +33,7 @@ namespace game
         PG_DOWN = 0x22,
         END = 0x23,
         HOME = 0x24,
-#ifdef WIN32
+#ifdef _WIN32
         LEFT_ARROW = 0x25,
         UP_ARROW = 0x26,
         RIGHT_ARROW = 0x27,
@@ -41,7 +41,12 @@ namespace game
 #endif
 
         INSERT = 0x2d,
+#ifdef _WIN32
+        DELETE_KEY = 0x2e,
+#else
+
         DELETE = 0x2e,
+#endif
 
         KEY_0 = 0x30,
         KEY_1 = 0x31,
@@ -99,7 +104,7 @@ namespace game
         UP_ARROW = 0x109,
 #endif
 
-#ifdef WIN32
+#ifdef _WIN32
         F1 = VK_F1,
         F2 = VK_F2,
         F3 = VK_F3,

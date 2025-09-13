@@ -14,15 +14,15 @@
 #include <Windowsx.h>
 #include <hidusage.h>
 
+#include "core/key.h"
 #include "ensure.h"
 #include "events/event.h"
 #include "events/key_event.h"
+#include "events/mouse_button_event.h"
 #include "events/mouse_event.h"
-#include "key.h"
+#include "events/stop_event.h"
+#include "graphics/opengl.h"
 #include "log.h"
-#include "mouse_button_event.h"
-#include "opengl.h"
-#include "stop_event.h"
 #include "utils/auto_release.h"
 
 #pragma comment(lib, "opengl32.lib")
