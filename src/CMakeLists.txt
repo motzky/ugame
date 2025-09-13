@@ -69,6 +69,25 @@ target_compile_options(
     PUBLIC -std=c++23 -Wall -Wextra -Wpedantic -Werror -pedantic-errors
 )
 
+if(WIN32)
+target_link_libraries(
+    gamelib
+    PUBLIC
+        imguilib
+        Jolt
+    PRIVATE
+        GL
+        stdc++exp
+)
+target_link_libraries(
+    nathan_stream
+    PUBLIC
+        gamelib
+    PRIVATE
+        GL
+        stdc++exp        
+)
+elseif(UNIX)
 target_link_libraries(
     gamelib
     PUBLIC
@@ -79,17 +98,6 @@ target_link_libraries(
         Backtrace::Backtrace
         stdc++exp
 )
-
-if(WIN32)
-target_link_libraries(
-    nathan_stream
-    PUBLIC
-        gamelib
-    PRIVATE
-        GL
-        stdc++exp        
-)
-elseif(UNIX)
 target_link_libraries(
     nathan_stream
     PUBLIC
