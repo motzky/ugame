@@ -5,6 +5,7 @@ include(GoogleTest)
 mark_as_advanced(BUILD_GMOCK BUILD_GTEST gtest_hide_internal_symbols)
 
 add_executable(unit_tests
+    camera_object_transformer_tests.cpp
     matrix4_tests.cpp
     quaternion_tests.cpp
     static_object_transformer_tests.cpp

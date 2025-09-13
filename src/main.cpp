@@ -18,6 +18,7 @@
 #include "events/key_event.h"
 #include "events/mouse_event.h"
 #include "events/stop_event.h"
+#include "game/camera_object_transformer.h"
 #include "game/object_transformer.h"
 #include "game/static_object_transformer.h"
 #include "graphics/cube_map.h"
@@ -62,6 +63,15 @@ auto main(int argc, char **argv) -> int
         game::log::info("Creating Window {} x {}...", width, height);
         auto window = game::Window{width, height};
 
+        auto camera = game::Camera{{0.f, 2.f, 20.f},
+                                   {0.f, 0.f, 0.f},
+                                   {0.f, 1.f, 0.f},
+                                   std::numbers::pi_v<float> / 4.f,
+                                   static_cast<float>(window.width()),
+                                   static_cast<float>(window.height()),
+                                   0.001f,
+                                   100.f};
+
         auto resource_loader = game::ResourceLoader{argv[1]};
 
         auto mesh_loader = game::MeshLoader{resource_loader};
@@ -101,6 +111,8 @@ auto main(int argc, char **argv) -> int
         auto entities = std::vector<TransformedEntity>{};
         entities.emplace_back(game::Entity{&mesh, &material, {}, {0.4f}, {{0.f}, {1.f}, {0.707107f, 0.f, 0.f, 0.707107f}}, tex_samp},
                               std::make_unique<game::StaticObjectTransformer>(game::Vector3{}));
+        entities.emplace_back(game::Entity{&mesh, &material, {5.f, 0.f, 0.f}, {0.4f}, {{0.f}, {1.f}, {0.707107f, 0.f, 0.f, 0.707107f}}, tex_samp},
+                              std::make_unique<game::CameraObjectTransformer>(game::Vector3{5.f, 0.f, 0.f}, camera));
 
         auto scene = game::Scene{
             .entities = entities |
@@ -118,15 +130,6 @@ auto main(int argc, char **argv) -> int
                         .linear_attenuation = .07,
                         .quad_attenuation = 0.017}},
             .debug_lines = {}};
-
-        auto camera = game::Camera{{0.f, 2.f, 20.f},
-                                   {0.f, 0.f, 0.f},
-                                   {0.f, 1.f, 0.f},
-                                   std::numbers::pi_v<float> / 4.f,
-                                   static_cast<float>(window.width()),
-                                   static_cast<float>(window.height()),
-                                   0.001f,
-                                   100.f};
 
         auto skybox = game::CubeMap{
             reader,

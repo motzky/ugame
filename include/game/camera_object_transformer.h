@@ -18,5 +18,6 @@ namespace game
     private:
         Vector3 _position;
         const Camera &_camera;
+        Vector3 _camera_last_position;
     };
 }
