@@ -47,7 +47,13 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ConorMacBride/install-package@v1
         with:
-          apt: gcc-14 libglfw3 libglfw3-dev
+          apt: libglfw3 libglfw3-dev
+
+      - name: Set GCC 14 as default on Ubuntu
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          echo "CMAKE_C_COMPILER=gcc-14" >> $GITHUB_ENV
+          echo "CMAKE_CXX_COMPILER=g++-14" >> $GITHUB_ENV
 
       - name: Set reusable strings
         # Turn repeated input strings (such as the build output directory) into step outputs. These step outputs can be used throughout the workflow file.
@@ -57,12 +63,10 @@ jobs:
           echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
 
       - name: Configure CMake
-        # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
-        # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
         run: >
           cmake -B ${{ steps.strings.outputs.build-output-dir }}
-          -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
-          -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
+          -DCMAKE_CXX_COMPILER=${{ env.CMAKE_CXX_COMPILER || matrix.cpp_compiler }}
+          -DCMAKE_C_COMPILER=${{ env.CMAKE_C_COMPILER || matrix.c_compiler }}
           -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
           -S ${{ github.workspace }}
 
