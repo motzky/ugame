@@ -33,6 +33,7 @@ endif()
 
 add_subdirectory(core)
 add_subdirectory(events)
+add_subdirectory(game)
 add_subdirectory(graphics)
 add_subdirectory(loaders)
 add_subdirectory(physics)
