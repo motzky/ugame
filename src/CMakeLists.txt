@@ -87,7 +87,6 @@ target_link_libraries(
         gamelib
     PRIVATE
         GL
-        Backtrace::Backtrace
         stdc++exp        
 )
 elseif(UNIX)

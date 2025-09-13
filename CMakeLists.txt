@@ -80,8 +80,8 @@ FetchContent_MakeAvailable(assimp)
 
 if(UNIX)
 find_package(glfw3 REQUIRED)
-endif()
 find_package(Backtrace REQUIRED)
+endif()
 
 set (CMAKE_CXX_STANDARD 23)
 set (CMAKE_CXX_FLAGS -std=c++23)
