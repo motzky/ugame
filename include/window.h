@@ -24,6 +24,7 @@ namespace game
 #endif
 
         Window(std::uint32_t width, std::uint32_t height);
+        Window(std::uint32_t width, std::uint32_t height, std::uint32_t x, std::uint32_t y);
         ~Window() = default;
 
         Window(const Window &) = delete;

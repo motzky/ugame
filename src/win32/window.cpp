@@ -251,6 +251,11 @@ namespace
 namespace game
 {
     Window::Window(std::uint32_t width, std::uint32_t height)
+        : Window(width, height, 0u, 0u)
+    {
+    }
+
+    Window::Window(std::uint32_t width, std::uint32_t height, std::uint32_t x, std::uint32_t y)
         : _windowHandle({}), _width(width), _height(height),
           //
           _wc({}), _dc({})
@@ -276,14 +281,14 @@ namespace game
 
         _windowHandle = {::CreateWindowExA(
                              0,
-                             _wc.lpszClassName,                                                            // Class name, should be registered before this
-                             "Game Window",                                                                // Window title
-                             WS_OVERLAPPEDWINDOW,                                                          // Window style
-                             CW_USEDEFAULT, CW_USEDEFAULT, rect.right - rect.left, rect.bottom - rect.top, // Position and size
-                             nullptr,                                                                      // Parent window
-                             nullptr,                                                                      // Menu
-                             _wc.hInstance,                                                                // Instance handle
-                             nullptr                                                                       // Additional application data
+                             _wc.lpszClassName,                                    // Class name, should be registered before this
+                             "Game Window",                                        // Windwindow title
+                             WS_OVERLAPPEDWINDOW,                                  // Window style
+                             x, y, rect.right - rect.left, rect.bottom - rect.top, // Position and size
+                             nullptr,                                              // Parent window
+                             nullptr,                                              // Menu
+                             _wc.hInstance,                                        // Instance handle
+                             nullptr                                               // Additional application data
                              ),
                          ::DestroyWindow}; // Use AutoRelease to manage the window handle
 

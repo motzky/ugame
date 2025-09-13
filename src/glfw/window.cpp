@@ -158,6 +158,11 @@ namespace
 namespace game
 {
     Window::Window(std::uint32_t width, std::uint32_t height)
+        : Window(width, height, 0u, 0u)
+    {
+    }
+
+    Window::Window(std::uint32_t width, std::uint32_t height, std::uint32_t x, std::uint32_t y)
         : _windowHandle{}, _width(width), _height(height)
     {
         log::info("Running on *nix, crating window with GLFW");
@@ -167,9 +172,20 @@ namespace game
         ::glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
         ::glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
 
+        if (x != 0 && y != 0)
+        {
+            ::glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
+        }
+
         _windowHandle = {::glfwCreateWindow(width, height, "Game Window", nullptr, nullptr),
                          ::glfwDestroyWindow};
         game::ensure(_windowHandle, "failed to create window");
+
+        if (x != 0 && y != 0)
+        {
+            ::glfwSetWindowPos(_windowHandle, x, y);
+            ::glfwShowWindow(_windowHandle);
+        }
 
         ::glfwSetKeyCallback(_windowHandle, key_callback);
         if (::glfwRawMouseMotionSupported())
