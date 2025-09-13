@@ -139,7 +139,7 @@ auto main(int argc, char **argv) -> int
                         .quad_attenuation = 0.017}},
             .debug_lines = {}};
 
-        auto camera = game::Camera{{0.f, 5.f, 50.f},
+        auto camera = game::Camera{{0.f, 5.f, 20.f},
                                    {0.f, 0.f, 0.f},
                                    {0.f, 1.f, 0.f},
                                    std::numbers::pi_v<float> / 4.f,
@@ -160,6 +160,8 @@ auto main(int argc, char **argv) -> int
 
         auto show_debug = false;
         const auto debug_ui = game::DebugUi(window.native_handle(), scene, camera, gamma);
+
+        auto show_physics_debug = false;
 
         // const auto sphere_shape = ps.create_shape<game::SphereShape>(5.f);
         // [[maybe_unused]] auto sphere = ps.create_rigid_body(sphere_shape, {0.f, 100.f, 0.f}, game::RigidBodyType::DYNAMIC);
@@ -190,6 +192,10 @@ auto main(int argc, char **argv) -> int
                             {
                                 show_debug = !show_debug;
                                 window.show_cursor(show_debug);
+                            }
+                            if (arg.key() == game::Key::F2 && arg.state() == game::KeyState::UP)
+                            {
+                                show_physics_debug = !show_physics_debug;
                             }
                         }
                         else if constexpr (std::same_as<T, game::MouseEvent>)
@@ -238,7 +244,10 @@ auto main(int argc, char **argv) -> int
             }
 
             const auto speed = key_state[game::Key::LSHIFT] ? 10.f : 3.f;
-            camera.translate(game::Vector3::normalize(walk_direction) * (speed / 60.f));
+            const auto velocity = game::Vector3::normalize(walk_direction) * speed;
+            ps.character_controller().set_linear_velocity(velocity);
+
+            camera.set_position(ps.character_controller().position() + game::Vector3{0.f, 2.f, 0.f});
             camera.update();
 
             ps.update();
@@ -248,7 +257,7 @@ auto main(int argc, char **argv) -> int
                 render.set_rotation(physics.rotation());
             }
 
-            if (show_debug)
+            if (show_physics_debug)
             {
                 scene.debug_lines = {ps.debug_renderer().lines()};
             }
