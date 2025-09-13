@@ -84,7 +84,11 @@ find_package(Backtrace REQUIRED)
 endif()
 
 set (CMAKE_CXX_STANDARD 23)
+if(MSVC)
+set (CMAKE_CXX_FLAGS /std=c++latest)
+else()
 set (CMAKE_CXX_FLAGS -std=c++23)
+endif()
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(FETCHCONTENT_QUIET FALSE)

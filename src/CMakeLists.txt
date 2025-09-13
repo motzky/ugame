@@ -56,18 +56,31 @@ target_compile_features(
     gamelib
     PUBLIC cxx_std_23
 )
-target_compile_options(
-    gamelib
-    PUBLIC -std=c++23 -Wall -Wextra -Wpedantic -Werror -pedantic-errors
-)
+
 target_compile_features(
     nathan_stream
     PUBLIC cxx_std_23
 )
+
+if(MSVC)
+target_compile_options(
+    gamelib
+    PUBLIC /std=c++latest /Wall /WX
+)
+target_compile_options(
+    nathan_stream
+    PUBLIC /std=c++latest /Wall /WX
+)
+else()
+target_compile_options(
+    gamelib
+    PUBLIC -std=c++23 -Wall -Wextra -Wpedantic -Werror -pedantic-errors
+)
 target_compile_options(
     nathan_stream
     PUBLIC -std=c++23 -Wall -Wextra -Wpedantic -Werror -pedantic-errors
 )
+endif()
 
 if(WIN32)
 target_link_libraries(
