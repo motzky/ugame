@@ -9,7 +9,7 @@
 #include <string_view>
 
 #ifdef WIN32
-#include <Windows>
+#include <Windows.h>
 #else
 #include <limits>
 #include <sys/mman.h>

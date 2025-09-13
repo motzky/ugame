@@ -2,6 +2,7 @@
 
 #include <format>
 #include <string_view>
+#include <utility>
 
 #include "core/exception.h"
 #include "graphics/opengl.h"

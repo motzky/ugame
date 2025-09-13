@@ -65,11 +65,21 @@ target_compile_features(
 if(MSVC)
 target_compile_options(
     gamelib
-    PUBLIC /std=c++latest /Wall /WX
+    PUBLIC /std:c++latest /Wall /WX
+)
+target_compile_definitions(
+    gamelib
+    PRIVATE
+    -DWIN32 -D_WIN32
 )
 target_compile_options(
     nathan_stream
-    PUBLIC /std=c++latest /Wall /WX
+    PUBLIC /std:c++latest /Wall /WX
+)
+target_compile_definitions(
+    nathan_stream
+    PRIVATE
+    -DWIN32 -D_WIN32
 )
 else()
 target_compile_options(
