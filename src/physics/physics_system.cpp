@@ -24,6 +24,7 @@
 #include "physics/box_shape.h"
 #include "physics/character_controller.h"
 #include "physics/debug_renderer.h"
+#include "physics/jolt_utils.h"
 #include "physics/rigid_body.h"
 #include "physics/sphere_shape.h"
 
@@ -171,6 +172,11 @@ namespace game
     auto PhysicsSystem::update() -> void
     {
         _impl->physics_system.Update(1.f / 60.f, 1, &_impl->temp_allocator, &_impl->job_system);
+        _impl->character_controller->update(
+            1.f / 60.f,
+            _impl->physics_system.GetDefaultBroadPhaseLayerFilter(to_jolt_layer(RigidBodyType::DYNAMIC)),
+            _impl->physics_system.GetDefaultLayerFilter(to_jolt_layer(RigidBodyType::DYNAMIC)),
+            {});
 
         _impl->debug_renderer.clear();
         static const auto settings = ::JPH::BodyManager::DrawSettings{};
