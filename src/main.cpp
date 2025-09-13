@@ -38,12 +38,6 @@
 #include "tlv/tlv_reader.h"
 #include "window.h"
 
-struct GameEntity
-{
-    game::Entity render_entity;
-    game::RigidBody physics_entity;
-};
-
 auto main(int argc, char **argv) -> int
 {
     game::log::info("starting game...");
@@ -58,10 +52,6 @@ auto main(int argc, char **argv) -> int
         // auto height = 720u;
         game::log::info("Creating Window {} x {}...", width, height);
         auto window = game::Window{width, height};
-
-        auto ps = game::PhysicsSystem{};
-        const auto floor_shape = ps.create_shape<game::BoxShape>(game::Vector3{50.f, 1.f, 50.f});
-        [[maybe_unused]] auto floor = ps.create_rigid_body(floor_shape, {0.f, -1.f, 0.f}, game::RigidBodyType::STATIC);
 
         auto resource_loader = game::ResourceLoader{argv[1]};
 
@@ -99,33 +89,14 @@ auto main(int argc, char **argv) -> int
 
         auto renderer = game::Renderer{resource_loader, mesh_loader, width, height};
 
-        auto entities = std::vector<GameEntity>{};
-
-        const auto cylinder_shape = ps.create_shape<game::CylinderShape>(.75f, .58f);
-
-        for (auto i = 0; i < 1; ++i)
-        {
-            for (auto j = 0; j < 100; ++j)
-            {
-                auto x = static_cast<float>(i) * 3.5f;
-                auto y = 20.f + (j * 10.5f);
-                auto z = static_cast<float>(j) * .1f;
-                const auto start_pos = game::Vector3{x, y, z};
-
-                entities.push_back({{&mesh,
-                                     &material,
-                                     start_pos,
-                                     game::Vector3{.4f},
-                                     {{0.f}, {1.f}, {0.707107f, 0.f, 0.f, 0.707107f}},
-                                     tex_samp},
-                                    ps.create_rigid_body(cylinder_shape, start_pos, game::RigidBodyType::DYNAMIC)});
-            }
-        }
+        auto entities = std::vector<game::Entity>{
+            {&mesh, &material, {}, {0.4f}, {{0.f}, {1.f}, {0.707107f, 0.f, 0.f, 0.707107f}}, tex_samp},
+        };
 
         auto scene = game::Scene{
             .entities = entities |
                         std::views::transform([](const auto &e)
-                                              { return &e.render_entity; }) |
+                                              { return std::addressof(e); }) |
                         std::ranges::to<std::vector>(),
             .ambient = {.r = .2f, .g = .2f, .b = .2f},
             .directional = {.direction = {-1.f, -1.f, -1.f}, .color = {.r = .3f, .g = .3f, .b = .3f}},
@@ -139,7 +110,7 @@ auto main(int argc, char **argv) -> int
                         .quad_attenuation = 0.017}},
             .debug_lines = {}};
 
-        auto camera = game::Camera{{0.f, 5.f, 20.f},
+        auto camera = game::Camera{{0.f, 2.f, 20.f},
                                    {0.f, 0.f, 0.f},
                                    {0.f, 1.f, 0.f},
                                    std::numbers::pi_v<float> / 4.f,
@@ -160,13 +131,6 @@ auto main(int argc, char **argv) -> int
 
         auto show_debug = false;
         const auto debug_ui = game::DebugUi(window.native_handle(), scene, camera, gamma);
-
-        auto show_physics_debug = false;
-
-        // const auto sphere_shape = ps.create_shape<game::SphereShape>(5.f);
-        // [[maybe_unused]] auto sphere = ps.create_rigid_body(sphere_shape, {0.f, 100.f, 0.f}, game::RigidBodyType::DYNAMIC);
-
-        ps.optimize();
 
         auto running = true;
 
@@ -193,18 +157,15 @@ auto main(int argc, char **argv) -> int
                                 show_debug = !show_debug;
                                 window.show_cursor(show_debug);
                             }
-                            if (arg.key() == game::Key::F2 && arg.state() == game::KeyState::UP)
-                            {
-                                show_physics_debug = !show_physics_debug;
-                            }
                         }
                         else if constexpr (std::same_as<T, game::MouseEvent>)
                         {
                             if (!show_debug)
                             {
+                                game::log::debug("{}", arg);
                                 static constexpr auto sensitivity = float{0.005f};
                                 camera.adjust_pitch(arg.delta_y() * sensitivity);
-                                camera.adjust_yaw(arg.delta_x() * sensitivity);
+                                camera.adjust_yaw(-arg.delta_x() * sensitivity);
                             }
                         }
                         else if constexpr (std::same_as<T, game::MouseButtonEvent>)
@@ -243,28 +204,12 @@ auto main(int argc, char **argv) -> int
                 walk_direction -= camera.up();
             }
 
+            walk_direction.y = 0.f;
+
             const auto speed = key_state[game::Key::LSHIFT] ? 10.f : 3.f;
-            const auto velocity = game::Vector3::normalize(walk_direction) * speed;
-            ps.character_controller().set_linear_velocity(velocity);
-
-            camera.set_position(ps.character_controller().position() + game::Vector3{0.f, 2.f, 0.f});
+            // const auto velocity = game::Vector3::normalize(walk_direction) * speed;
+            camera.translate(game::Vector3::normalize(walk_direction) * (speed / 60.f));
             camera.update();
-
-            ps.update();
-            for (auto &[render, physics] : entities)
-            {
-                render.set_position(physics.position());
-                render.set_rotation(physics.rotation());
-            }
-
-            if (show_physics_debug)
-            {
-                scene.debug_lines = {ps.debug_renderer().lines()};
-            }
-            else
-            {
-                scene.debug_lines.reset();
-            }
 
             renderer.render(camera, scene, skybox, sampler, gamma);
             if (show_debug)
