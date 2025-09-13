@@ -17,6 +17,7 @@ namespace game
         auto right() const -> Vector3;
         auto up() const -> Vector3;
         auto position() const -> Vector3;
+        auto set_position(const Vector3 &position) -> void;
 
         auto translate(const Vector3 &translation) -> void;
         auto view() const -> std::span<const float>;

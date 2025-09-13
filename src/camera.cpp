@@ -49,6 +49,11 @@ namespace game
         return _position;
     }
 
+    auto Camera::set_position(const Vector3 &position) -> void
+    {
+        _position = position;
+    }
+
     auto Camera::translate(const Vector3 &translation) -> void
     {
         _position += translation;
