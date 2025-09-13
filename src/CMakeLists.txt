@@ -80,6 +80,17 @@ target_link_libraries(
         stdc++exp
 )
 
+if(WIN32)
+target_link_libraries(
+    nathan_stream
+    PUBLIC
+        gamelib
+    PRIVATE
+        GL
+        Backtrace::Backtrace
+        stdc++exp        
+)
+elseif(UNIX)
 target_link_libraries(
     nathan_stream
     PUBLIC
@@ -90,3 +101,4 @@ target_link_libraries(
         Backtrace::Backtrace
         stdc++exp        
 )
+endif()
