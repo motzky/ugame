@@ -114,7 +114,6 @@ namespace
                 static_cast<float>(GET_Y_LPARAM(lParam)),
                 game::MouseButtonState::DOWN});
             break;
-            break;
         }
         }
 
@@ -132,7 +131,7 @@ namespace
 
     auto resolve_wgl_functions(HINSTANCE instance) -> void
     {
-        auto wc = ::WNDCLASS{
+        auto wc = ::WNDCLASSA{
             .style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC,
             .lpfnWndProc = ::DefWindowProc,
             .hInstance = instance,
@@ -277,7 +276,7 @@ namespace game
 
         _windowHandle = {::CreateWindowExA(
                              0,
-                             _wc.lpszClassName                                                             // Class name, should be registered before this
+                             _wc.lpszClassName,                                                            // Class name, should be registered before this
                              "Game Window",                                                                // Window title
                              WS_OVERLAPPEDWINDOW,                                                          // Window style
                              CW_USEDEFAULT, CW_USEDEFAULT, rect.right - rect.left, rect.bottom - rect.top, // Position and size
@@ -331,7 +330,7 @@ namespace game
 
     auto Window::swap() -> void
     {
-        ::SwapBuffers(_dc)
+        ::SwapBuffers(_dc);
     }
 
     auto Window::native_handle() const -> HandleType
