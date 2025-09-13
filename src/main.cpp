@@ -1,6 +1,7 @@
 #include <cmath>
 #include <format>
 #include <iostream>
+#include <memory>
 #include <numbers>
 #include <print>
 #include <random>
@@ -17,6 +18,8 @@
 #include "events/key_event.h"
 #include "events/mouse_event.h"
 #include "events/stop_event.h"
+#include "game/object_transformer.h"
+#include "game/static_object_transformer.h"
 #include "graphics/cube_map.h"
 #include "graphics/material.h"
 #include "graphics/renderer.h"
@@ -37,6 +40,12 @@
 #include "tlv/tlv_entry.h"
 #include "tlv/tlv_reader.h"
 #include "window.h"
+
+struct TransformedEntity
+{
+    game::Entity entity;
+    std::unique_ptr<game::ObjectTransformer> transformer;
+};
 
 auto main(int argc, char **argv) -> int
 {
@@ -89,14 +98,14 @@ auto main(int argc, char **argv) -> int
 
         auto renderer = game::Renderer{resource_loader, mesh_loader, width, height};
 
-        auto entities = std::vector<game::Entity>{
-            {&mesh, &material, {}, {0.4f}, {{0.f}, {1.f}, {0.707107f, 0.f, 0.f, 0.707107f}}, tex_samp},
-        };
+        auto entities = std::vector<TransformedEntity>{};
+        entities.emplace_back(game::Entity{&mesh, &material, {}, {0.4f}, {{0.f}, {1.f}, {0.707107f, 0.f, 0.f, 0.707107f}}, tex_samp},
+                              std::make_unique<game::StaticObjectTransformer>(game::Vector3{}));
 
         auto scene = game::Scene{
             .entities = entities |
                         std::views::transform([](const auto &e)
-                                              { return std::addressof(e); }) |
+                                              { return std::addressof(e.entity); }) |
                         std::ranges::to<std::vector>(),
             .ambient = {.r = .2f, .g = .2f, .b = .2f},
             .directional = {.direction = {-1.f, -1.f, -1.f}, .color = {.r = .3f, .g = .3f, .b = .3f}},
@@ -162,7 +171,7 @@ auto main(int argc, char **argv) -> int
                         {
                             if (!show_debug)
                             {
-                                game::log::debug("{}", arg);
+                                // game::log::debug("{}", arg);
                                 static constexpr auto sensitivity = float{0.005f};
                                 camera.adjust_pitch(arg.delta_y() * sensitivity);
                                 camera.adjust_yaw(-arg.delta_x() * sensitivity);
@@ -210,6 +219,12 @@ auto main(int argc, char **argv) -> int
             // const auto velocity = game::Vector3::normalize(walk_direction) * speed;
             camera.translate(game::Vector3::normalize(walk_direction) * (speed / 60.f));
             camera.update();
+
+            for (auto &[entity, transformer] : entities)
+            {
+                transformer->update();
+                entity.set_position(transformer->position());
+            }
 
             renderer.render(camera, scene, skybox, sampler, gamma);
             if (show_debug)
