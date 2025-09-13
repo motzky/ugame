@@ -1,9 +1,10 @@
 #pragma once
 
 #ifdef _WIN32
+#include <Windows.h>
 #include <gl/gl.h>
 
-#include "../../../third_party/opengl/glext.h"
+#include <opengl/glext.h>
 #define GL_GET_PROC_ADDRESS wglGetProcAddress
 #else
 #include <GL/gl.h>

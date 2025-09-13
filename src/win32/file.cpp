@@ -11,7 +11,7 @@
 #include <string_view>
 
 #ifdef WIN32
-#include <Windows>
+#include <Windows.h>
 #endif
 
 #include "ensure.h"

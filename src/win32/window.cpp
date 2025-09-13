@@ -10,6 +10,9 @@
 #include <queue>
 #include <ranges>
 
+#include "graphics/opengl.h"
+
+#include "opengl/wglext.h"
 #include <Windows.h>
 #include <Windowsx.h>
 #include <hidusage.h>
@@ -21,7 +24,6 @@
 #include "events/mouse_button_event.h"
 #include "events/mouse_event.h"
 #include "events/stop_event.h"
-#include "graphics/opengl.h"
 #include "log.h"
 #include "utils/auto_release.h"
 

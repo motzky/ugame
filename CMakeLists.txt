@@ -9,6 +9,10 @@ project(
 
 include(FetchContent)
 
+if(MSVC)
+set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+endif()
+
 FetchContent_Declare(
     googletest
     GIT_REPOSITORY https://github.com/google/googletest.git
@@ -48,6 +52,10 @@ if (MSVC)
 	endif()
 endif()
 
+if(MSVC)
+set(USE_STATIC_MSVC_RUNTIME_LIBRARY ON CACHE BOOL "" FORCE)
+endif()
+
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
 set(CPP_RTTI_ENABLED ON CACHE BOOL "" FORCE)
 
@@ -83,17 +91,20 @@ find_package(glfw3 REQUIRED)
 find_package(Backtrace REQUIRED)
 endif()
 
-set (CMAKE_CXX_STANDARD 23)
-if(MSVC)
-set (CMAKE_CXX_FLAGS /std:c++latest)
-else()
-set (CMAKE_CXX_FLAGS -std=c++23)
-endif()
+# if(MSVC)
+# set (CMAKE_CXX_FLAGS /std:c++latest)
+# else()
+# set (CMAKE_CXX_FLAGS -std=c++23)
+# endif()
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(FETCHCONTENT_QUIET FALSE)
 
 include_directories(include)
+if(WIN32)
+include_directories(third_party)
+endif()
+
 
 add_subdirectory(src)
 add_subdirectory(tools)

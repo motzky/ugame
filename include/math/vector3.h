@@ -28,7 +28,10 @@ namespace game
         float y;
         float z;
 
-        constexpr auto length() const -> float
+#ifndef _WIN32
+        constexpr
+#endif
+        auto length() const -> float
         {
             return std::hypot(x, y, z);
         }

@@ -201,7 +201,11 @@ struct std::formatter<game::Key>
         case INSERT:
             s = "INSERT"sv;
             break;
+#ifdef _WIN32
+        case DELETE_KEY:
+#else
         case DELETE:
+#endif
             s = "DELETE"sv;
             break;
 

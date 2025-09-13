@@ -10,12 +10,13 @@ namespace game
     {
     public:
         AutoRelease()
-            : AutoRelease({}, nullptr)
+            : AutoRelease(Invalid, nullptr)
         {
         }
 
         AutoRelease(T obj, std::function<void(T)> deleter)
-            : _obj(obj), _deleter(std::move(deleter))
+            : _obj(obj),
+              _deleter(std::move(deleter))
         {
         }
 

@@ -15,7 +15,7 @@ namespace game
         : Shape(pk),
           _half_height(half_height),
           _radius(radius),
-          _shape_settings({_half_height, _radius})
+          _shape_settings{_half_height, _radius}
 
     {
         _shape_settings.SetEmbedded();

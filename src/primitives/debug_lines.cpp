@@ -16,7 +16,7 @@ namespace game
         : _vao{0u, [](auto vao)
                { ::glDeleteVertexArrays(1, &vao); }},
           _vbo{static_cast<std::uint32_t>(lines.size_bytes())},
-          _count(lines.size())
+          _count(static_cast<std::uint32_t>(lines.size()))
 
     {
         {

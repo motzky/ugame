@@ -4,7 +4,7 @@
 #include <cstdint>
 #include <span>
 
-#include "opengl.h"
+#include "graphics/opengl.h"
 #include "utils/auto_release.h"
 
 namespace game
