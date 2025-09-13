@@ -6,7 +6,8 @@
 #include <Jolt/Physics/Collision/Shape/CapsuleShape.h>
 #include <Jolt/Physics/Collision/Shape/RotatedTranslatedShape.h>
 
-#include <utils/pass_key.h>
+#include "physics/jolt_utils.h"
+#include "utils/pass_key.h"
 
 namespace game
 {
@@ -25,5 +26,16 @@ namespace game
                                .Get();
 
         _character = new ::JPH::CharacterVirtual{settings, ::JPH::RVec3::sZero(), ::JPH::Quat::sIdentity(), 0, physics_system};
+    }
+
+    auto CharacterController::position() const -> Vector3
+    {
+        return to_native(_character->GetPosition());
+    }
+
+    auto CharacterController::draw(::JPH::DebugRenderer *debug_renderer, PassKey<PhysicsSystem>) const -> void
+    {
+        const auto transform = _character->GetCenterOfMassTransform();
+        return _character->GetShape()->Draw(debug_renderer, transform, ::JPH::Vec3::sOne(), ::JPH::Color::sGreen, false, true);
     }
 }

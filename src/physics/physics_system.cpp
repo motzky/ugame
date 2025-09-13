@@ -174,6 +174,8 @@ namespace game
         _impl->debug_renderer.clear();
         static const auto settings = ::JPH::BodyManager::DrawSettings{};
         _impl->physics_system.DrawBodies(settings, &_impl->debug_renderer);
+
+        _impl->character_controller->draw(&_impl->debug_renderer, {});
     }
 
     auto PhysicsSystem::debug_renderer() const -> const DebugRenderer &

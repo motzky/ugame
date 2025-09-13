@@ -108,7 +108,7 @@ auto main(int argc, char **argv) -> int
             for (auto j = 0; j < 100; ++j)
             {
                 auto x = static_cast<float>(i) * 3.5f;
-                auto y = 30.f + (j * 10.5f);
+                auto y = 20.f + (j * 10.5f);
                 auto z = static_cast<float>(j) * .1f;
                 const auto start_pos = game::Vector3{x, y, z};
 
