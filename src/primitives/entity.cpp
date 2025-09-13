@@ -38,6 +38,7 @@ namespace game
           _local_transform(local_transform),
           _textures(textures)
     {
+        _transform.rotation = _local_transform.rotation;
     }
 
     auto Entity::mesh() const -> const Mesh *
