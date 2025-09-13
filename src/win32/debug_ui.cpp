@@ -23,8 +23,10 @@
 
 namespace game
 {
-    DebugUi::DebugUi(Window::HandleType window, Scene &scene, Camera &camera)
-        : _scene(scene), _camera(camera)
+    DebugUi::DebugUi(Window::HandleType window, Scene &scene, Camera &camera, float &gamma)
+        : _scene(scene),
+          _camera(camera),
+          _gamma(gamma)
     {
         IMGUI_CHECKVERSION();
         ::ImGui::CreateContext();

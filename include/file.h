@@ -52,6 +52,7 @@ namespace game
         AutoRelease<HANDLE, INVALID_HANDLE_VALUE> _handle;
         AutoRelease<HANDLE, reinterpret_cast<HANDLE>(NULL)> _mapping;
         std::unique_ptr<void, decltype(&::UnmapViewOfFile)> _map_view;
+        std::size_t _filesize;
 
 #else
         using FileHandle = int;

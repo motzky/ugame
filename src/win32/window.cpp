@@ -67,7 +67,7 @@ namespace
         }
     }
 
-    auto CALLBACK window_proc(HWCD hWnd, UINT Msg, WPARAM wParam, LPARAM lParam) -> LRESULT
+    auto CALLBACK window_proc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam) -> LRESULT
     {
         switch (Msg)
         {
@@ -79,7 +79,7 @@ namespace
             g_event_queue.emplace(game::KeyEvent{static_cast<game::Key>{wParam}, game::KeyState::UP});
             break;
         }
-        case WM_KEYUP:
+        case WM_KEYDOWN:
         {
             g_event_queue.emplace(game::KeyEvent{static_cast<game::Key>{wParam}, game::KeyState::DOWN});
             break;
@@ -88,7 +88,7 @@ namespace
         {
             auto raw = ::RAWINPUT{};
             auto dwSize = UINT{sizeof(RAWINPUT)};
-            game::ensure(::GetRawInputdata(reinterpret_cast<::HRAWINPUT>(lParam), RID_INPUT, &raw, &dwSize, sizeof(::RAWINPUTHEADER)) != static_cast<::UINT>(-1), "failed to get raw input");
+            game::ensure(::GetRawInputData(reinterpret_cast<::HRAWINPUT>(lParam), RID_INPUT, &raw, &dwSize, sizeof(::RAWINPUTHEADER)) != static_cast<::UINT>(-1), "failed to get raw input");
 
             if (raw.header.dwType == RIM_TYPEMOUSE)
             {
@@ -130,7 +130,7 @@ namespace
         function = reinterpret_cast<T>(address);
     }
 
-    auto resolve_global_gl_functions(HINSTANCE instance) -> void
+    auto resolve_wgl_functions(HINSTANCE instance) -> void
     {
         auto wc = ::WNDCLASS{
             .style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC,
@@ -164,8 +164,8 @@ namespace
 
         auto pfd = ::PIXELFORMATDESCRIPTOR{
             .nSize = sizeof(::PIXELFORMATDESCRIPTOR),
-            .nVersin = 1,
-            .dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_SUBBLEBUFFER,
+            .nVersion = 1,
+            .dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER,
             .iPixelType = PFD_TYPE_RGBA,
             .cColorBits = 32,
             .cAlphaBits = 8,
@@ -178,7 +178,7 @@ namespace
 
         game::ensure(::SetPixelFormat(dc, pixel_format, &pfd) == TRUE, "failed to set pixel format");
 
-        const auto context = game::AutoRelease<HGLRC>{::wglCreatecontext(dc), ::wglDeleteContext};
+        const auto context = game::AutoRelease<HGLRC>{::wglCreateContext(dc), ::wglDeleteContext};
         game::ensure(context, "failed to create wgl context");
 
         game::ensure(::wglMakeCurrent(dc, context) == TRUE, "failed to make current context");
@@ -202,7 +202,7 @@ namespace
             WGL_FULL_ACCELERATION_ARB,
             WGL_PIXEL_TYPE_ARB,
             WGL_TYPE_RGBA_ARB,
-            WGL_COLOR_BITS,
+            WGL_COLOR_BITS_ARB,
             32,
             WGL_DEPTH_BITS_ARB,
             24,
@@ -223,13 +223,13 @@ namespace
         int gl_attribts[]{
             WGL_CONTEXT_MAJOR_VERSION_ARB,
             4,
-            WGL_CONTEXT_MINOR_VERION_ARB,
+            WGL_CONTEXT_MINOR_VERSION_ARB,
             6,
             WGL_CONTEXT_PROFILE_MASK_ARB,
             WGL_CONTEXT_CORE_PROFILE_BIT_ARB,
             0};
 
-        auto context = ::wglCreateContextAttribtsARB(dc, 0, gl_attribts);
+        auto context = ::wglCreateContextAttribsARB(dc, 0, gl_attribts);
         game::ensure(context != nullptr, "failed to create wgl context");
 
         game::ensure(::wglMakeCurrent(dc, context) == TRUE, "failed to make current context");
@@ -302,7 +302,7 @@ namespace game
 
         ensure(::RegisterRawInputDevices(&rid, 1, sizeof(rid)) == TRUE, "failed to register input device");
 
-        resolve_wgl_functions(wc.hInstance);
+        resolve_wgl_functions(_wc.hInstance);
         init_opengl(_dc);
         resolve_global_gl_functions();
         setup_debug();
@@ -336,7 +336,7 @@ namespace game
 
     auto Window::native_handle() const -> HandleType
     {
-        return _windowHandle:
+        return _windowHandle;
     }
     auto Window::width() const -> std::uint32_t
     {
@@ -349,7 +349,7 @@ namespace game
 
     auto Window::show_cursor(bool show) const -> void
     {
-        log::warning("show_cursor() not supported on Windows yet!");
+        log::warn("show_cursor() not supported on Windows yet!");
     }
 
 }

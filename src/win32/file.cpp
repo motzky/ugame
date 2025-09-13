@@ -21,11 +21,11 @@ namespace game
 {
     File::File(const std::filesystem::path &path, CreationMode mode)
         : _handle(INVALID_HANDLE_VALUE, ::CloseHandle),
-          _mapping(NULL, ::CloaseHandle),
+          _mapping(NULL, ::CloseHandle),
           _map_view{nullptr, ::UnmapViewOfFile},
           _filesize{}
     {
-        _handle.reset(::CreateFileA(path, GENERIC_READ | GENERIC_WRITE, 0, nullptr, mode == CreationMode::OPEN ? OPEN_EXISTING : OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr));
+        _handle.reset(::CreateFileA(path.string().c_str(), GENERIC_READ | GENERIC_WRITE, 0, nullptr, mode == CreationMode::OPEN ? OPEN_EXISTING : OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr));
         ensure(_handle, "failed to open file");
 
         _mapping.reset(::CreateFileMappingA(_handle, nullptr, PAGE_READWRITE, 0, 0, nullptr));
