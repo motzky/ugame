@@ -20,17 +20,17 @@ namespace game
                const Material *material,
                const Vector3 &position,
                const Vector3 &scale,
-               std::vector<std::tuple<const Texture *, const TextureSampler *>> &textures);
+               std::span<const Texture *> textures);
         Entity(const Mesh *mesh,
                const Material *material,
                const Vector3 &position,
                const Vector3 &scale,
                const Transform &local_transform,
-               std::vector<std::tuple<const Texture *, const TextureSampler *>> &textures);
+               std::span<const Texture *> textures);
 
         auto mesh() const -> const Mesh *;
         auto material() const -> const Material *;
-        auto textures() const -> std::span<const std::tuple<const Texture *, const TextureSampler *>>;
+        auto textures() const -> std::span<const Texture *const>;
         auto transform() const -> const Transform &;
         auto local_transform() const -> const Transform &;
 
@@ -42,7 +42,7 @@ namespace game
         const Material *_material;
         Transform _transform;
         Transform _local_transform;
-        std::vector<std::tuple<const Texture *, const TextureSampler *>> _textures;
+        std::vector<const Texture *> _textures;
     };
 
 }

@@ -105,6 +105,11 @@ namespace game
         set_uniform(uniform_name, 0);
     }
 
+    auto Material::bind_texture(std::uint32_t index, const Texture *texture) const -> void
+    {
+        bind_texture(index, texture, texture->sampler());
+    }
+
     auto Material::bind_texture(std::uint32_t index, const Texture *texture, const TextureSampler *sampler) const -> void
     {
         const auto gl_index = static_cast<::GLuint>(index);
@@ -115,12 +120,11 @@ namespace game
         set_uniform(uniform_name, static_cast<std::int32_t>(index));
     }
 
-    auto Material::bind_textures(std::span<const std::tuple<const Texture *, const TextureSampler *>> tex_samps) const -> void
+    auto Material::bind_textures(std::span<const Texture *const> textures) const -> void
     {
-        for (const auto &[index, tex_samp] : tex_samps | std::views::enumerate)
+        for (const auto &[index, tex] : textures | std::views::enumerate)
         {
-            const auto &[tex, sampler] = tex_samp;
-            bind_texture(static_cast<uint32_t>(index), tex, sampler);
+            bind_texture(static_cast<uint32_t>(index), tex, tex->sampler());
         }
     }
 

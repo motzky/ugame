@@ -9,11 +9,12 @@
 #include <utility>
 #include <vector>
 
-#include "opengl.h"
+#include "graphics/opengl.h"
 #include "utils/auto_release.h"
 
 namespace game
 {
+    class TextureSampler;
     class TlvReader;
 
     enum class TextureUsage
@@ -45,14 +46,16 @@ namespace game
     {
     public:
         Texture(TextureUsage usage, std::uint32_t width, std::uint32_t height);
-        Texture(const TextureDescription &data);
-        Texture(const TlvReader &reader, std::string_view name);
-        // Texture(TextureUsage usage, std::span<const std::byte> data, std::uint32_t width, std::uint32_t height);
+        Texture(const TextureDescription &data, const TextureSampler *sampler);
+        Texture(const TlvReader &reader, std::string_view name, const TextureSampler *sampler);
+        // Texture(TextureUsage usage, std::span<const std::byte> data, std::uint32_t width, std::uint32_t height, const TextureSampler *sampler);
 
         auto native_handle() const -> ::GLuint;
+        auto sampler() const -> const TextureSampler *;
 
     private:
         AutoRelease<GLuint> _handle;
+        const TextureSampler *_sampler;
     };
 
 }

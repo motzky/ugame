@@ -1,5 +1,6 @@
 #include "primitives/entity.h"
 
+#include <ranges>
 #include <span>
 #include <tuple>
 #include <vector>
@@ -17,12 +18,12 @@ namespace game
                    const Material *material,
                    const Vector3 &position,
                    const Vector3 &scale,
-                   std::vector<std::tuple<const Texture *, const TextureSampler *>> &textures)
+                   std::span<const Texture *> textures)
         : _mesh(mesh),
           _material(material),
           _transform(position, scale),
           _local_transform(),
-          _textures(textures)
+          _textures(std::ranges::cbegin(textures), std::ranges::cend(textures))
     {
     }
 
@@ -31,12 +32,12 @@ namespace game
                    const Vector3 &position,
                    const Vector3 &scale,
                    const Transform &local_transform,
-                   std::vector<std::tuple<const Texture *, const TextureSampler *>> &textures)
+                   std::span<const Texture *> textures)
         : _mesh(mesh),
           _material(material),
           _transform(position, scale),
           _local_transform(local_transform),
-          _textures(textures)
+          _textures(std::ranges::cbegin(textures), std::ranges::cend(textures))
     {
         _transform.rotation = _local_transform.rotation;
     }
@@ -57,7 +58,7 @@ namespace game
     {
         _transform.rotation = rotation * _local_transform.rotation;
     }
-    auto Entity::textures() const -> std::span<const std::tuple<const Texture *, const TextureSampler *>>
+    auto Entity::textures() const -> std::span<const Texture *const>
     {
         return _textures;
     }

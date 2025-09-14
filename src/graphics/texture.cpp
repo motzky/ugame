@@ -88,9 +88,10 @@ namespace
 
 namespace game
 {
-    Texture::Texture(const TextureDescription &data)
+    Texture::Texture(const TextureDescription &data, const TextureSampler *sampler)
         : _handle{0u, [](auto texture)
-                  { ::glDeleteTextures(1u, &texture); }}
+                  { ::glDeleteTextures(1u, &texture); }},
+          _sampler(sampler)
     {
         log::info("creating texture with: {}", data);
 
@@ -102,22 +103,25 @@ namespace game
         ::glTextureSubImage2D(_handle, 0, 0, 0, data.width, data.height, get_sub_image_format(num_channels), GL_UNSIGNED_BYTE, data.data.data());
     }
 
-    Texture::Texture(const TlvReader &reader, std::string_view name)
+    Texture::Texture(const TlvReader &reader, std::string_view name, const TextureSampler *sampler)
         : _handle{0u, [](auto texture)
-                  { ::glDeleteTextures(1u, &texture); }}
+                  { ::glDeleteTextures(1u, &texture); }},
+          _sampler(sampler)
+
     {
         const auto data = std::ranges::find_if(reader, [name](const auto &e)
                                                { return e.is_texture(name); });
         ensure(data != std::ranges::end(reader), "failed to load texture '{}'", name);
 
-        auto tex = Texture{(*data).texture_description_value()};
+        auto tex = Texture{(*data).texture_description_value(), _sampler};
 
         std::ranges::swap(_handle, tex._handle);
     }
 
     Texture::Texture(TextureUsage usage, std::uint32_t width, std::uint32_t height)
         : _handle{0u, [](auto texture)
-                  { ::glDeleteTextures(1u, &texture); }}
+                  { ::glDeleteTextures(1u, &texture); }},
+          _sampler(nullptr)
     {
         ::glCreateTextures(GL_TEXTURE_2D, 1u, &_handle);
         switch (usage)
@@ -135,7 +139,7 @@ namespace game
         }
     }
 
-    // Texture::Texture(TextureUsage usage, std::span<const std::byte> data, std::uint32_t /*width*/, std::uint32_t /*height*/)
+    // Texture::Texture(TextureUsage usage, std::span<const std::byte> data, std::uint32_t /*width*/, std::uint32_t /*height*/, const TextureSampler *sampler)
     //     : _handle{0u, [](auto texture)
     //               { ::glDeleteTextures(1u, &texture); }}
     // {
@@ -167,4 +171,9 @@ namespace game
     {
         return _handle;
     }
+    auto Texture::sampler() const -> const TextureSampler *
+    {
+        return _sampler;
+    }
+
 }

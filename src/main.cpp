@@ -87,15 +87,13 @@ auto main(int argc, char **argv) -> int
         game::log::info("Creating GL textures...");
 
         auto sampler = game::TextureSampler{};
-        auto albedo_tex = game::Texture{reader, "barrel_base_albedo"};
-        auto spec_map = game::Texture{reader, "barrel_metallic"};
-        auto normal_map = game::Texture{reader, "barrel_normal_ogl"};
+        auto albedo_tex = game::Texture{reader, "barrel_base_albedo", &sampler};
+        auto spec_map = game::Texture{reader, "barrel_metallic", &sampler};
+        auto normal_map = game::Texture{reader, "barrel_normal_ogl", &sampler};
 
         game::log::info("Creating materials...");
 
         const game::Texture *textures[]{&albedo_tex, &spec_map, &normal_map};
-        const game::TextureSampler *samplers[]{&sampler, &sampler, &sampler};
-        auto tex_samp = std::views::zip(textures, samplers) | std::ranges::to<std::vector>();
 
         const auto vertex_shader_file = resource_loader.load("simple.vert");
         const auto fragment_shader_file = resource_loader.load("simple.frag");
@@ -125,17 +123,18 @@ auto main(int argc, char **argv) -> int
                 .usage = game::TextureUsage::SRGB,
                 .width = 1u,
                 .height = 1u,
-                .data{static_cast<std::byte>(0xff), static_cast<std::byte>(0xff), static_cast<std::byte>(0xff)}}};
+                .data{static_cast<std::byte>(0xff), static_cast<std::byte>(0xff), static_cast<std::byte>(0xff)}},
+            &floor_sampler};
 
-        auto floor_samp = std::vector<std::tuple<const game::Texture *, const game::TextureSampler *>>{std::make_tuple(&floor_texture, &floor_sampler)};
-        auto floor_entity = game::Entity{&floor_mesh, &floor_material, {0.f, -2.f, 0}, {100.f, 1.f, 100.f}, floor_samp};
+        const game::Texture *floor_textures[]{&floor_texture};
+        auto floor_entity = game::Entity{&floor_mesh, &floor_material, {0.f, -2.f, 0}, {100.f, 1.f, 100.f}, floor_textures};
 
         auto entities = std::vector<TransformedEntity>{};
-        entities.emplace_back(game::Entity{&mesh, &material, {-5.f, 0.f, 0.f}, {0.4f}, {{0.f}, {1.f}, {0.707107f, 0.f, 0.f, 0.707107f}}, tex_samp},
+        entities.emplace_back(game::Entity{&mesh, &material, {-5.f, 0.f, 0.f}, {0.4f}, {{0.f}, {1.f}, {0.707107f, 0.f, 0.f, 0.707107f}}, textures},
                               std::make_unique<game::InverseCameraObjectTransformer>(game::Vector3{-5.f, 0.f, 0.f}, camera));
-        entities.emplace_back(game::Entity{&mesh, &material, {}, {0.4f}, {{0.f}, {1.f}, {0.707107f, 0.f, 0.f, 0.707107f}}, tex_samp},
+        entities.emplace_back(game::Entity{&mesh, &material, {}, {0.4f}, {{0.f}, {1.f}, {0.707107f, 0.f, 0.f, 0.707107f}}, textures},
                               std::make_unique<game::StaticObjectTransformer>(game::Vector3{}));
-        entities.emplace_back(game::Entity{&mesh, &material, {5.f, 0.f, 0.f}, {0.4f}, {{0.f}, {1.f}, {0.707107f, 0.f, 0.f, 0.707107f}}, tex_samp},
+        entities.emplace_back(game::Entity{&mesh, &material, {5.f, 0.f, 0.f}, {0.4f}, {{0.f}, {1.f}, {0.707107f, 0.f, 0.f, 0.707107f}}, textures},
                               std::make_unique<game::CameraObjectTransformer>(game::Vector3{5.f, 0.f, 0.f}, camera));
 
         auto scene = game::Scene{

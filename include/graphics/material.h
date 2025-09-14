@@ -26,8 +26,9 @@ namespace game
         auto set_uniform(std::string_view name, std::int32_t obj) const -> void;
         auto set_uniform(std::string_view name, float obj) const -> void;
         auto bind_cube_map(const CubeMap *texture, const TextureSampler *sampler) const -> void;
+        auto bind_texture(std::uint32_t index, const Texture *texture) const -> void;
         auto bind_texture(std::uint32_t index, const Texture *texture, const TextureSampler *sampler) const -> void;
-        auto bind_textures(std::span<const std::tuple<const Texture *, const TextureSampler *>>) const -> void;
+        auto bind_textures(std::span<const Texture *const>) const -> void;
 
         auto native_handle() const -> ::GLuint;
 
