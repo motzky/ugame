@@ -18,6 +18,7 @@
 #include "events/key_event.h"
 #include "events/mouse_event.h"
 #include "events/stop_event.h"
+#include "game/aabb.h"
 #include "game/chain.h"
 #include "graphics/cube_map.h"
 #include "graphics/material.h"
@@ -52,9 +53,15 @@ constexpr auto CameraDelta = [](const game::Vector3 &in, const GameTransformStat
 constexpr auto Invert = [](const game::Vector3 &in, const GameTransformState &) -> game::TransformerResult
 { return {-in}; };
 
+constexpr auto CheckVisible = [](const game::Vector3 &in, const GameTransformState &) -> game::TransformerResult
+{
+    return {-in};
+};
+
 struct TransformedEntity
 {
     game::Entity entity;
+    game::AABB bounding_box;
     std::unique_ptr<game::ChainBase<GameTransformState>> transformer_chain;
 };
 
@@ -140,10 +147,13 @@ auto main(int argc, char **argv) -> int
 
         auto entities = std::vector<TransformedEntity>{};
         entities.emplace_back(game::Entity{&mesh, &material, {-5.f, 0.f, 0.f}, {0.4f}, {{0.f}, {1.f}, {0.707107f, 0.f, 0.f, 0.707107f}}, textures},
+                              game::AABB{{-5.6f, -.75f, -.6f}, {-4.4f, .75f, .6f}},
                               std::make_unique<game::Chain<GameTransformState, CameraDelta, Invert>>());
         entities.emplace_back(game::Entity{&mesh, &material, {}, {0.4f}, {{0.f}, {1.f}, {0.707107f, 0.f, 0.f, 0.707107f}}, textures},
+                              game::AABB{{-.6f, -.75f, -.6f}, {.6f, .75f, .6f}},
                               std::make_unique<game::Chain<GameTransformState>>());
         entities.emplace_back(game::Entity{&mesh, &material, {5.f, 0.f, 0.f}, {0.4f}, {{0.f}, {1.f}, {0.707107f, 0.f, 0.f, 0.707107f}}, textures},
+                              game::AABB{{4.4f, -.75f, -.6f}, {5.6f, .75f, .6f}},
                               std::make_unique<game::Chain<GameTransformState, CameraDelta>>());
 
         auto scene = game::Scene{
@@ -182,12 +192,15 @@ auto main(int argc, char **argv) -> int
         auto show_debug = false;
         const auto debug_ui = game::DebugUi(window.native_handle(), scene, camera, gamma);
 
+        auto show_physics_debug = false;
+
         auto state = GameTransformState{.camera = &camera, .camera_last_position = camera.position()};
 
         auto running = true;
 
         while (running)
         {
+#pragma region EventHandling
             auto event = window.pump_event();
             while (event && running)
             {
@@ -209,6 +222,10 @@ auto main(int argc, char **argv) -> int
                                 show_debug = !show_debug;
                                 window.show_cursor(show_debug);
                             }
+                            else if (arg.key() == game::Key::F2 && arg.state() == game::KeyState::UP)
+                            {
+                                show_physics_debug = !show_physics_debug;
+                            }
                         }
                         else if constexpr (std::same_as<T, game::MouseEvent>)
                         {
@@ -228,7 +245,9 @@ auto main(int argc, char **argv) -> int
                     *event);
                 event = window.pump_event();
             }
+#pragma endregion
 
+#pragma region Camera Control
             auto walk_direction = game::Vector3{0.f};
 
             if (key_state[game::Key::D] || key_state[game::Key::RIGHT_ARROW])
@@ -261,15 +280,70 @@ auto main(int argc, char **argv) -> int
             const auto speed = key_state[game::Key::LSHIFT] ? 30.f : 10.f;
             camera.translate(game::Vector3::normalize(walk_direction) * (speed / 60.f));
             camera.update();
+#pragma endregion
+
+            auto debug_line_data = std::vector<game::LineData>{};
 
             for (const auto &[transformed_entity, light] : std::views::zip(entities, scene.points))
             {
-                auto &[entity, transformer] = transformed_entity;
+                auto &[entity, aabb, transformer] = transformed_entity;
                 const auto enitiy_delta = transformer->go({}, state);
                 entity.translate(enitiy_delta);
 
+                aabb.min += enitiy_delta;
+                aabb.max += enitiy_delta;
+
                 const auto position = entity.position();
                 light.position = {position.x, 5.f, position.z};
+
+#pragma region DrawAABB
+
+                debug_line_data.push_back({aabb.max, {0.f, 1.f, 0.f}});
+                debug_line_data.push_back({{aabb.min.x, aabb.max.y, aabb.max.z}, {0.f, 1.f, 0.f}});
+
+                debug_line_data.push_back({{aabb.min.x, aabb.max.y, aabb.max.z}, {0.f, 1.f, 0.f}});
+                debug_line_data.push_back({{aabb.min.x, aabb.max.y, aabb.min.z}, {0.f, 1.f, 0.f}});
+
+                debug_line_data.push_back({{aabb.min.x, aabb.max.y, aabb.min.z}, {0.f, 1.f, 0.f}});
+                debug_line_data.push_back({{aabb.max.x, aabb.max.y, aabb.min.z}, {0.f, 1.f, 0.f}});
+
+                debug_line_data.push_back({{aabb.max.x, aabb.max.y, aabb.min.z}, {0.f, 1.f, 0.f}});
+
+                debug_line_data.push_back({aabb.max, {0.f, 1.f, 0.f}});
+
+                debug_line_data.push_back({aabb.max, {0.f, 1.f, 0.f}});
+                debug_line_data.push_back({{aabb.max.x, aabb.min.y, aabb.max.z}, {0.f, 1.f, 0.f}});
+
+                debug_line_data.push_back({{aabb.min.x, aabb.max.y, aabb.max.z}, {0.f, 1.f, 0.f}});
+                debug_line_data.push_back({{aabb.min.x, aabb.min.y, aabb.max.z}, {0.f, 1.f, 0.f}});
+
+                debug_line_data.push_back({{aabb.max.x, aabb.max.y, aabb.min.z}, {0.f, 1.f, 0.f}});
+                debug_line_data.push_back({{aabb.max.x, aabb.min.y, aabb.min.z}, {0.f, 1.f, 0.f}});
+
+                debug_line_data.push_back({{aabb.min.x, aabb.max.y, aabb.min.z}, {0.f, 1.f, 0.f}});
+                debug_line_data.push_back({aabb.min, {0.f, 1.f, 0.f}});
+
+                debug_line_data.push_back({aabb.min, {0.f, 1.f, 0.f}});
+                debug_line_data.push_back({{aabb.min.x, aabb.min.y, aabb.max.z}, {0.f, 1.f, 0.f}});
+
+                debug_line_data.push_back({{aabb.min.x, aabb.min.y, aabb.max.z}, {0.f, 1.f, 0.f}});
+                debug_line_data.push_back({{aabb.max.x, aabb.min.y, aabb.max.z}, {0.f, 1.f, 0.f}});
+
+                debug_line_data.push_back({{aabb.max.x, aabb.min.y, aabb.max.z}, {0.f, 1.f, 0.f}});
+                debug_line_data.push_back({{aabb.max.x, aabb.min.y, aabb.min.z}, {0.f, 1.f, 0.f}});
+
+                debug_line_data.push_back({{aabb.max.x, aabb.min.y, aabb.min.z}, {0.f, 1.f, 0.f}});
+                debug_line_data.push_back({aabb.min, {0.f, 1.f, 0.f}});
+#pragma endregion
+            }
+
+            if (show_physics_debug)
+            {
+                scene.debug_lines = game::DebugLines{debug_line_data};
+            }
+            else
+            {
+                scene.debug_lines.reset();
             }
 
             renderer.render(camera, scene, skybox, sampler, gamma);
