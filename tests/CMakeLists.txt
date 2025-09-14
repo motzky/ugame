@@ -12,6 +12,7 @@ add_executable(unit_tests
     tlv_reader_tests.cpp
     tlv_writer_tests.cpp
     vector3_tests.cpp
+    vector4_tests.cpp
 )
 
 target_link_libraries(unit_tests gmock_main gamelib)
