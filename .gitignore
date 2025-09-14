@@ -64,6 +64,7 @@ CMakeUserPresets.json
 
 build/
 
-assets/resource
-assets/resources
+assets/*
+!assets/*.vert
+!assets/*.frag
 assets_old/
