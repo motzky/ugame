@@ -46,15 +46,11 @@ struct GameTransformState
     game::Vector3 camera_last_position;
 };
 
-constexpr auto CameraDelta = [](const game::Vector3 &in, const game::State<GameTransformState> &state) -> game::TransformerResult
-{
-    return {in + state.state.camera->position() - state.state.camera_last_position};
-};
+constexpr auto CameraDelta = [](const game::Vector3 &in, const GameTransformState &state) -> game::TransformerResult
+{ return {in + state.camera->position() - state.camera_last_position}; };
 
-constexpr auto Invert = [](const game::Vector3 &in, const game::State<GameTransformState> &) -> game::TransformerResult
-{
-    return {-in};
-};
+constexpr auto Invert = [](const game::Vector3 &in, const GameTransformState &) -> game::TransformerResult
+{ return {-in}; };
 
 struct TransformedEntity
 {
@@ -186,7 +182,7 @@ auto main(int argc, char **argv) -> int
         auto show_debug = false;
         const auto debug_ui = game::DebugUi(window.native_handle(), scene, camera, gamma);
 
-        auto state = game::State<GameTransformState>{.state = {.camera = &camera, .camera_last_position = camera.position()}};
+        auto state = GameTransformState{.camera = &camera, .camera_last_position = camera.position()};
 
         auto running = true;
 
@@ -283,7 +279,7 @@ auto main(int argc, char **argv) -> int
             }
             window.swap();
 
-            state.state.camera_last_position = camera.position();
+            state.camera_last_position = camera.position();
         }
     }
     catch (const game::Exception &err)
