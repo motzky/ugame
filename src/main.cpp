@@ -71,7 +71,7 @@ auto main(int argc, char **argv) -> int
                                    static_cast<float>(window.width()),
                                    static_cast<float>(window.height()),
                                    0.001f,
-                                   100.f};
+                                   500.f};
 
         auto resource_loader = game::ResourceLoader{argv[1]};
 
