@@ -219,7 +219,6 @@ auto main(int argc, char **argv) -> int
             walk_direction.y = 0.f;
 
             const auto speed = key_state[game::Key::LSHIFT] ? 10.f : 3.f;
-            // const auto velocity = game::Vector3::normalize(walk_direction) * speed;
             camera.translate(game::Vector3::normalize(walk_direction) * (speed / 60.f));
             camera.update();
 
