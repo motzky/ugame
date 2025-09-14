@@ -19,6 +19,7 @@
 #include "events/mouse_event.h"
 #include "events/stop_event.h"
 #include "game/camera_object_transformer.h"
+#include "game/inverse_camera_object_transformer.h"
 #include "game/object_transformer.h"
 #include "game/static_object_transformer.h"
 #include "graphics/cube_map.h"
@@ -108,7 +109,30 @@ auto main(int argc, char **argv) -> int
 
         auto renderer = game::Renderer{resource_loader, mesh_loader, width, height};
 
+        const auto checker_vertex_shader_file = resource_loader.load("checker.vert");
+        const auto checker_fragment_shader_file = resource_loader.load("checker.frag");
+
+        const auto checker_vertex_shader = game::Shader{checker_vertex_shader_file.as_string(), game::ShaderType::VERTEX};
+        const auto checker_fragment_shader = game::Shader{checker_fragment_shader_file.as_string(), game::ShaderType::FRAGMENT};
+        auto floor_material = game::Material{checker_vertex_shader, checker_fragment_shader};
+
+        const auto floor_sampler = game::TextureSampler{};
+        const auto floor_mesh = game::Mesh{mesh_loader.cube()};
+        const auto floor_texture = game::Texture{
+            game::TextureDescription{
+                .name = "white",
+                .format = game::TextureFormat::RGB,
+                .usage = game::TextureUsage::SRGB,
+                .width = 1u,
+                .height = 1u,
+                .data{static_cast<std::byte>(0xff), static_cast<std::byte>(0xff), static_cast<std::byte>(0xff)}}};
+
+        auto floor_samp = std::vector<std::tuple<const game::Texture *, const game::TextureSampler *>>{std::make_tuple(&floor_texture, &floor_sampler)};
+        auto floor_entity = game::Entity{&floor_mesh, &floor_material, {0.f, -2.f, 0}, {100.f, 1.f, 100.f}, floor_samp};
+
         auto entities = std::vector<TransformedEntity>{};
+        entities.emplace_back(game::Entity{&mesh, &material, {-5.f, 0.f, 0.f}, {0.4f}, {{0.f}, {1.f}, {0.707107f, 0.f, 0.f, 0.707107f}}, tex_samp},
+                              std::make_unique<game::InverseCameraObjectTransformer>(game::Vector3{-5.f, 0.f, 0.f}, camera));
         entities.emplace_back(game::Entity{&mesh, &material, {}, {0.4f}, {{0.f}, {1.f}, {0.707107f, 0.f, 0.f, 0.707107f}}, tex_samp},
                               std::make_unique<game::StaticObjectTransformer>(game::Vector3{}));
         entities.emplace_back(game::Entity{&mesh, &material, {5.f, 0.f, 0.f}, {0.4f}, {{0.f}, {1.f}, {0.707107f, 0.f, 0.f, 0.707107f}}, tex_samp},
@@ -121,15 +145,21 @@ auto main(int argc, char **argv) -> int
                         std::ranges::to<std::vector>(),
             .ambient = {.r = .2f, .g = .2f, .b = .2f},
             .directional = {.direction = {-1.f, -1.f, -1.f}, .color = {.r = .3f, .g = .3f, .b = .3f}},
-            .points = {{.position = {5.f, 5.f, 0.f}, .color = {.r = 0.f, .g = 1.f, .b = 0.f}, //
+            .points = {{.position = {5.f, 3.f, 0.f}, .color = {.r = 1.f, .g = 0.f, .b = 0.f}, //
                         .const_attenuation = 1.f,
                         .linear_attenuation = .07f,
                         .quad_attenuation = 0.017f},
-                       {.position = {-5.f, 5.f, 0.f}, .color = {.r = 1.f, .g = 0.f, .b = 0.f}, //
+                       {.position = {-5.f, 3.f, 0.f}, .color = {.r = 0.f, .g = 1.f, .b = 0.f}, //
+                        .const_attenuation = 1.f,
+                        .linear_attenuation = .07f,
+                        .quad_attenuation = 0.017f},
+                       {.position = {-5.f, 3.f, 0.f}, .color = {.r = 0.f, .g = 0.f, .b = 1.f}, //
                         .const_attenuation = 1.f,
                         .linear_attenuation = .07f,
                         .quad_attenuation = 0.017f}},
             .debug_lines = {}};
+
+        scene.entities.push_back(&floor_entity);
 
         auto skybox = game::CubeMap{
             reader,
@@ -222,10 +252,15 @@ auto main(int argc, char **argv) -> int
             camera.translate(game::Vector3::normalize(walk_direction) * (speed / 60.f));
             camera.update();
 
-            for (auto &[entity, transformer] : entities)
+            for (const auto &[transformed_entity, light] : std::views::zip(entities, scene.points))
             {
+                auto &[entity, transformer] = transformed_entity;
                 transformer->update();
+                const auto position = transformer->position();
+
                 entity.set_position(transformer->position());
+
+                light.position = {position.x, 5.f, position.z};
             }
 
             renderer.render(camera, scene, skybox, sampler, gamma);
