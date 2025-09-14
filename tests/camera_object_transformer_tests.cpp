@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+#include <numbers>
 
 #include "camera.h"
 #include "game/camera_object_transformer.h"

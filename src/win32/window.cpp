@@ -33,7 +33,7 @@ namespace
 {
 
     PFNWGLCHOOSEPIXELFORMATARBPROC wglChoosePixelFormatARB{};
-    PFNWGLCREATECONTEXTATTRIBSARBPROC wglCreateContextAttribtsARGB{};
+    PFNWGLCREATECONTEXTATTRIBSARBPROC wglCreateContextAttribsARB{};
 
     auto g_event_queue = std::queue<game::Event>{};
 
@@ -76,12 +76,12 @@ namespace
             break;
         case WM_KEYUP:
         {
-            g_event_queue.emplace(game::KeyEvent{static_cast<game::Key>{wParam}, game::KeyState::UP});
+            g_event_queue.emplace(game::KeyEvent{static_cast<game::Key>(wParam), game::KeyState::UP});
             break;
         }
         case WM_KEYDOWN:
         {
-            g_event_queue.emplace(game::KeyEvent{static_cast<game::Key>{wParam}, game::KeyState::DOWN});
+            g_event_queue.emplace(game::KeyEvent{static_cast<game::Key>(wParam), game::KeyState::DOWN});
             break;
         }
         case WM_INPUT:
@@ -182,7 +182,7 @@ namespace
 
         game::ensure(::wglMakeCurrent(dc, context) == TRUE, "failed to make current context");
 
-        resolve_gl_function(wglCreateContextAttribtsARGB, "wglCreateContextAttribsARB");
+        resolve_gl_function(wglCreateContextAttribsARB, "wglCreateContextAttribsARB");
         resolve_gl_function(wglChoosePixelFormatARB, "wglChoosePixelFormatARB");
 
         game::ensure(::wglMakeCurrent(dc, 0) == TRUE, "failed to unbind context");
@@ -351,7 +351,7 @@ namespace game
         return _height;
     }
 
-    auto Window::show_cursor(bool show) const -> void
+    auto Window::show_cursor(bool /*show*/) const -> void
     {
         log::warn("show_cursor() not supported on Windows yet!");
     }

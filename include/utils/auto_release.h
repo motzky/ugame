@@ -5,7 +5,7 @@
 
 namespace game
 {
-    template <class T, T Invalid = {}>
+    template <class T, T Invalid = T()>
     class AutoRelease
     {
     public:

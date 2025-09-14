@@ -123,12 +123,12 @@ auto main(int argc, char **argv) -> int
             .directional = {.direction = {-1.f, -1.f, -1.f}, .color = {.r = .3f, .g = .3f, .b = .3f}},
             .points = {{.position = {5.f, 5.f, 0.f}, .color = {.r = 0.f, .g = 1.f, .b = 0.f}, //
                         .const_attenuation = 1.f,
-                        .linear_attenuation = .07,
-                        .quad_attenuation = 0.017},
+                        .linear_attenuation = .07f,
+                        .quad_attenuation = 0.017f},
                        {.position = {-5.f, 5.f, 0.f}, .color = {.r = 1.f, .g = 0.f, .b = 0.f}, //
                         .const_attenuation = 1.f,
-                        .linear_attenuation = .07,
-                        .quad_attenuation = 0.017}},
+                        .linear_attenuation = .07f,
+                        .quad_attenuation = 0.017f}},
             .debug_lines = {}};
 
         auto skybox = game::CubeMap{

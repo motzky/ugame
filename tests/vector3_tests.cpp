@@ -39,7 +39,7 @@ TEST(vector3, normalize)
     auto v1 = game::Vector3{1.f, 2.f, 3.f};
     auto norm = game::Vector3::normalize(v1);
 
-    const auto expected = game::Vector3{0.26726124f, 0.5345225f, 0.80178374};
+    const auto expected = game::Vector3{0.26726124f, 0.5345225f, 0.80178374f};
 
     ASSERT_EQ(norm, expected);
 }

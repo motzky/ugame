@@ -203,7 +203,7 @@ namespace game
 
     auto TlvEntry::size() const -> std::uint32_t
     {
-        return static_cast<std::uint32_t>(sizeof(_type)) + static_cast<std::uint32_t>(sizeof(std::uint32_t)) + _value.size();
+        return static_cast<std::uint32_t>(sizeof(_type)) + static_cast<std::uint32_t>(sizeof(std::uint32_t)) + static_cast<std::uint32_t>(_value.size());
     }
 
 }
