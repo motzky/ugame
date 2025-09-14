@@ -1,3 +1,4 @@
+#include <array>
 #include <cmath>
 #include <format>
 #include <iostream>
@@ -20,6 +21,7 @@
 #include "events/stop_event.h"
 #include "game/aabb.h"
 #include "game/chain.h"
+#include "game/frustum_plane.h"
 #include "graphics/cube_map.h"
 #include "graphics/material.h"
 #include "graphics/renderer.h"
@@ -30,6 +32,8 @@
 #include "loaders/mesh_loader.h"
 #include "loaders/resource_loader.h"
 #include "log.h"
+#include "math/matrix4.h"
+#include "math/vector4.h"
 #include "physics/box_shape.h"
 #include "physics/cylinder_shape.h"
 #include "physics/debug_renderer.h"
@@ -41,29 +45,101 @@
 #include "tlv/tlv_reader.h"
 #include "window.h"
 
-struct GameTransformState
+namespace
 {
-    const game::Camera *camera;
-    game::Vector3 camera_last_position;
-};
+    auto calculate_frustum_planes(const game::Camera &camera) -> std::array<game::FrustumPlane, 6u>
+    {
+        auto planes = std::array<game::FrustumPlane, 6u>{};
 
-constexpr auto CameraDelta = [](const game::Vector3 &in, const GameTransformState &state) -> game::TransformerResult
-{ return {in + state.camera->position() - state.camera_last_position}; };
+        const auto view_proj = game::Matrix4{camera.projection()} * game::Matrix4{camera.view()};
 
-constexpr auto Invert = [](const game::Vector3 &in, const GameTransformState &) -> game::TransformerResult
-{ return {-in}; };
+        for (const auto &[index, plane] : planes | std::views::enumerate)
+        {
+            auto row = view_proj.row(3u);
+            if ((index % 2) == 0)
+            {
+                row += view_proj.row(index / 2);
+            }
+            else
+            {
+                row -= view_proj.row(index / 2);
+            }
 
-constexpr auto CheckVisible = [](const game::Vector3 &in, const GameTransformState &) -> game::TransformerResult
-{
-    return {-in};
-};
+            const auto normal = game::Vector3{row};
+            const auto distance = normal.length();
 
-struct TransformedEntity
-{
-    game::Entity entity;
-    game::AABB bounding_box;
-    std::unique_ptr<game::ChainBase<GameTransformState>> transformer_chain;
-};
+            plane = game::FrustumPlane{.normal = normal, .distance = distance};
+        }
+
+        return planes;
+    }
+
+    auto intersects_frutum(const game::AABB &aabb, const std::array<game::FrustumPlane, 6u> &planes) -> bool
+    {
+        for (const auto &plane : planes)
+        {
+            auto pos_vec = aabb.min;
+            auto neg_vec = aabb.max;
+
+            if (plane.normal.x >= 0.f)
+            {
+                pos_vec.x = aabb.max.x;
+                neg_vec.x = aabb.min.x;
+            }
+            if (plane.normal.y >= 0.f)
+            {
+                pos_vec.y = aabb.max.y;
+                neg_vec.y = aabb.min.y;
+            }
+            if (plane.normal.z >= 0.f)
+            {
+                pos_vec.z = aabb.max.z;
+                neg_vec.z = aabb.min.z;
+            }
+
+            if (game::Vector3::dot(plane.normal, neg_vec) + plane.distance < 0.f)
+            {
+                game::log::debug("not intersect");
+                return false;
+            }
+            if (game::Vector3::dot(plane.normal, pos_vec) + plane.distance < 0.f)
+            {
+                game::log::debug("not intersect");
+                return false;
+            }
+        }
+        game::log::debug("intersect");
+        return true;
+    }
+
+    struct GameTransformState
+    {
+        const game::Camera *camera;
+        game::AABB aabb;
+        game::Vector3 camera_last_position;
+    };
+
+    constexpr auto CameraDelta = [](const game::Vector3 &in, const GameTransformState &state) -> game::TransformerResult
+    { return {in + state.camera->position() - state.camera_last_position}; };
+
+    constexpr auto Invert = [](const game::Vector3 &in, const GameTransformState &) -> game::TransformerResult
+    { return {-in}; };
+
+    constexpr auto CheckVisible = [](const game::Vector3 &in, const GameTransformState &state) -> game::TransformerResult
+    {
+        const auto planes = calculate_frustum_planes(*state.camera);
+        return {
+            -in, intersects_frutum(state.aabb, planes)};
+    };
+
+    struct TransformedEntity
+    {
+        game::Entity entity;
+        game::AABB bounding_box;
+        std::unique_ptr<game::ChainBase<GameTransformState>> transformer_chain;
+    };
+
+}
 
 auto main(int argc, char **argv) -> int
 {
@@ -154,7 +230,7 @@ auto main(int argc, char **argv) -> int
                               std::make_unique<game::Chain<GameTransformState>>());
         entities.emplace_back(game::Entity{&mesh, &material, {5.f, 0.f, 0.f}, {0.4f}, {{0.f}, {1.f}, {0.707107f, 0.f, 0.f, 0.707107f}}, textures},
                               game::AABB{{4.4f, -.75f, -.6f}, {5.6f, .75f, .6f}},
-                              std::make_unique<game::Chain<GameTransformState, CameraDelta>>());
+                              std::make_unique<game::Chain<GameTransformState, CheckVisible, CameraDelta>>());
 
         auto scene = game::Scene{
             .entities = entities |
@@ -194,7 +270,7 @@ auto main(int argc, char **argv) -> int
 
         auto show_physics_debug = false;
 
-        auto state = GameTransformState{.camera = &camera, .camera_last_position = camera.position()};
+        auto state = GameTransformState{.camera = &camera, .aabb = {}, .camera_last_position = camera.position()};
 
         auto running = true;
 
@@ -287,6 +363,7 @@ auto main(int argc, char **argv) -> int
             for (const auto &[transformed_entity, light] : std::views::zip(entities, scene.points))
             {
                 auto &[entity, aabb, transformer] = transformed_entity;
+                state.aabb = aabb;
                 const auto enitiy_delta = transformer->go({}, state);
                 entity.translate(enitiy_delta);
 
