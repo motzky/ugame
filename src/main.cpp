@@ -18,10 +18,7 @@
 #include "events/key_event.h"
 #include "events/mouse_event.h"
 #include "events/stop_event.h"
-#include "game/camera_object_transformer.h"
-#include "game/inverse_camera_object_transformer.h"
-#include "game/object_transformer.h"
-#include "game/static_object_transformer.h"
+#include "game/transforms.h"
 #include "graphics/cube_map.h"
 #include "graphics/material.h"
 #include "graphics/renderer.h"
@@ -43,10 +40,26 @@
 #include "tlv/tlv_reader.h"
 #include "window.h"
 
+struct GameTransformState
+{
+    const game::Camera *camera;
+    game::Vector3 camera_last_position;
+};
+
+constexpr auto CameraDelta = [](const game::Vector3 &in, const game::State<GameTransformState> &state) -> game::TransformerResult
+{
+    return {in + state.state.camera->position() - state.state.camera_last_position};
+};
+
+constexpr auto Invert = [](const game::Vector3 &in, const game::State<GameTransformState> &) -> game::TransformerResult
+{
+    return {-in};
+};
+
 struct TransformedEntity
 {
     game::Entity entity;
-    std::unique_ptr<game::ObjectTransformer> transformer;
+    std::unique_ptr<game::ChainBase<GameTransformState>> transformer_chain;
 };
 
 auto main(int argc, char **argv) -> int
@@ -131,11 +144,11 @@ auto main(int argc, char **argv) -> int
 
         auto entities = std::vector<TransformedEntity>{};
         entities.emplace_back(game::Entity{&mesh, &material, {-5.f, 0.f, 0.f}, {0.4f}, {{0.f}, {1.f}, {0.707107f, 0.f, 0.f, 0.707107f}}, textures},
-                              std::make_unique<game::InverseCameraObjectTransformer>(game::Vector3{-5.f, 0.f, 0.f}, camera));
+                              std::make_unique<game::Chain<GameTransformState, CameraDelta, Invert>>());
         entities.emplace_back(game::Entity{&mesh, &material, {}, {0.4f}, {{0.f}, {1.f}, {0.707107f, 0.f, 0.f, 0.707107f}}, textures},
-                              std::make_unique<game::StaticObjectTransformer>(game::Vector3{}));
+                              std::make_unique<game::Chain<GameTransformState>>());
         entities.emplace_back(game::Entity{&mesh, &material, {5.f, 0.f, 0.f}, {0.4f}, {{0.f}, {1.f}, {0.707107f, 0.f, 0.f, 0.707107f}}, textures},
-                              std::make_unique<game::CameraObjectTransformer>(game::Vector3{5.f, 0.f, 0.f}, camera));
+                              std::make_unique<game::Chain<GameTransformState, CameraDelta>>());
 
         auto scene = game::Scene{
             .entities = entities |
@@ -172,6 +185,8 @@ auto main(int argc, char **argv) -> int
 
         auto show_debug = false;
         const auto debug_ui = game::DebugUi(window.native_handle(), scene, camera, gamma);
+
+        auto state = game::State<GameTransformState>{.state = {.camera = &camera, .camera_last_position = camera.position()}};
 
         auto running = true;
 
@@ -247,18 +262,17 @@ auto main(int argc, char **argv) -> int
 
             walk_direction.y = 0.f;
 
-            const auto speed = key_state[game::Key::LSHIFT] ? 10.f : 3.f;
+            const auto speed = key_state[game::Key::LSHIFT] ? 30.f : 10.f;
             camera.translate(game::Vector3::normalize(walk_direction) * (speed / 60.f));
             camera.update();
 
             for (const auto &[transformed_entity, light] : std::views::zip(entities, scene.points))
             {
                 auto &[entity, transformer] = transformed_entity;
-                transformer->update();
-                const auto position = transformer->position();
+                const auto enitiy_delta = transformer->go({}, state);
+                entity.translate(enitiy_delta);
 
-                entity.set_position(transformer->position());
-
+                const auto position = entity.position();
                 light.position = {position.x, 5.f, position.z};
             }
 
@@ -268,6 +282,8 @@ auto main(int argc, char **argv) -> int
                 debug_ui.render();
             }
             window.swap();
+
+            state.state.camera_last_position = camera.position();
         }
     }
     catch (const game::Exception &err)

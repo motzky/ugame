@@ -33,9 +33,11 @@ namespace game
         auto textures() const -> std::span<const Texture *const>;
         auto transform() const -> const Transform &;
         auto local_transform() const -> const Transform &;
+        auto position() const -> Vector3;
 
         auto set_position(const Vector3 &position) -> void;
         auto set_rotation(const Quaternion &rotation) -> void;
+        auto translate(const Vector3 &translation) -> void;
 
     private:
         const Mesh *_mesh;

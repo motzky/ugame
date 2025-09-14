@@ -70,4 +70,12 @@ namespace game
     {
         return _local_transform;
     }
+    auto Entity::position() const -> Vector3
+    {
+        return _transform.position;
+    }
+    auto Entity::translate(const Vector3 &translation) -> void
+    {
+        _transform.position += _local_transform.position + translation;
+    }
 }
