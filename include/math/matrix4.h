@@ -1,6 +1,7 @@
 #pragma once
 
 #include <array>
+#include <cstring>
 #include <format>
 #include <span>
 
@@ -8,8 +9,10 @@
 #include <Jolt/Math/Mat44.h>
 #include <Jolt/Math/Quat.h>
 
+#include "ensure.h"
 #include "math/quaternion.h"
 #include "math/vector3.h"
+#include "math/vector4.h"
 #include "physics/jolt_utils.h"
 
 namespace game
@@ -41,9 +44,11 @@ namespace game
         {
         }
 
-        constexpr Matrix4(const std::array<float, 16u> &elements)
-            : _elements(elements)
+        constexpr Matrix4(const std::span<const float> &elements)
+            : Matrix4{}
         {
+            ensure(elements.size() == 16u, "not enough elements");
+            std::memcpy(_elements.data(), elements.data(), elements.size_bytes());
         }
 
         constexpr Matrix4(const Vector3 &translation)
@@ -158,6 +163,13 @@ namespace game
         auto operator[](this auto &&self, std::size_t index) -> float &
         {
             return self._elements[index];
+        }
+
+        constexpr auto row(std::size_t index) const -> Vector4
+        {
+            ensure(index < 4, "index out of range");
+
+            return {_elements[index], _elements[index + 4u], _elements[index + 8u], _elements[index + 12u]};
         }
 
         friend constexpr auto operator*=(Matrix4 &m1, const Matrix4 &m2) -> Matrix4 &;
