@@ -15,7 +15,7 @@ namespace game
 
     auto InverseCameraObjectTransformer::update() -> void
     {
-        _position += _camera.position() - _camera_last_position;
+        _position += _camera_last_position - _camera.position();
         _camera_last_position = _camera.position();
     }
 
