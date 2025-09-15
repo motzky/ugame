@@ -165,7 +165,7 @@ namespace game
             return self._elements[index];
         }
 
-        constexpr auto row(std::size_t index) const -> Vector4
+        auto row(std::size_t index) const -> Vector4
         {
             ensure(index < 4, "index out of range");
 
