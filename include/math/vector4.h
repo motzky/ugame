@@ -29,6 +29,11 @@ namespace game
         float z;
         float w;
 
+        static constexpr auto dot(const Vector4 &v1, const Vector4 &v2) -> float
+        {
+            return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z + v1.w * v2.w;
+        }
+
         static auto normalize(const Vector4 &v) -> Vector4
         {
             const auto length = std::sqrt(v.x * v.x + v.y * v.y + v.z * v.z + v.w * v.w);

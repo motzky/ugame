@@ -77,3 +77,35 @@ TEST(vector4, subtract)
     ASSERT_EQ(v3.y, expected.y);
     ASSERT_EQ(v3.z, expected.z);
 }
+
+TEST(vector4, dot_product_basic)
+{
+    const auto v1 = game::Vector4{1.f, 2.f, 3.f, 4.f};
+    const auto v2 = game::Vector4{5.f, -6.f, 7.f, -8.f};
+    const auto expected = -18.f; // 1*5 + 2*(-6) + 3*7 + 4*(-8) = -18
+
+    const auto dot = game::Vector4::dot(v1, v2);
+
+    ASSERT_FLOAT_EQ(dot, expected);
+}
+
+TEST(vector4, dot_product_with_zero)
+{
+    const auto v1 = game::Vector4{1.f, 2.f, 3.f, 4.f};
+    const auto zero = game::Vector4{};
+    const auto expected = 0.f;
+
+    const auto dot = game::Vector4::dot(v1, zero);
+
+    ASSERT_FLOAT_EQ(dot, expected);
+}
+
+TEST(vector4, dot_product_with_self)
+{
+    const auto v1 = game::Vector4{2.f, 3.f, 6.f, 9.f};
+    const auto expected = 2.f * 2.f + 3.f * 3.f + 6.f * 6.f + 9.f * 9.f; // 4 + 9 + 36 + 81 = 130
+
+    const auto dot = game::Vector4::dot(v1, v1);
+
+    ASSERT_FLOAT_EQ(dot, expected);
+}
