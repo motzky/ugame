@@ -44,7 +44,7 @@ namespace game
         {
         }
 
-        constexpr Matrix4(const std::span<const float> &elements)
+        Matrix4(const std::span<const float> &elements)
             : Matrix4{}
         {
             ensure(elements.size() == 16u, "not enough elements");
