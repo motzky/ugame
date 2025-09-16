@@ -152,9 +152,6 @@ namespace game
         const float half_h_side = half_v_side * _width / _height;
         const auto front_mult_far = _far_plane * _direction;
 
-        // std::println("{} {} {} {}", _width / _height, _fov, _near_plane, _far_plane);
-        // std::println("{} {}", _position, _direction);
-
         return {{{_position + _near_plane * _direction, _direction},                        // 0: near
                  {_position + front_mult_far, -_direction},                                 // 1: far
                  {_position, Vector3::cross(front_mult_far - _right * half_h_side, _up)},   // 2: right

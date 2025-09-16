@@ -27,6 +27,7 @@
 #include "graphics/renderer.h"
 #include "graphics/scene.h"
 #include "graphics/shader.h"
+#include "graphics/shape_wireframe_renderer.h"
 #include "graphics/texture.h"
 #include "graphics/texture_sampler.h"
 #include "loaders/mesh_loader.h"
@@ -47,68 +48,31 @@
 
 namespace
 {
-    auto calculate_frustum_planes(const game::Camera &camera) -> std::array<game::FrustumPlane, 6u>
-    {
-        auto planes = std::array<game::FrustumPlane, 6u>{};
 
-        const auto view_proj = game::Matrix4{camera.projection()} * game::Matrix4{camera.view()};
-
-        for (const auto &[index, plane] : planes | std::views::enumerate)
-        {
-            auto row = view_proj.row(3u);
-            if ((index % 2) == 0)
-            {
-                row += view_proj.row(index / 2);
-            }
-            else
-            {
-                row -= view_proj.row(index / 2);
-            }
-
-            const auto normal = game::Vector3{row};
-            const auto distance = normal.length();
-
-            plane = game::FrustumPlane{.normal = normal, .distance = distance};
-        }
-
-        return planes;
-    }
-
-    auto intersects_frutum(const game::AABB &aabb, const std::array<game::FrustumPlane, 6u> &planes) -> bool
+    auto intersects_frustum(const game::AABB &aabb, const std::array<game::FrustumPlane, 6u> &planes) -> bool
     {
         for (const auto &plane : planes)
         {
-            auto pos_vec = aabb.min;
-            auto neg_vec = aabb.max;
 
-            if (plane.normal.x >= 0.f)
+            auto pos_vert = aabb.min;
+            if (plane.normal.x >= 0)
             {
-                pos_vec.x = aabb.max.x;
-                neg_vec.x = aabb.min.x;
+                pos_vert.x = aabb.max.x;
             }
-            if (plane.normal.y >= 0.f)
+            if (plane.normal.y >= 0)
             {
-                pos_vec.y = aabb.max.y;
-                neg_vec.y = aabb.min.y;
+                pos_vert.y = aabb.max.y;
             }
-            if (plane.normal.z >= 0.f)
+            if (plane.normal.z >= 0)
             {
-                pos_vec.z = aabb.max.z;
-                neg_vec.z = aabb.min.z;
+                pos_vert.z = aabb.max.z;
             }
 
-            if (game::Vector3::dot(plane.normal, neg_vec) + plane.distance < 0.f)
+            if (game::Vector3::dot(plane.normal, pos_vert) + plane.distance > 0.f)
             {
-                game::log::debug("not intersect");
-                return false;
-            }
-            if (game::Vector3::dot(plane.normal, pos_vec) + plane.distance < 0.f)
-            {
-                game::log::debug("not intersect");
                 return false;
             }
         }
-        game::log::debug("intersect");
         return true;
     }
 
@@ -127,9 +91,8 @@ namespace
 
     constexpr auto CheckVisible = [](const game::Vector3 &in, const GameTransformState &state) -> game::TransformerResult
     {
-        const auto planes = calculate_frustum_planes(*state.camera);
-        return {
-            -in, intersects_frutum(state.aabb, planes)};
+        const auto planes = state.camera->calculate_frustum_planes();
+        return {-in, !intersects_frustum(state.aabb, planes)};
     };
 
     struct TransformedEntity
@@ -224,7 +187,7 @@ auto main(int argc, char **argv) -> int
         auto entities = std::vector<TransformedEntity>{};
         entities.emplace_back(game::Entity{&mesh, &material, {-5.f, 0.f, 0.f}, {0.4f}, {{0.f}, {1.f}, {0.707107f, 0.f, 0.f, 0.707107f}}, textures},
                               game::AABB{{-5.6f, -.75f, -.6f}, {-4.4f, .75f, .6f}},
-                              std::make_unique<game::Chain<GameTransformState, CameraDelta, Invert>>());
+                              std::make_unique<game::Chain<GameTransformState, CheckVisible, CameraDelta, Invert>>());
         entities.emplace_back(game::Entity{&mesh, &material, {}, {0.4f}, {{0.f}, {1.f}, {0.707107f, 0.f, 0.f, 0.707107f}}, textures},
                               game::AABB{{-.6f, -.75f, -.6f}, {.6f, .75f, .6f}},
                               std::make_unique<game::Chain<GameTransformState>>());
@@ -271,6 +234,8 @@ auto main(int argc, char **argv) -> int
         auto show_physics_debug = false;
 
         auto state = GameTransformState{.camera = &camera, .aabb = {}, .camera_last_position = camera.position()};
+
+        auto debug_wireframe_renderer = game::ShapeWireframeRenderer{};
 
         auto running = true;
 
@@ -358,8 +323,6 @@ auto main(int argc, char **argv) -> int
             camera.update();
 #pragma endregion
 
-            auto debug_line_data = std::vector<game::LineData>{};
-
             for (const auto &[transformed_entity, light] : std::views::zip(entities, scene.points))
             {
                 auto &[entity, aabb, transformer] = transformed_entity;
@@ -370,53 +333,17 @@ auto main(int argc, char **argv) -> int
                 aabb.min += enitiy_delta;
                 aabb.max += enitiy_delta;
 
+                debug_wireframe_renderer.draw(aabb);
+
                 const auto position = entity.position();
                 light.position = {position.x, 5.f, position.z};
-
-#pragma region DrawAABB
-
-                debug_line_data.push_back({aabb.max, {0.f, 1.f, 0.f}});
-                debug_line_data.push_back({{aabb.min.x, aabb.max.y, aabb.max.z}, {0.f, 1.f, 0.f}});
-
-                debug_line_data.push_back({{aabb.min.x, aabb.max.y, aabb.max.z}, {0.f, 1.f, 0.f}});
-                debug_line_data.push_back({{aabb.min.x, aabb.max.y, aabb.min.z}, {0.f, 1.f, 0.f}});
-
-                debug_line_data.push_back({{aabb.min.x, aabb.max.y, aabb.min.z}, {0.f, 1.f, 0.f}});
-                debug_line_data.push_back({{aabb.max.x, aabb.max.y, aabb.min.z}, {0.f, 1.f, 0.f}});
-
-                debug_line_data.push_back({{aabb.max.x, aabb.max.y, aabb.min.z}, {0.f, 1.f, 0.f}});
-
-                debug_line_data.push_back({aabb.max, {0.f, 1.f, 0.f}});
-
-                debug_line_data.push_back({aabb.max, {0.f, 1.f, 0.f}});
-                debug_line_data.push_back({{aabb.max.x, aabb.min.y, aabb.max.z}, {0.f, 1.f, 0.f}});
-
-                debug_line_data.push_back({{aabb.min.x, aabb.max.y, aabb.max.z}, {0.f, 1.f, 0.f}});
-                debug_line_data.push_back({{aabb.min.x, aabb.min.y, aabb.max.z}, {0.f, 1.f, 0.f}});
-
-                debug_line_data.push_back({{aabb.max.x, aabb.max.y, aabb.min.z}, {0.f, 1.f, 0.f}});
-                debug_line_data.push_back({{aabb.max.x, aabb.min.y, aabb.min.z}, {0.f, 1.f, 0.f}});
-
-                debug_line_data.push_back({{aabb.min.x, aabb.max.y, aabb.min.z}, {0.f, 1.f, 0.f}});
-                debug_line_data.push_back({aabb.min, {0.f, 1.f, 0.f}});
-
-                debug_line_data.push_back({aabb.min, {0.f, 1.f, 0.f}});
-                debug_line_data.push_back({{aabb.min.x, aabb.min.y, aabb.max.z}, {0.f, 1.f, 0.f}});
-
-                debug_line_data.push_back({{aabb.min.x, aabb.min.y, aabb.max.z}, {0.f, 1.f, 0.f}});
-                debug_line_data.push_back({{aabb.max.x, aabb.min.y, aabb.max.z}, {0.f, 1.f, 0.f}});
-
-                debug_line_data.push_back({{aabb.max.x, aabb.min.y, aabb.max.z}, {0.f, 1.f, 0.f}});
-                debug_line_data.push_back({{aabb.max.x, aabb.min.y, aabb.min.z}, {0.f, 1.f, 0.f}});
-
-                debug_line_data.push_back({{aabb.max.x, aabb.min.y, aabb.min.z}, {0.f, 1.f, 0.f}});
-                debug_line_data.push_back({aabb.min, {0.f, 1.f, 0.f}});
-#pragma endregion
             }
+
+            debug_wireframe_renderer.draw(camera);
 
             if (show_physics_debug)
             {
-                scene.debug_lines = game::DebugLines{debug_line_data};
+                scene.debug_lines = game::DebugLines{debug_wireframe_renderer.yield()};
             }
             else
             {

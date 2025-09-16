@@ -92,10 +92,6 @@ namespace game
 
         static constexpr auto invert(const Matrix3 &m) -> Matrix3
         {
-            // 0 3 6
-            // 1 4 7
-            // 2 5 8
-
             const auto adjoint = Matrix3{{(m[4] * m[8]) - (m[5] * m[7]),
                                           -(m[1] * m[8]) + (m[2] * m[7]),
                                           (m[1] * m[5]) - (m[2] * m[4]),
