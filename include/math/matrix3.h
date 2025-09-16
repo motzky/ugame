@@ -3,6 +3,7 @@
 #include <array>
 #include <cstring>
 #include <format>
+#include <ranges>
 #include <span>
 
 #include <Jolt/Jolt.h>
@@ -34,6 +35,11 @@ namespace game
                          0.f,
                          0.f,
                          1.f})
+        {
+        }
+
+        constexpr Matrix3(const std::array<float, 9u> &elements)
+            : _elements{elements}
         {
         }
 
@@ -73,8 +79,44 @@ namespace game
 
         constexpr auto operator==(const Matrix3 &) const -> bool = default;
 
+        static constexpr auto invert(const Matrix3 &m) -> Matrix3
+        {
+            // 0 3 6
+            // 1 4 7
+            // 2 5 8
+
+            const auto adjoint = Matrix3{{(m[4] * m[8]) - (m[5] * m[7]),
+                                          -(m[1] * m[8]) + (m[2] * m[7]),
+                                          (m[1] * m[5]) - (m[2] * m[4]),
+
+                                          -(m[3] * m[8]) + (m[5] * m[6]),
+                                          (m[0] * m[8]) - (m[2] * m[6]),
+                                          -(m[0] * m[5]) + (m[2] * m[3]),
+
+                                          (m[3] * m[7]) - (m[4] * m[6]),
+                                          -(m[0] * m[7]) + (m[1] * m[6]),
+                                          (m[0] * m[4]) - (m[1] * m[3])}};
+
+            const auto det =
+                m[0] * m[4] * m[8] +
+                m[1] * m[5] * m[6] +
+                m[2] * m[3] * m[7] -
+
+                m[0] * m[5] * m[7] -
+                m[1] * m[3] * m[8] -
+                m[2] * m[4] * m[6];
+
+            const auto inv_vals = adjoint.data() | std::views::transform([det](auto e)
+                                                                         { return e / det; });
+            auto inv_arr = std::array<float, 9u>{};
+            std::ranges::copy(inv_vals, std::ranges::begin(inv_arr));
+
+            return {inv_arr};
+        }
+
     private:
-        std::array<float, 16u> _elements;
+        std::array<float, 9u>
+            _elements;
     };
 
     constexpr auto operator*=(Matrix3 &m1, const Matrix3 &m2) -> Matrix3 &
@@ -110,7 +152,6 @@ namespace game
 
         return {x, y, z};
     }
-
 }
 
 template <>

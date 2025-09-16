@@ -85,3 +85,30 @@ TEST(matrix3, multiply_with_vector)
     ASSERT_FLOAT_EQ(mult.y, 150.f);
     ASSERT_FLOAT_EQ(mult.z, 180.f);
 }
+
+TEST(matrix3, invert)
+{
+    float vals[] = {
+        1.f, 2.f, -1.f,
+        2.f, 1.f, 2.f,
+        -1.f, 2.f, 1.f};
+
+    float expected_vals[] = {
+        3.f / 16.f, .25f, -5.f / 16.f,
+        .25f, 0.f, .25f,
+        -5.f / 16.f, .25f, 3.f / 16.f};
+
+    const auto m = game::Matrix3{vals};
+
+    const auto m_inv = game::Matrix3::invert(m);
+
+    ASSERT_FLOAT_EQ(m_inv[0], expected_vals[0]);
+    ASSERT_FLOAT_EQ(m_inv[1], expected_vals[1]);
+    ASSERT_FLOAT_EQ(m_inv[2], expected_vals[2]);
+    ASSERT_FLOAT_EQ(m_inv[3], expected_vals[3]);
+    ASSERT_FLOAT_EQ(m_inv[4], expected_vals[4]);
+    ASSERT_FLOAT_EQ(m_inv[5], expected_vals[5]);
+    ASSERT_FLOAT_EQ(m_inv[6], expected_vals[6]);
+    ASSERT_FLOAT_EQ(m_inv[7], expected_vals[7]);
+    ASSERT_FLOAT_EQ(m_inv[8], expected_vals[8]);
+}
