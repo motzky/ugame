@@ -4,7 +4,6 @@
 #include <format>
 
 #include "log.h"
-#include "math/vector4.h"
 
 namespace game
 {
@@ -22,11 +21,6 @@ namespace game
 
         constexpr Vector3(float x, float y, float z)
             : x(x), y(y), z(z)
-        {
-        }
-
-        constexpr Vector3(const Vector4 &v)
-            : x(v.x), y(v.y), z(v.z)
         {
         }
 
@@ -115,7 +109,6 @@ namespace game
     {
         return {-v.x, -v.y, -v.z};
     }
-
 }
 
 template <>

@@ -1,9 +1,9 @@
 #pragma once
 
-#include <cmath>
 #include <format>
 
 #include "log.h"
+#include "math/vector3.h"
 
 namespace game
 {
@@ -21,6 +21,11 @@ namespace game
 
         constexpr Vector4(float x, float y, float z, float w)
             : x(x), y(y), z(z), w(w)
+        {
+        }
+
+        constexpr Vector4(const Vector3 &xyz, float w)
+            : Vector4(xyz.x, xyz.y, xyz.z, w)
         {
         }
 
