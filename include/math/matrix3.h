@@ -102,6 +102,15 @@ namespace game
         return tmp *= m2;
     }
 
+    constexpr auto operator*(Matrix3 &m, const Vector3 &v) -> Vector3
+    {
+        const auto x = m[0] * v.x + m[3] * v.y + m[6] * v.z;
+        const auto y = m[1] * v.x + m[4] * v.y + m[7] * v.z;
+        const auto z = m[2] * v.x + m[5] * v.y + m[8] * v.z;
+
+        return {x, y, z};
+    }
+
 }
 
 template <>
