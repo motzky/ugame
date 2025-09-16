@@ -155,12 +155,12 @@ namespace game
         // std::println("{} {} {} {}", _width / _height, _fov, _near_plane, _far_plane);
         // std::println("{} {}", _position, _direction);
 
-        return {{{_position + _near_plane * _direction, _direction},
-                 {_position + front_mult_far, -_direction},
-                 {_position, Vector3::cross(front_mult_far - _right * half_h_side, _up)},
-                 {_position, Vector3::cross(_up, front_mult_far + _right * half_h_side)},
-                 {_position, Vector3::cross(_right, front_mult_far - _up * half_v_side)},
-                 {_position, Vector3::cross(front_mult_far + _up * half_v_side, _right)}}};
+        return {{{_position + _near_plane * _direction, _direction},                        // 0: near
+                 {_position + front_mult_far, -_direction},                                 // 1: far
+                 {_position, Vector3::cross(front_mult_far - _right * half_h_side, _up)},   // 2: right
+                 {_position, Vector3::cross(_up, front_mult_far + _right * half_h_side)},   // 3: left
+                 {_position, Vector3::cross(_right, front_mult_far - _up * half_v_side)},   // 4: top
+                 {_position, Vector3::cross(front_mult_far + _up * half_v_side, _right)}}}; // 5: bottom
     }
 
 }
