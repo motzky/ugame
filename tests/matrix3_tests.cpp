@@ -86,6 +86,22 @@ TEST(matrix3, multiply_with_vector)
     ASSERT_FLOAT_EQ(mult.z, 180.f);
 }
 
+TEST(matrix3, determinate)
+{
+    float vals[] = {
+        1.f, 2.f, -1.f,
+        2.f, 1.f, 2.f,
+        -1.f, 2.f, 1.f};
+
+    float expected = -16.f;
+
+    const auto m = game::Matrix3{vals};
+
+    const auto det = game::Matrix3::determinate(m);
+
+    ASSERT_FLOAT_EQ(det, expected);
+}
+
 TEST(matrix3, invert)
 {
     float vals[] = {

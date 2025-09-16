@@ -79,6 +79,17 @@ namespace game
 
         constexpr auto operator==(const Matrix3 &) const -> bool = default;
 
+        static constexpr auto determinate(const Matrix3 &m) -> float
+        {
+            return m[0] * m[4] * m[8] +
+                   m[1] * m[5] * m[6] +
+                   m[2] * m[3] * m[7] -
+
+                   m[0] * m[5] * m[7] -
+                   m[1] * m[3] * m[8] -
+                   m[2] * m[4] * m[6];
+        }
+
         static constexpr auto invert(const Matrix3 &m) -> Matrix3
         {
             // 0 3 6
@@ -97,14 +108,7 @@ namespace game
                                           -(m[0] * m[7]) + (m[1] * m[6]),
                                           (m[0] * m[4]) - (m[1] * m[3])}};
 
-            const auto det =
-                m[0] * m[4] * m[8] +
-                m[1] * m[5] * m[6] +
-                m[2] * m[3] * m[7] -
-
-                m[0] * m[5] * m[7] -
-                m[1] * m[3] * m[8] -
-                m[2] * m[4] * m[6];
+            const auto det = determinate(m);
 
             const auto inv_vals = adjoint.data() | std::views::transform([det](auto e)
                                                                          { return e / det; });
