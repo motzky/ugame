@@ -6,6 +6,7 @@ target_sources(gamelib PUBLIC
     mesh.cpp
     renderer.cpp
     shader.cpp
+    shape_wireframe_renderer.cpp
     texture.cpp
     texture_sampler.cpp
 )
