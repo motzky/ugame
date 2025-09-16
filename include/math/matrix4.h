@@ -214,11 +214,6 @@ namespace game
         const auto u = Vector3::normalize(Vector3::cross(s, f));
 
         auto m = Matrix4{};
-        // m._elements = {s.x, s.y, s.z, 0.f, u.x, u.y, u.z, 0.f, -f.x, -f.y, -f.z, 0.f, 0.f, 0.f, 0.f, 1.f};
-        // m._elements = { s.x, s.y, s.z, 0.f,
-        //                 u.x, u.y, u.z, 0.f,
-        //                -f.x, -f.y, -f.z, 0.f,
-        //                 0.f, 0.f, 0.f, 1.f};
 
         m._elements = {s.x, u.x, -f.x, 0.f,
                        s.y, u.y, -f.y, 0.f,
