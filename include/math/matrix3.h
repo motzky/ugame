@@ -1,0 +1,123 @@
+#pragma once
+
+#include <array>
+#include <cstring>
+#include <format>
+#include <span>
+
+#include <Jolt/Jolt.h>
+#include <Jolt/Math/Mat44.h>
+#include <Jolt/Math/Quat.h>
+
+#include "ensure.h"
+#include "math/quaternion.h"
+#include "math/vector3.h"
+#include "math/vector4.h"
+#include "physics/jolt_utils.h"
+
+namespace game
+{
+    class Matrix3
+    {
+    public:
+        struct Scale
+        {
+        };
+        // initialize to identity
+        constexpr Matrix3()
+            : _elements({1.f,
+                         0.f,
+                         0.f,
+                         0.f,
+                         1.f,
+                         0.f,
+                         0.f,
+                         0.f,
+                         1.f})
+        {
+        }
+
+        constexpr Matrix3(const Vector3 &v1, const Vector3 &v2, const Vector3 &v3)
+            : _elements(
+                  {v1.x, v1.y, v1.z,
+                   v2.x, v2.y, v2.z,
+                   v3.x, v3.y, v3.z})
+        {
+        }
+
+        Matrix3(const std::span<const float> &elements)
+            : Matrix3{}
+        {
+            ensure(elements.size() == 9u, "not enough elements");
+            std::memcpy(_elements.data(), elements.data(), elements.size_bytes());
+        }
+
+        constexpr auto data() const -> std::span<const float>
+        {
+            return _elements;
+        }
+
+        auto operator[](this auto &&self, std::size_t index) -> float &
+        {
+            return self._elements[index];
+        }
+
+        auto row(std::size_t index) const -> Vector3
+        {
+            ensure(index < 3, "index out of range");
+
+            return {_elements[index], _elements[index + 3u], _elements[index + 6u]};
+        }
+
+        friend constexpr auto operator*=(Matrix3 &m1, const Matrix3 &m2) -> Matrix3 &;
+
+        constexpr auto operator==(const Matrix3 &) const -> bool = default;
+
+    private:
+        std::array<float, 16u> _elements;
+    };
+
+    constexpr auto operator*=(Matrix3 &m1, const Matrix3 &m2) -> Matrix3 &
+    {
+        auto result = Matrix3{};
+        for (auto i = 0u; i < 3u; i++)
+        {
+            for (auto j = 0u; j < 3u; j++)
+            {
+                result._elements[i + j * 3] = 0.f;
+                for (auto k = 0u; k < 3u; ++k)
+                {
+                    result._elements[i + j * 3] += m1._elements[i + k * 3] * m2._elements[k + j * 3];
+                }
+            }
+        }
+
+        m1 = result;
+        return m1;
+    }
+
+    constexpr auto operator*(const Matrix3 &m1, const Matrix3 &m2) -> Matrix3
+    {
+        auto tmp{m1};
+        return tmp *= m2;
+    }
+
+}
+
+template <>
+struct std::formatter<game::Matrix3>
+{
+    constexpr auto parse(std::format_parse_context &ctx)
+    {
+        return std::begin(ctx);
+    }
+
+    auto format(const game::Matrix3 &obj, std::format_context &ctx) const
+    {
+        const auto *data = obj.data().data();
+        return std::format_to(ctx.out(), "{} {} {}\n{} {} {}\n{} {} {}",
+                              data[0], data[3], data[6],
+                              data[1], data[4], data[7],
+                              data[2], data[5], data[8]);
+    }
+};
