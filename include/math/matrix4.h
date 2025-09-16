@@ -160,7 +160,7 @@ namespace game
             return _elements;
         }
 
-        auto operator[](this auto &&self, std::size_t index) -> float &
+        auto operator[](this auto &&self, std::size_t index) -> auto
         {
             return self._elements[index];
         }

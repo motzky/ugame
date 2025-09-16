@@ -57,7 +57,7 @@ namespace game
             return _elements;
         }
 
-        auto operator[](this auto &&self, std::size_t index) -> float &
+        auto operator[](this auto &&self, std::size_t index) -> auto
         {
             return self._elements[index];
         }
@@ -102,7 +102,7 @@ namespace game
         return tmp *= m2;
     }
 
-    constexpr auto operator*(Matrix3 &m, const Vector3 &v) -> Vector3
+    constexpr auto operator*(const Matrix3 &m, const Vector3 &v) -> Vector3
     {
         const auto x = m[0] * v.x + m[3] * v.y + m[6] * v.z;
         const auto y = m[1] * v.x + m[4] * v.y + m[7] * v.z;
