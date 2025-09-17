@@ -68,7 +68,7 @@ namespace
                 pos_vert.z = aabb.max.z;
             }
 
-            if (game::Vector3::dot(plane.normal, pos_vert) + plane.distance > 0.f)
+            if (game::Vector3::dot(plane.normal, pos_vert) + plane.distance < 0.f)
             {
                 return false;
             }
@@ -91,7 +91,7 @@ namespace
 
     constexpr auto CheckVisible = [](const game::Vector3 &in, const GameTransformState &state) -> game::TransformerResult
     {
-        const auto planes = state.camera->calculate_frustum_planes();
+        const auto planes = state.camera->frustum_planes();
         return {-in, !intersects_frustum(state.aabb, planes)};
     };
 
@@ -125,7 +125,7 @@ auto main(int argc, char **argv) -> int
                                    std::numbers::pi_v<float> / 4.f,
                                    static_cast<float>(window.width()),
                                    static_cast<float>(window.height()),
-                                   0.001f,
+                                   0.1f,
                                    500.f};
 
         auto resource_loader = game::ResourceLoader{argv[1]};
@@ -309,14 +309,12 @@ auto main(int argc, char **argv) -> int
             }
             if (key_state[game::Key::SPACE])
             {
-                walk_direction += camera.up();
+                walk_direction = show_physics_debug ? walk_direction + camera.up() : 0.f;
             }
             if (key_state[game::Key::LCTRL])
             {
-                walk_direction -= camera.up();
+                walk_direction = show_physics_debug ? walk_direction - camera.up() : 0.f;
             }
-
-            walk_direction.y = 0.f;
 
             const auto speed = key_state[game::Key::LSHIFT] ? 30.f : 10.f;
             camera.translate(game::Vector3::normalize(walk_direction) * (speed / 60.f));
@@ -338,8 +336,6 @@ auto main(int argc, char **argv) -> int
                 const auto position = entity.position();
                 light.position = {position.x, 5.f, position.z};
             }
-
-            debug_wireframe_renderer.draw(camera);
 
             if (show_physics_debug)
             {
