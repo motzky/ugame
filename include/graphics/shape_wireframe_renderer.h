@@ -3,9 +3,9 @@
 #include <vector>
 
 #include "camera.h"
-#include "game/aabb.h"
 #include "graphics/color.h"
 #include "graphics/line_data.h"
+#include "math/aabb.h"
 
 namespace game
 {
