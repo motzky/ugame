@@ -87,6 +87,17 @@ namespace game
         //     return;
         // }
         _pitch += adjust;
+
+        if (_pitch > 1.55334303f)
+        {
+            _pitch = 1.55334303f;
+            return;
+        }
+        if (_pitch < -1.55334303f)
+        {
+            _pitch = -1.55334303f;
+            return;
+        }
     }
     auto Camera::adjust_yaw(float adjust) -> void
     {
