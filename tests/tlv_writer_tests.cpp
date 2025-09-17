@@ -23,7 +23,7 @@ namespace
     }
 }
 
-TEST(tlv_witer, write_uint32)
+TEST(tlv_writer, write_uint32)
 {
     auto value = std::uint32_t{0xaabbccdd};
     auto writer = game::TlvWriter{};
@@ -38,7 +38,7 @@ TEST(tlv_witer, write_uint32)
     ASSERT_EQ(value, (*entry).uint32_value());
 }
 
-TEST(tlv_witer, write_string)
+TEST(tlv_writer, write_string)
 {
     auto value = std::string{"hello test"};
     auto writer = game::TlvWriter{};
@@ -53,7 +53,7 @@ TEST(tlv_witer, write_string)
     ASSERT_EQ(value, (*entry).string_value());
 }
 
-TEST(tlv_witer, write_byte_array)
+TEST(tlv_writer, write_byte_array)
 {
     auto value = create_binary_vector(0xaa, 0xbb, 0xcc);
     auto writer = game::TlvWriter{};
@@ -68,7 +68,7 @@ TEST(tlv_witer, write_byte_array)
     ASSERT_EQ(value, (*entry).byte_array_value());
 }
 
-TEST(tlv_witer, write_texture_format)
+TEST(tlv_writer, write_texture_format)
 {
     auto value = game::TextureFormat::RGBA;
     auto writer = game::TlvWriter{};
@@ -83,7 +83,7 @@ TEST(tlv_witer, write_texture_format)
     ASSERT_EQ(value, (*entry).texture_format_value());
 }
 
-TEST(tlv_witer, write_texture_usage)
+TEST(tlv_writer, write_texture_usage)
 {
     auto value = game::TextureUsage::SRGB;
     auto writer = game::TlvWriter{};
@@ -98,7 +98,7 @@ TEST(tlv_witer, write_texture_usage)
     ASSERT_EQ(value, (*entry).texture_usage_value());
 }
 
-TEST(tlv_witer, write_texture_data)
+TEST(tlv_writer, write_texture_data)
 {
     auto data = create_binary_vector(0xaa, 0xbb, 0xcc);
     auto texture_data = game::TextureDescription{
