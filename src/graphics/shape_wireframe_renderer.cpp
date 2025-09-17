@@ -6,8 +6,8 @@
 
 #include "camera.h"
 #include "game/aabb.h"
-#include "game/frustum_plane.h"
 #include "graphics/color.h"
+#include "graphics/frustum_plane.h"
 #include "graphics/line_data.h"
 #include "math/matrix3.h"
 #include "math/vector3.h"

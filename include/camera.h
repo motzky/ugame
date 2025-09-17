@@ -3,7 +3,7 @@
 #include <array>
 #include <span>
 
-#include "game/frustum_plane.h"
+#include "graphics/frustum_plane.h"
 #include "math/matrix4.h"
 #include "math/vector3.h"
 

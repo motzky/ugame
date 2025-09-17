@@ -1,11 +1,9 @@
 #pragma once
 
-#include <array>
 #include <vector>
 
 #include "camera.h"
 #include "game/aabb.h"
-#include "game/frustum_plane.h"
 #include "graphics/color.h"
 #include "graphics/line_data.h"
 
