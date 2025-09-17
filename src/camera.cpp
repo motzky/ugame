@@ -121,7 +121,10 @@ namespace game
     auto Camera::update() -> void
     {
         _direction = create_direction(_pitch, _yaw);
-        _right = Vector3::normalize(Vector3::cross(_direction, _up));
+
+        auto world_up = Vector3{0.f, 1.0f, 0.f};
+        _right = Vector3::normalize(Vector3::cross(_direction, world_up));
+        _up = Vector3::normalize(Vector3::cross(_right, _direction));
         recalculate_view();
     }
 
