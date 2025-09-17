@@ -28,11 +28,7 @@ namespace game
         float y;
         float z;
 
-#ifndef _WIN32
-        constexpr
-#endif
-            auto
-            length() const -> float
+        auto length() const -> float
         {
             return std::hypot(x, y, z);
         }
@@ -49,11 +45,6 @@ namespace game
             return {v.x / length, v.y / length, v.z / length};
         }
 
-        static constexpr auto dot(const Vector3 &v1, const Vector3 &v2) -> float
-        {
-            return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
-        }
-
         static constexpr auto cross(const Vector3 &v1, const Vector3 &v2) -> Vector3
         {
             const auto i = (v1.y * v2.z) - (v1.z * v2.y);
@@ -61,6 +52,11 @@ namespace game
             const auto k = (v1.x * v2.y) - (v1.y * v2.x);
 
             return {i, -j, k};
+        }
+
+        static constexpr auto dot(const Vector3 &v1, const Vector3 &v2) -> float
+        {
+            return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
         }
 
         constexpr auto operator==(const Vector3 &) const -> bool = default;
