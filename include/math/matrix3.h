@@ -63,9 +63,18 @@ namespace game
             return _elements;
         }
 
-        constexpr auto operator[](this auto &&self, std::size_t index) -> auto
+        constexpr auto operator[](this auto &&self, std::size_t index) -> auto &
         {
             return self._elements[index];
+        }
+
+        static constexpr auto transpose(Matrix3 m) -> Matrix3
+        {
+            std::ranges::swap(m[1], m[3]);
+            std::ranges::swap(m[2], m[6]);
+            std::ranges::swap(m[5], m[7]);
+
+            return m;
         }
 
         auto row(std::size_t index) const -> Vector3
@@ -126,11 +135,12 @@ namespace game
         {
             for (auto j = 0u; j < 3u; j++)
             {
-                result._elements[i + j * 3] = 0.f;
+                auto sum = 0.f;
                 for (auto k = 0u; k < 3u; ++k)
                 {
-                    result._elements[i + j * 3] += m1._elements[i + k * 3] * m2._elements[k + j * 3];
+                    sum += m1._elements[i + k * 3] * m2._elements[k + j * 3];
                 }
+                result._elements[i + j * 3] = sum;
             }
         }
 

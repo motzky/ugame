@@ -187,11 +187,13 @@ namespace game
         {
             for (auto j = 0u; j < 4u; j++)
             {
+                auto sum = 0.f;
                 result._elements[i + j * 4] = 0.f;
                 for (auto k = 0u; k < 4u; ++k)
                 {
-                    result._elements[i + j * 4] += m1._elements[i + k * 4] * m2._elements[k + j * 4];
+                    sum += m1._elements[i + k * 4] * m2._elements[k + j * 4];
                 }
+                result._elements[i + j * 4] = sum;
             }
         }
 
