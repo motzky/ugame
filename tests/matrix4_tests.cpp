@@ -36,7 +36,8 @@ TEST(matrix4, look_at)
 {
     const auto view = game::Matrix4::look_at({1.f, 0.f, 5.f}, {0.f}, {0.f, 1.f, 0.f});
     float vals[] = {0.980581f, 0.f, 0.196116f, 0.f,
-                    0.f, 1.f, 0.f, 0.f, -0.196116f, 0.f, 0.980581f, 0.f,
+                    0.f, 1.f, 0.f, 0.f,
+                    -0.196116f, 0.f, 0.980581f, 0.f,
                     0.f, 0.f, -5.099020f, 1.f};
     const auto expected = game::Matrix4{vals};
 

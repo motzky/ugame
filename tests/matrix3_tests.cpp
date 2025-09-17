@@ -139,3 +139,29 @@ TEST(matrix3, invert)
     ASSERT_FLOAT_EQ(m_inv[7], expected_vals[7]);
     ASSERT_FLOAT_EQ(m_inv[8], expected_vals[8]);
 }
+
+TEST(matrix3, matrix_times_invert_equals_identiy)
+{
+    float vals[] = {
+        1.f, 2.f, -1.f,
+        2.f, 1.f, 2.f,
+        -1.f, 2.f, 1.f};
+
+    const auto identity = game::Matrix3{};
+
+    const auto m = game::Matrix3{vals};
+
+    const auto m_inv = game::Matrix3::invert(m);
+
+    const auto result = m * m_inv;
+
+    ASSERT_FLOAT_EQ(result[0], identity[0]);
+    ASSERT_FLOAT_EQ(result[1], identity[1]);
+    ASSERT_FLOAT_EQ(result[2], identity[2]);
+    ASSERT_FLOAT_EQ(result[3], identity[3]);
+    ASSERT_FLOAT_EQ(result[4], identity[4]);
+    ASSERT_FLOAT_EQ(result[5], identity[5]);
+    ASSERT_FLOAT_EQ(result[6], identity[6]);
+    ASSERT_FLOAT_EQ(result[7], identity[7]);
+    ASSERT_FLOAT_EQ(result[8], identity[8]);
+}
