@@ -34,7 +34,8 @@ namespace game
         auto near_plane() const -> float;
         auto far_plane() const -> float;
 
-        auto calculate_frustum_planes() const -> std::array<game::FrustumPlane, 6u>;
+        auto frustum_corners() const -> std::array<Vector3, 8u>;
+        auto frustum_planes() const -> std::array<game::FrustumPlane, 6u>;
 
         // auto invert_pitch(bool invert) -> void;
         // auto invert_yaw(bool invert) -> void;

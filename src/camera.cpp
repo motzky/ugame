@@ -158,20 +158,80 @@ namespace game
         _view = Matrix4::look_at(_position, _position + _direction, _up);
     }
 
-    auto Camera::calculate_frustum_planes() const -> std::array<FrustumPlane, 6u>
+    auto Camera::frustum_corners() const -> std::array<Vector3, 8u>
     {
-        auto planes = std::array<FrustumPlane, 6u>{};
+        auto corners = std::array<Vector3, 8u>{};
 
-        const float half_v_side = _far_plane * std::tan(_fov * .5f);
-        const float half_h_side = half_v_side * _width / _height;
-        const auto front_mult_far = _far_plane * _direction;
+        const auto tan_half_fov = std::tan(_fov / 2.0f);
+        const auto aspect = _width / _height;
 
-        return {{{_position + _near_plane * _direction, _direction},                        // 0: near
-                 {_position + front_mult_far, -_direction},                                 // 1: far
-                 {_position, Vector3::cross(front_mult_far - _right * half_h_side, _up)},   // 2: right
-                 {_position, Vector3::cross(_up, front_mult_far + _right * half_h_side)},   // 3: left
-                 {_position, Vector3::cross(_right, front_mult_far - _up * half_v_side)},   // 4: top
-                 {_position, Vector3::cross(front_mult_far + _up * half_v_side, _right)}}}; // 5: bottom
+        const auto near_height = 2.0f * tan_half_fov * _near_plane;
+        const auto near_width = near_height * aspect;
+
+        const auto far_height = 2.0f * tan_half_fov * _far_plane;
+        const auto far_width = far_height * aspect;
+
+        const auto forward = Vector3::normalize(_direction);
+        const auto right = Vector3::normalize(Vector3::cross(forward, _up));
+        const auto up = Vector3::normalize(Vector3::cross(right, forward));
+
+        const auto near_center = _position + _direction * _near_plane;
+        corners[0] = near_center + up * (near_height / 2.0f) - right * (near_width / 2.0f);
+        corners[1] = near_center + up * (near_height / 2.0f) + right * (near_width / 2.0f);
+        corners[2] = near_center - up * (near_height / 2.0f) + right * (near_width / 2.0f);
+        corners[3] = near_center - up * (near_height / 2.0f) - right * (near_width / 2.0f);
+
+        const auto far_center = _position + _direction * _far_plane;
+        corners[4] = far_center + up * (far_height / 2.0f) - right * (far_width / 2.0f);
+        corners[5] = far_center + up * (far_height / 2.0f) + right * (far_width / 2.0f);
+        corners[6] = far_center - up * (far_height / 2.0f) + right * (far_width / 2.0f);
+        corners[7] = far_center - up * (far_height / 2.0f) - right * (far_width / 2.0f);
+
+        return corners;
+    }
+
+    auto Camera::frustum_planes() const -> std::array<FrustumPlane, 6u>
+    {
+        // auto planes = std::array<FrustumPlane, 6u>{};
+
+        // const float half_v_side = _far_plane * std::tan(_fov * .5f);
+        // const float half_h_side = half_v_side * _width / _height;
+        // const auto front_mult_far = _far_plane * _direction;
+
+        // return {{{_position + _near_plane * _direction, _direction},                        // 0: near
+        //          {_position + front_mult_far, -_direction},                                 // 1: far
+        //          {_position, Vector3::cross(front_mult_far - _right * half_h_side, _up)},   // 2: right
+        //          {_position, Vector3::cross(_up, front_mult_far + _right * half_h_side)},   // 3: left
+        //          {_position, Vector3::cross(_right, front_mult_far - _up * half_v_side)},   // 4: top
+        //          {_position, Vector3::cross(front_mult_far + _up * half_v_side, _right)}}}; // 5: bottom
+
+        const auto view_proj = _projection * _view;
+        return {{
+            {view_proj[3] - view_proj[2],
+             view_proj[7] - view_proj[6],
+             view_proj[11] - view_proj[10],
+             view_proj[15] - view_proj[14]},
+            {view_proj[3] + view_proj[2],
+             view_proj[7] + view_proj[6],
+             view_proj[11] + view_proj[10],
+             view_proj[15] + view_proj[14]},
+            {view_proj[3] + view_proj[0],
+             view_proj[7] + view_proj[4],
+             view_proj[11] + view_proj[8],
+             view_proj[15] + view_proj[12]},
+            {view_proj[3] - view_proj[0],
+             view_proj[7] - view_proj[4],
+             view_proj[11] - view_proj[8],
+             view_proj[15] - view_proj[12]},
+            {view_proj[3] + view_proj[1],
+             view_proj[7] + view_proj[5],
+             view_proj[11] + view_proj[9],
+             view_proj[15] + view_proj[13]},
+            {view_proj[3] - view_proj[1],
+             view_proj[7] - view_proj[5],
+             view_proj[11] - view_proj[9],
+             view_proj[15] - view_proj[13]},
+        }};
     }
 
 }
