@@ -88,18 +88,18 @@ namespace game
         auto tmp = v1;
         return tmp += v2;
     }
-    constexpr auto operator*=(Vector3 &v1, const Vector3 &v2) -> Vector3 &
+    constexpr auto operator*=(Vector3 &v1, const float scale) -> Vector3 &
     {
-        v1.x *= v2.x;
-        v1.y *= v2.y;
-        v1.z *= v2.z;
+        v1.x *= scale;
+        v1.y *= scale;
+        v1.z *= scale;
 
         return v1;
     }
-    constexpr auto operator*(const Vector3 &v1, const Vector3 &v2) -> Vector3
+    constexpr auto operator*(const Vector3 &v1, const float scale) -> Vector3
     {
         auto tmp = v1;
-        return tmp *= v2;
+        return tmp *= scale;
     }
     constexpr auto operator-(const Vector3 &v) -> Vector3
     {

@@ -11,10 +11,10 @@ template <auto... T>
 using TestChain = game::Chain<EmptyState, T...>;
 
 constexpr auto AddTransformer = [](const game::Vector3 &in, const EmptyState &) -> game::TransformerResult
-{ return {in + game::Vector3{1.f}}; };
+{ return {in + 1.f}; };
 
 constexpr auto MultiplyTransformer = [](const game::Vector3 &in, const EmptyState &) -> game::TransformerResult
-{ return {in * game::Vector3{2.f}}; };
+{ return {in * 2.f}; };
 
 constexpr auto ChoiceTransformer = [](const game::Vector3 &in, const EmptyState &) -> game::TransformerResult
 { return {in, in.x == 1.0f}; };
