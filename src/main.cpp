@@ -309,11 +309,16 @@ auto main(int argc, char **argv) -> int
             }
             if (key_state[game::Key::SPACE])
             {
-                walk_direction = show_physics_debug ? walk_direction + camera.up() : 0.f;
+                walk_direction += camera.up();
             }
             if (key_state[game::Key::LCTRL])
             {
-                walk_direction = show_physics_debug ? walk_direction - camera.up() : 0.f;
+                walk_direction -= camera.up();
+            }
+
+            if (!show_debug)
+            {
+                walk_direction.y = 0.f;
             }
 
             const auto speed = key_state[game::Key::LSHIFT] ? 30.f : 10.f;
