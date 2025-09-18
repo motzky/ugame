@@ -15,6 +15,8 @@ namespace game
         auto key() const -> Key;
         auto state() const -> KeyState;
 
+        auto operator==(const KeyEvent &) const -> bool = default;
+
     private:
         Key _key;
         KeyState _state;
