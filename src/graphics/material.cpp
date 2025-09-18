@@ -43,27 +43,27 @@ namespace game
         auto uniform_count = ::GLint{};
         ::glGetProgramiv(_handle, GL_ACTIVE_UNIFORMS, &uniform_count);
 
-        log::info("new material ({} uniforms)", uniform_count);
-
-        if (uniform_count != 0)
+        if (uniform_count == 0)
         {
-            auto max_name_length = ::GLint{};
-            ::glGetProgramiv(_handle, GL_ACTIVE_UNIFORM_MAX_LENGTH, &max_name_length);
+            return;
+        }
 
-            auto length = ::GLsizei{};
-            auto count = ::GLsizei{};
-            auto type = ::GLenum{};
+        auto max_name_length = ::GLint{};
+        ::glGetProgramiv(_handle, GL_ACTIVE_UNIFORM_MAX_LENGTH, &max_name_length);
 
-            for (auto i = ::GLint{}; i < uniform_count; ++i)
-            {
-                auto name = std::string(max_name_length, '\0');
+        auto length = ::GLsizei{};
+        auto count = ::GLsizei{};
+        auto type = ::GLenum{};
 
-                ::glGetActiveUniform(_handle, i, max_name_length, &length, &count, &type, name.data());
-                name.resize(length);
+        for (auto i = ::GLint{}; i < uniform_count; ++i)
+        {
+            auto name = std::string(max_name_length, '\0');
 
-                const auto location = ::glGetUniformLocation(_handle, name.c_str());
-                _uniforms[name] = location;
-            }
+            ::glGetActiveUniform(_handle, i, max_name_length, &length, &count, &type, name.data());
+            name.resize(length);
+
+            const auto location = ::glGetUniformLocation(_handle, name.c_str());
+            _uniforms[name] = location;
         }
     }
 
