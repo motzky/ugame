@@ -9,6 +9,7 @@
 #include <print>
 #include <queue>
 #include <ranges>
+#include <string_view>
 
 #include <GLFW/glfw3.h>
 
@@ -28,6 +29,56 @@ namespace
     auto g_event_queue = std::queue<game::Event>{};
     auto g_process_mouse_events = false;
 
+    auto gl_source_to_string(GLenum source) -> std::string_view
+    {
+        switch (source)
+        {
+        case GL_DEBUG_SOURCE_API:
+            return "API";
+        case GL_DEBUG_SOURCE_WINDOW_SYSTEM:
+            return "Window System";
+        case GL_DEBUG_SOURCE_SHADER_COMPILER:
+            return "Shader Compiler";
+        case GL_DEBUG_SOURCE_THIRD_PARTY:
+            return "Third party";
+        case GL_DEBUG_SOURCE_APPLICATION:
+            return "APP";
+        case GL_DEBUG_SOURCE_OTHER:
+            return "OTHER";
+
+        default:
+            return std::to_string(source);
+        }
+    }
+
+    auto gl_message_type_to_string(GLenum type) -> std::string_view
+    {
+        switch (type)
+        {
+        case GL_DEBUG_TYPE_ERROR:
+            return "ERROR";
+        case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR:
+            return "DEPRECATED BEHAVIOR";
+        case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR:
+            return "UNDEFINED  BEHAVIOR";
+        case GL_DEBUG_TYPE_PORTABILITY:
+            return "PORTABILITY";
+        case GL_DEBUG_TYPE_PERFORMANCE:
+            return "PERFORMANCE";
+        case GL_DEBUG_TYPE_MARKER:
+            return "MARKER";
+        case GL_DEBUG_TYPE_PUSH_GROUP:
+            return "PUSH GROUP";
+        case GL_DEBUG_TYPE_POP_GROUP:
+            return "POP GROUP";
+        case GL_DEBUG_TYPE_OTHER:
+            return "OTHER";
+
+        default:
+            return std::to_string(type);
+        }
+    }
+
     void APIENTRY opengl_debug_callback(
         GLenum source,
         GLenum type,
@@ -40,16 +91,21 @@ namespace
         switch (severity)
         {
         case GL_DEBUG_SEVERITY_HIGH:
-            game::log::error("{} - {}: {} from {}", id, type, message, source);
+            game::log::error("{} - {} - {}: {}", gl_source_to_string(source), id, gl_message_type_to_string(type), message);
             break;
         case GL_DEBUG_SEVERITY_MEDIUM:
-            game::log::warn("{} - {}: {} from {}", id, type, message, source);
+            game::log::warn("{} - {} - {}: {}", gl_source_to_string(source), id, gl_message_type_to_string(type), message);
             break;
         case GL_DEBUG_SEVERITY_LOW:
-            game::log::info("{} - {}: {} from {}", id, type, message, source);
+            game::log::debug("{} - {} - {}: {}", gl_source_to_string(source), id, gl_message_type_to_string(type), message);
             break;
         case GL_DEBUG_SEVERITY_NOTIFICATION:
-            game::log::debug("{} - {}: {} from {}", id, type, message, source);
+            if (source == GL_DEBUG_SOURCE_SHADER_COMPILER && type == GL_DEBUG_TYPE_OTHER)
+            {
+                // just ignore shader compiler stats
+                return;
+            }
+            game::log::debug("{} - {} - {}: {}", gl_source_to_string(source), id, gl_message_type_to_string(type), message);
             break;
         }
     }
