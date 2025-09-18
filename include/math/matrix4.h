@@ -3,6 +3,7 @@
 #include <array>
 #include <cstring>
 #include <format>
+#include <ranges>
 #include <span>
 
 #include <Jolt/Jolt.h>
@@ -44,11 +45,17 @@ namespace game
         {
         }
 
+        Matrix4(const std::array<float, 16u> &elements)
+            : Matrix4{std::span<const float>{elements}}
+        {
+        }
+
         Matrix4(const std::span<const float> &elements)
             : Matrix4{}
         {
             ensure(elements.size() == 16u, "not enough elements");
-            std::memcpy(_elements.data(), elements.data(), elements.size_bytes());
+            std::ranges::copy(elements, std::ranges::begin(_elements));
+            // std::memcpy(_elements.data(), elements.data(), elements.size_bytes());
         }
 
         constexpr Matrix4(const Vector3 &translation)
@@ -188,7 +195,6 @@ namespace game
             for (auto j = 0u; j < 4u; j++)
             {
                 auto sum = 0.f;
-                result._elements[i + j * 4] = 0.f;
                 for (auto k = 0u; k < 4u; ++k)
                 {
                     sum += m1._elements[i + k * 4] * m2._elements[k + j * 4];

@@ -1,35 +1,131 @@
 #include <gtest/gtest.h>
 
+#include <cstring>
 #include <numbers>
 #include <print>
 
 #include "math/matrix4.h"
 #include "math/vector3.h"
 
-TEST(matrx4, multiply_by_identity)
+TEST(matrix4, identity_ctor)
 {
-    float vals[] = {
+    const auto m = game::Matrix4{};
+    const auto expected = std::array<float, 16u>{
         1.f,
-        2.f,
-        3.f,
-        4.f,
+        0.f,
+        0.f,
+        0.f,
+        0.f,
         1.f,
-        2.f,
-        3.f,
-        4.f,
+        0.f,
+        0.f,
+        0.f,
+        0.f,
         1.f,
-        2.f,
-        3.f,
-        4.f,
+        0.f,
+        0.f,
+        0.f,
+        0.f,
         1.f,
-        2.f,
-        3.f,
-        4.f,
     };
-    const auto m1 = game::Matrix4{vals};
+
+    const auto result = m.data();
+    ASSERT_EQ(result.size(), expected.size());
+    EXPECT_EQ(std::memcmp(result.data(), expected.data(), result.size_bytes()), 0);
+}
+
+TEST(matrix4, element_ctor)
+{
+    const auto expected = std::array<float, 16u>{
+        1.f,
+        2.f,
+        3.f,
+        4.f,
+        5.f,
+        6.f,
+        7.f,
+        8.f,
+        9.f,
+        10.f,
+        11.f,
+        12.f,
+        13.f,
+        14.f,
+        15.f,
+        16.f,
+    };
+
+    const auto m = game::Matrix4{expected};
+
+    const auto result = m.data();
+    ASSERT_EQ(result.size(), expected.size());
+    EXPECT_EQ(std::memcmp(result.data(), expected.data(), result.size_bytes()), 0);
+}
+
+TEST(matrix4, incorrect_element_size_ctor)
+{
+    const auto expected = std::array<float, 161u>{
+        1.f,
+    };
+
+    EXPECT_THROW(game::Matrix4{expected}, game::Exception);
+}
+
+TEST(matrix4, equals_operator)
+{
+    const auto m1 = game::Matrix4{};
+
+    ASSERT_TRUE(m1 == m1);
+}
+
+TEST(matrix4, multiply_by_identity)
+{
+    const auto m1 = game::Matrix4{{
+        1.f,
+        2.f,
+        3.f,
+        4.f,
+        1.f,
+        2.f,
+        3.f,
+        4.f,
+        1.f,
+        2.f,
+        3.f,
+        4.f,
+        1.f,
+        2.f,
+        3.f,
+        4.f,
+    }};
     const auto m2 = game::Matrix4{};
 
     ASSERT_EQ(m1 * m2, m1);
+}
+
+TEST(matrix4, multiply)
+{
+    const auto m1 = game::Matrix4{{1.f, 2.f, 3.f, 4.f, 5.f, 6.f, 7.f, 8.f, 9.f, 10.f,
+                                   11.f, 12.f, 13.f, 14.f, 15.f, 16.f}};
+
+    const auto m2 = game::Matrix4{{1.5f, 2.5f, 3.5f, 4.5f, 5.5f, 6.5f, 7.5f, 8.5f, 9.5f, 10.5f,
+                                   11.5f, 12.5f, 13.5f, 14.5f, 15.5f, 16.5f}};
+
+    const auto expected = game::Matrix4{{104.f, 116.f, 128.f, 140.f, 216.f, 244.f, 272.f, 300.f, 328.f, 372.f, 416.f, 460.f, 440.f, 500.f, 560.f, 620.f}};
+
+    ASSERT_EQ(m1 * m2, expected);
+}
+TEST(matrix4, multiply_assing)
+{
+    auto m = game::Matrix4{{1.f, 2.f, 3.f, 4.f, 5.f, 6.f, 7.f, 8.f, 9.f, 10.f,
+                            11.f, 12.f, 13.f, 14.f, 15.f, 16.f}};
+
+    m *= game::Matrix4{{1.5f, 2.5f, 3.5f, 4.5f, 5.5f, 6.5f, 7.5f, 8.5f, 9.5f, 10.5f,
+                        11.5f, 12.5f, 13.5f, 14.5f, 15.5f, 16.5f}};
+
+    const auto expected = game::Matrix4{{104.f, 116.f, 128.f, 140.f, 216.f, 244.f, 272.f, 300.f, 328.f, 372.f, 416.f, 460.f, 440.f, 500.f, 560.f, 620.f}};
+
+    ASSERT_EQ(m, expected);
 }
 
 TEST(matrix4, look_at)
@@ -45,6 +141,7 @@ TEST(matrix4, look_at)
     const auto exp_spn = expected.data();
     for (auto i = 0u; i < 16u; i++)
     {
+        std::println("{}", i);
         ASSERT_NEAR(view_spn[i], exp_spn[i], 0.00001f);
     }
 }
