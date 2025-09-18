@@ -1,8 +1,9 @@
 #pragma once
 
+#include <filesystem>
 #include <format>
-#include <source_location>
 #include <print>
+#include <source_location>
 
 namespace game::log
 {
@@ -46,7 +47,8 @@ namespace game::log
                 level = "ERROR";
             }
 
-            std::println("[{}] ({}:{}) - {}", level, loc.file_name(), loc.line(), std::format(msg, std::forward<Args>(args)...));
+            const auto path = std::filesystem::path{loc.file_name()};
+            std::println("[{}] ({}:{}) - {}", level, path.filename().string(), loc.line(), std::format(msg, std::forward<Args>(args)...));
         }
     };
 
