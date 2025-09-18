@@ -4,7 +4,7 @@
 #include <numbers>
 #include <print>
 
-#include "graphics/frustum_plane.h"
+#include "math/frustum_plane.h"
 #include "math/vector3.h"
 
 TEST(frustum_plane, ctor_two_vectors)
@@ -35,7 +35,7 @@ TEST(frustum_plane, intesection_at_origin)
     const auto xz = game::FrustumPlane{{1.f, 0.f, 1.f}, {0.f, 1.f, 0.f}};
     const auto yz = game::FrustumPlane{{0.f, 1.f, 1.f}, {1.f, 0.f, 0.f}};
 
-    auto v = game::intersection(xy, xz, yz);
+    auto v = game::FrustumPlane::intersection(xy, xz, yz);
 
     EXPECT_NEAR(v.x, 0.f, 0.00001f);
     EXPECT_NEAR(v.y, 0.f, 0.00001f);
@@ -48,7 +48,7 @@ TEST(frustum_plane, intersection_at_one_one_one)
     const auto xz = game::FrustumPlane{game::Vector3{1.f, 0.f, 1.f} + game::Vector3{1.f, 1.f, 1.f}, {0.f, 1.f, 0.f}};
     const auto yz = game::FrustumPlane{game::Vector3{0.f, 1.f, 1.f} + game::Vector3{1.f, 1.f, 1.f}, {1.f, 0.f, 0.f}};
 
-    auto v = game::intersection(xy, xz, yz);
+    auto v = game::FrustumPlane::intersection(xy, xz, yz);
 
     EXPECT_NEAR(v.x, -1.f, 0.00001f);
     EXPECT_NEAR(v.y, -1.f, 0.00001f);
@@ -61,7 +61,7 @@ TEST(frustum_plane, intersection_at_minus_two_zero_three)
     const auto xz = game::FrustumPlane{game::Vector3{1.f, 0.f, 1.f} + game::Vector3{-2.f, 0.f, 3.f}, {0.f, 1.f, 0.f}};
     const auto yz = game::FrustumPlane{game::Vector3{0.f, 1.f, 1.f} + game::Vector3{-2.f, 0.f, 3.f}, {1.f, 0.f, 0.f}};
 
-    auto v = game::intersection(xy, xz, yz);
+    auto v = game::FrustumPlane::intersection(xy, xz, yz);
 
     EXPECT_NEAR(v.x, 2.f, 0.00001f);
     EXPECT_NEAR(v.y, 0.f, 0.00001f);

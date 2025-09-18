@@ -36,6 +36,7 @@ add_subdirectory(events)
 add_subdirectory(game)
 add_subdirectory(graphics)
 add_subdirectory(loaders)
+add_subdirectory(math)
 add_subdirectory(physics)
 add_subdirectory(tlv)
 
