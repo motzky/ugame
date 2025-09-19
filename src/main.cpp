@@ -183,13 +183,13 @@ auto main(int argc, char **argv) -> int
         auto floor_entity = game::Entity{&floor_mesh, &floor_material, {0.f, -2.f, 0}, {100.f, 1.f, 100.f}, floor_textures};
 
         auto entities = std::vector<TransformedEntity>{};
-        entities.emplace_back(game::Entity{&mesh, &material, {-5.f, 0.f, 0.f}, {0.4f}, {{0.f}, {1.f}, {0.707107f, 0.f, 0.f, 0.707107f}}, textures},
+        entities.emplace_back(game::Entity{&mesh, &material, {-5.f, -.1f, 0.f}, {0.4f}, {{0.f}, {1.f}, {0.707107f, 0.f, 0.f, 0.707107f}}, textures},
                               game::AABB{{-5.6f, -.75f, -.6f}, {-4.4f, .75f, .6f}},
                               std::make_unique<game::Chain<GameTransformState, CheckVisible, CameraDelta, Invert>>());
-        entities.emplace_back(game::Entity{&mesh, &material, {}, {0.4f}, {{0.f}, {1.f}, {0.707107f, 0.f, 0.f, 0.707107f}}, textures},
+        entities.emplace_back(game::Entity{&mesh, &material, {0.f, -.1f, 0.f}, {0.4f}, {{0.f}, {1.f}, {0.707107f, 0.f, 0.f, 0.707107f}}, textures},
                               game::AABB{{-.6f, -.75f, -.6f}, {.6f, .75f, .6f}},
                               std::make_unique<game::Chain<GameTransformState>>());
-        entities.emplace_back(game::Entity{&mesh, &material, {5.f, 0.f, 0.f}, {0.4f}, {{0.f}, {1.f}, {0.707107f, 0.f, 0.f, 0.707107f}}, textures},
+        entities.emplace_back(game::Entity{&mesh, &material, {5.f, -.1f, 0.f}, {0.4f}, {{0.f}, {1.f}, {0.707107f, 0.f, 0.f, 0.707107f}}, textures},
                               game::AABB{{4.4f, -.75f, -.6f}, {5.6f, .75f, .6f}},
                               std::make_unique<game::Chain<GameTransformState, CheckVisible, CameraDelta>>());
 
@@ -221,8 +221,6 @@ auto main(int argc, char **argv) -> int
             {"skybox_right", "skybox_left", "skybox_top", "skybox_bottom", "skybox_front", "skybox_back"}};
 
         auto skybox_sampler = game::TextureSampler{};
-
-        auto key_state = std::unordered_map<game::Key, bool>{};
 
         auto gamma = 2.2f;
 
@@ -257,28 +255,27 @@ auto main(int argc, char **argv) -> int
 
                             bus.post_key_press(arg);
 
-                            // key_state[arg.key()] = arg.state() == game::KeyState::DOWN;
-                            // if (arg.key() == game::Key::F1 && arg.state() == game::KeyState::UP)
-                            // {
-                            //     show_debug = !show_debug;
-                            //     window.show_cursor(show_debug);
-                            // }
-                            // else if (arg.key() == game::Key::F2 && arg.state() == game::KeyState::UP)
-                            // {
-                            //     show_physics_debug = !show_physics_debug;
-                            // }
+                            if (arg.key() == game::Key::F1 && arg.state() == game::KeyState::UP)
+                            {
+                                show_debug = !show_debug;
+                                window.show_cursor(show_debug);
+                                player.set_flying(!player.flying());
+                            }
+                            else if (arg.key() == game::Key::F2 && arg.state() == game::KeyState::UP)
+                            {
+                                show_physics_debug = !show_physics_debug;
+                            }
                         }
                         else if constexpr (std::same_as<T, game::MouseEvent>)
                         {
                             if (!show_debug)
                             {
-                                // static constexpr auto sensitivity = float{0.005f};
-                                // camera.adjust_pitch(arg.delta_y() * sensitivity);
-                                // camera.adjust_yaw(-arg.delta_x() * sensitivity);
+                                bus.post_mouse_move(arg);
                             }
                         }
                         else if constexpr (std::same_as<T, game::MouseButtonEvent>)
                         {
+                            bus.post_mouse_button(arg);
                             debug_ui.add_mouse_event(arg);
                         }
                     },
@@ -288,58 +285,26 @@ auto main(int argc, char **argv) -> int
 #pragma endregion
 
 #pragma region Camera Control
-            // auto walk_direction = game::Vector3{0.f};
 
-            // if (key_state[game::Key::D] || key_state[game::Key::RIGHT_ARROW])
-            // {
-            //     walk_direction += camera.right();
-            // }
-            // if (key_state[game::Key::A] || key_state[game::Key::LEFT_ARROW])
-            // {
-            //     walk_direction -= camera.right();
-            // }
-            // if (key_state[game::Key::W] || key_state[game::Key::UP_ARROW])
-            // {
-            //     walk_direction += camera.direction();
-            // }
-            // if (key_state[game::Key::S] || key_state[game::Key::DOWN_ARROW])
-            // {
-            //     walk_direction -= camera.direction();
-            // }
-            // if (key_state[game::Key::SPACE])
-            // {
-            //     walk_direction += camera.up();
-            // }
-            // if (key_state[game::Key::LCTRL])
-            // {
-            //     walk_direction -= camera.up();
-            // }
-
-            // if (!show_debug)
-            // {
-            //     walk_direction.y = 0.f;
-            // }
-
-            // const auto speed = key_state[game::Key::LSHIFT] ? 30.f : 10.f;
-            // camera.translate(game::Vector3::normalize(walk_direction) * (speed / 60.f));
-            // camera.update();
 #pragma endregion
 
-            // for (const auto &[transformed_entity, light] : std::views::zip(entities, scene.points))
-            // {
-            //     auto &[entity, aabb, transformer] = transformed_entity;
-            //     state.aabb = aabb;
-            //     const auto enitiy_delta = transformer->go({}, state);
-            //     entity.translate(enitiy_delta);
+            player.update();
 
-            //     aabb.min += enitiy_delta;
-            //     aabb.max += enitiy_delta;
+            for (const auto &[transformed_entity, light] : std::views::zip(entities, scene.points))
+            {
+                auto &[entity, aabb, transformer] = transformed_entity;
+                state.aabb = aabb;
+                const auto enitiy_delta = transformer->go({}, state);
+                entity.translate(enitiy_delta);
 
-            //     debug_wireframe_renderer.draw(aabb);
+                aabb.min += enitiy_delta;
+                aabb.max += enitiy_delta;
 
-            //     const auto position = entity.position();
-            //     light.position = {position.x, 5.f, position.z};
-            // }
+                debug_wireframe_renderer.draw(aabb);
+
+                const auto position = entity.position();
+                light.position = {position.x, 5.f, position.z};
+            }
 
             if (show_physics_debug)
             {
