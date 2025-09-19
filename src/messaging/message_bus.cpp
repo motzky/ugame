@@ -8,6 +8,19 @@
 #include "events/mouse_event.h"
 #include "messaging/subscriber.h"
 
+namespace
+{
+
+    template <class... Args>
+    auto post_message(game::messaging::MessageType type, auto &subscribers, auto func, Args &&...args)
+    {
+        for (auto *subscriber : subscribers[type])
+        {
+            func(subscriber, std::forward<Args>(args)...);
+        }
+    }
+}
+
 namespace game::messaging
 {
     auto MessageBus::subscribe(MessageType type, Subscriber *subscriber) -> void
@@ -19,25 +32,19 @@ namespace game::messaging
 
     auto MessageBus::post_key_press(const KeyEvent &event) -> void
     {
-        for (auto *subscriber : _subscribers[MessageType::KEY_PRESS])
-        {
-            subscriber->handle_key_press(event);
-        }
+        post_message(MessageType::KEY_PRESS, _subscribers, [](auto *sub, const KeyEvent &evt)
+                     { sub->handle_key_press(evt); }, event);
     }
 
     auto MessageBus::post_mouse_move(const MouseEvent &event) -> void
     {
-        for (auto *subscriber : _subscribers[MessageType::MOUSE_MOVE])
-        {
-            subscriber->handle_mouse_move(event);
-        }
+        post_message(MessageType::MOUSE_MOVE, _subscribers, [](auto *sub, const MouseEvent &evt)
+                     { sub->handle_mouse_move(evt); }, event);
     }
 
     auto MessageBus::post_mouse_button(const MouseButtonEvent &event) -> void
     {
-        for (auto *subscriber : _subscribers[MessageType::MOUSE_BUTTON_PRESS])
-        {
-            subscriber->handle_mouse_button(event);
-        }
+        post_message(MessageType::MOUSE_BUTTON_PRESS, _subscribers, [](auto *sub, const MouseButtonEvent &evt)
+                     { sub->handle_mouse_button(evt); }, event);
     }
 }
