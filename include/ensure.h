@@ -1,8 +1,10 @@
 #pragma once
 
+#include <exception>
 #include <format>
 #include <memory>
 #include <string_view>
+#include <utility>
 
 #include "core/exception.h"
 #include "log.h"
