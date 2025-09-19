@@ -1,7 +1,6 @@
 #pragma once
 
-#include "messaging/message_bus.h"
-#include "messaging/subscriber.h"
+#include "events/key_event.h"
 
 namespace game::messaging
 {
