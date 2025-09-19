@@ -12,7 +12,7 @@ namespace game
 {
 #ifdef _MSC_VER
 #pragma warning(push)
-#pragma waring(disable : 4702)
+#pragma warning(disable : 4702)
 #endif
     template <class... Args>
     auto expect(bool predicate, std::format_string<Args...> msg, Args &&...args) -> void
