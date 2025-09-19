@@ -31,7 +31,6 @@ namespace game
     private:
         Camera _camera;
         std::unordered_map<game::Key, bool> _key_state;
-        std::queue<game::KeyEvent> _key_event_buffer;
         bool _flying;
     };
 }

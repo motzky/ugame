@@ -11,8 +11,7 @@ namespace game
 {
     Player::Player(messaging::MessageBus &bus, Camera camera)
         : _camera(std::move(camera)),
-          _key_state{std::unordered_map<game::Key, bool>{}},
-          _key_event_buffer{},
+          _key_state{},
           _flying{false}
     {
         bus.subscribe(messaging::MessageType::KEY_PRESS, this);
@@ -21,7 +20,7 @@ namespace game
 
     auto Player::handle_key_press(const KeyEvent &event) -> void
     {
-        _key_event_buffer.push(event);
+        _key_state[event.key()] = event.state() == game::KeyState::DOWN;
     }
 
     auto Player::handle_mouse_move(const MouseEvent &event) -> void
@@ -53,15 +52,6 @@ namespace game
 
     auto Player::update() -> void
     {
-        while (!_key_event_buffer.empty())
-        {
-            const auto &event = _key_event_buffer.front();
-
-            _key_state[event.key()] = event.state() == game::KeyState::DOWN;
-
-            _key_event_buffer.pop();
-        }
-
         auto walk_direction = game::Vector3{0.f};
 
         if (_key_state[game::Key::D] || _key_state[game::Key::RIGHT_ARROW])
