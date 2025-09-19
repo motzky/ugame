@@ -21,7 +21,7 @@
 
 namespace game
 {
-    DebugUi::DebugUi(Window::HandleType window, Scene &scene, Camera &camera, float &gamma)
+    DebugUi::DebugUi(Window::HandleType window, Scene &scene, const Camera &camera, float &gamma)
         : _scene(scene),
           _camera(camera),
           _gamma(gamma)
