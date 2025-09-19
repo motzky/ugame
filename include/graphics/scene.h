@@ -4,7 +4,9 @@
 #include <vector>
 
 #include "graphics/color.h"
+#include "graphics/cube_map.h"
 #include "graphics/line_data.h"
+#include "graphics/texture_sampler.h"
 #include "math/vector3.h"
 #include "primitives/debug_lines.h"
 #include "primitives/entity.h"
@@ -33,5 +35,7 @@ namespace game
         DirectionalLight directional;
         std::vector<PointLight> points;
         std::optional<DebugLines> debug_lines;
+        const CubeMap *skybox;
+        const TextureSampler *skybox_sampler;
     };
 }

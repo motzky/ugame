@@ -20,6 +20,7 @@
 #include "events/mouse_event.h"
 #include "events/stop_event.h"
 #include "game/chain.h"
+#include "game/levels/level_apple.h"
 #include "game/player.h"
 #include "graphics/cube_map.h"
 #include "graphics/material.h"
@@ -42,59 +43,6 @@
 
 namespace
 {
-
-    auto intersects_frustum(const game::AABB &aabb, const std::array<game::FrustumPlane, 6u> &planes) -> bool
-    {
-        for (const auto &plane : planes)
-        {
-
-            auto pos_vert = aabb.min;
-            if (plane.normal.x >= 0)
-            {
-                pos_vert.x = aabb.max.x;
-            }
-            if (plane.normal.y >= 0)
-            {
-                pos_vert.y = aabb.max.y;
-            }
-            if (plane.normal.z >= 0)
-            {
-                pos_vert.z = aabb.max.z;
-            }
-
-            if (game::Vector3::dot(plane.normal, pos_vert) + plane.distance < 0.f)
-            {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    struct GameTransformState
-    {
-        const game::Camera &camera;
-        game::AABB aabb;
-        game::Vector3 camera_last_position;
-    };
-
-    constexpr auto CameraDelta = [](const game::Vector3 &in, const GameTransformState &state) -> game::TransformerResult
-    { return {in + state.camera.position() - state.camera_last_position}; };
-
-    constexpr auto Invert = [](const game::Vector3 &in, const GameTransformState &) -> game::TransformerResult
-    { return {-in}; };
-
-    constexpr auto CheckVisible = [](const game::Vector3 &in, const GameTransformState &state) -> game::TransformerResult
-    {
-        const auto planes = state.camera.frustum_planes();
-        return {-in, !intersects_frustum(state.aabb, planes)};
-    };
-
-    struct TransformedEntity
-    {
-        game::Entity entity;
-        game::AABB bounding_box;
-        std::unique_ptr<game::ChainBase<GameTransformState>> transformer_chain;
-    };
 
 }
 
@@ -180,56 +128,23 @@ auto main(int argc, char **argv) -> int
             &floor_sampler};
 
         const game::Texture *floor_textures[]{&floor_texture};
-        auto floor_entity = game::Entity{&floor_mesh, &floor_material, {0.f, -2.f, 0}, {100.f, 1.f, 100.f}, floor_textures};
 
-        auto entities = std::vector<TransformedEntity>{};
-        entities.emplace_back(game::Entity{&mesh, &material, {-5.f, -.1f, 0.f}, {0.4f}, {{0.f}, {1.f}, {0.707107f, 0.f, 0.f, 0.707107f}}, textures},
-                              game::AABB{{-5.6f, -.75f, -.6f}, {-4.4f, .75f, .6f}},
-                              std::make_unique<game::Chain<GameTransformState, CheckVisible, CameraDelta, Invert>>());
-        entities.emplace_back(game::Entity{&mesh, &material, {0.f, -.1f, 0.f}, {0.4f}, {{0.f}, {1.f}, {0.707107f, 0.f, 0.f, 0.707107f}}, textures},
-                              game::AABB{{-.6f, -.75f, -.6f}, {.6f, .75f, .6f}},
-                              std::make_unique<game::Chain<GameTransformState>>());
-        entities.emplace_back(game::Entity{&mesh, &material, {5.f, -.1f, 0.f}, {0.4f}, {{0.f}, {1.f}, {0.707107f, 0.f, 0.f, 0.707107f}}, textures},
-                              game::AABB{{4.4f, -.75f, -.6f}, {5.6f, .75f, .6f}},
-                              std::make_unique<game::Chain<GameTransformState, CheckVisible, CameraDelta>>());
-
-        auto scene = game::Scene{
-            .entities = entities |
-                        std::views::transform([](const auto &e)
-                                              { return std::addressof(e.entity); }) |
-                        std::ranges::to<std::vector>(),
-            .ambient = {.r = .2f, .g = .2f, .b = .2f},
-            .directional = {.direction = {-1.f, -1.f, -1.f}, .color = {.r = .3f, .g = .3f, .b = .3f}},
-            .points = {{.position = {5.f, 3.f, 0.f}, .color = {.r = 1.f, .g = 0.f, .b = 0.f}, //
-                        .const_attenuation = 1.f,
-                        .linear_attenuation = .07f,
-                        .quad_attenuation = 0.017f},
-                       {.position = {-5.f, 3.f, 0.f}, .color = {.r = 0.f, .g = 1.f, .b = 0.f}, //
-                        .const_attenuation = 1.f,
-                        .linear_attenuation = .07f,
-                        .quad_attenuation = 0.017f},
-                       {.position = {-5.f, 3.f, 0.f}, .color = {.r = 0.f, .g = 0.f, .b = 1.f}, //
-                        .const_attenuation = 1.f,
-                        .linear_attenuation = .07f,
-                        .quad_attenuation = 0.017f}},
-            .debug_lines = {}};
-
-        scene.entities.push_back(&floor_entity);
-
-        auto skybox = game::CubeMap{
+        auto level = game::levels::LevelApple{
+            &floor_mesh,
+            &floor_material,
+            floor_textures,
+            &mesh,
+            &material,
+            textures,
             reader,
-            {"skybox_right", "skybox_left", "skybox_top", "skybox_bottom", "skybox_front", "skybox_back"}};
-
-        auto skybox_sampler = game::TextureSampler{};
+            player};
 
         auto gamma = 2.2f;
 
         auto show_debug = false;
-        const auto debug_ui = game::DebugUi(window.native_handle(), scene, player.camera(), gamma);
+        const auto debug_ui = game::DebugUi(window.native_handle(), level.scene(), player.camera(), gamma);
 
         auto show_physics_debug = false;
-
-        auto state = GameTransformState{.camera = player.camera(), .aabb = {}, .camera_last_position = player.position()};
 
         auto debug_wireframe_renderer = game::ShapeWireframeRenderer{};
 
@@ -285,43 +200,23 @@ auto main(int argc, char **argv) -> int
 #pragma endregion
 
             player.update();
-
-            for (const auto &[transformed_entity, light] : std::views::zip(entities, scene.points))
-            {
-                auto &[entity, aabb, transformer] = transformed_entity;
-                state.aabb = aabb;
-                if (!show_debug)
-                {
-                    const auto enitiy_delta = transformer->go({}, state);
-                    entity.translate(enitiy_delta);
-
-                    aabb.min += enitiy_delta;
-                    aabb.max += enitiy_delta;
-                }
-
-                debug_wireframe_renderer.draw(aabb);
-
-                const auto position = entity.position();
-                light.position = {position.x, 5.f, position.z};
-            }
+            level.update(player);
 
             if (show_physics_debug)
             {
-                scene.debug_lines = game::DebugLines{debug_wireframe_renderer.yield()};
+                level.scene().debug_lines = game::DebugLines{debug_wireframe_renderer.yield()};
             }
             else
             {
-                scene.debug_lines.reset();
+                level.scene().debug_lines.reset();
             }
 
-            renderer.render(player.camera(), scene, skybox, sampler, gamma);
+            renderer.render(player.camera(), level.scene(), gamma);
             if (show_debug)
             {
                 debug_ui.render();
             }
             window.swap();
-
-            state.camera_last_position = player.position();
         }
     }
     catch (const game::Exception &err)
