@@ -259,7 +259,7 @@ auto main(int argc, char **argv) -> int
                             {
                                 show_debug = !show_debug;
                                 window.show_cursor(show_debug);
-                                player.set_flying(!player.flying());
+                                player.set_flying(show_debug);
                             }
                             else if (arg.key() == game::Key::F2 && arg.state() == game::KeyState::UP)
                             {
@@ -284,21 +284,20 @@ auto main(int argc, char **argv) -> int
             }
 #pragma endregion
 
-#pragma region Camera Control
-
-#pragma endregion
-
             player.update();
 
             for (const auto &[transformed_entity, light] : std::views::zip(entities, scene.points))
             {
                 auto &[entity, aabb, transformer] = transformed_entity;
                 state.aabb = aabb;
-                const auto enitiy_delta = transformer->go({}, state);
-                entity.translate(enitiy_delta);
+                if (!show_debug)
+                {
+                    const auto enitiy_delta = transformer->go({}, state);
+                    entity.translate(enitiy_delta);
 
-                aabb.min += enitiy_delta;
-                aabb.max += enitiy_delta;
+                    aabb.min += enitiy_delta;
+                    aabb.max += enitiy_delta;
+                }
 
                 debug_wireframe_renderer.draw(aabb);
 
