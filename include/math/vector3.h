@@ -59,6 +59,8 @@ namespace game
             return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
         }
 
+        static auto distance(const Vector3 &v1, const Vector3 &v2) -> float;
+
         constexpr auto operator==(const Vector3 &) const -> bool = default;
     };
 
@@ -105,6 +107,7 @@ namespace game
     {
         return {-v.x, -v.y, -v.z};
     }
+
 }
 
 template <>
