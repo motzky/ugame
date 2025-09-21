@@ -32,11 +32,13 @@ namespace game
         }
 
         template <class U>
-        auto get(std::string_view name) -> U *
+        auto get(std::string_view name)
         {
             auto &map = std::get<StringUnorderedMap<U>>(_maps);
+
             const auto iter = map.find(name);
             expect(iter != std::ranges::end(map), "{} doesn;t exists", name);
+
             return std::addressof(iter->second);
         }
 
