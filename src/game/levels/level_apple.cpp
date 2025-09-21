@@ -52,11 +52,6 @@ namespace
         const auto planes = state.camera.frustum_planes();
         return {-in, !intersects_frustum(state.aabb, planes)};
     };
-
-    // auto textures() -> std::vector<const game::Texture *>
-    // {
-    //     return {};
-    // }
 }
 
 namespace game::levels

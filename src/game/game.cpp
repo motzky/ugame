@@ -95,11 +95,9 @@ namespace game
 
         const auto reader = game::TlvReader{tlv_file.as_bytes()};
 
-        game::log::info("Creating GL textures...");
-
-        resource_cache.insert<game::Texture>("barrel_albedo", reader, "barrel_base_albedo", sampler);
-        resource_cache.insert<game::Texture>("barrel_specular", reader, "barrel_metallic", sampler);
-        resource_cache.insert<game::Texture>("barrel_normal", reader, "barrel_normal_ogl", sampler);
+        game::log::info("Loading meshes...");
+        resource_cache.insert<Mesh>("barrel", reader, "Cylinder.014");
+        resource_cache.insert<Mesh>("floor", mesh_loader.cube());
 
         game::log::info("Creating materials...");
 
@@ -110,9 +108,6 @@ namespace game
         const auto fragment_shader = game::Shader{fragment_shader_file.as_string(), game::ShaderType::FRAGMENT};
         resource_cache.insert<Material>("barrel_material", vertex_shader, fragment_shader);
 
-        game::log::info("Loading meshes...");
-        resource_cache.insert<Mesh>("barrel", reader, "Cylinder.014");
-
         auto renderer = game::Renderer{resource_loader, mesh_loader, width, height};
 
         const auto checker_vertex_shader_file = resource_loader.load("simple.vert");
@@ -122,7 +117,11 @@ namespace game
         const auto checker_fragment_shader = game::Shader{checker_fragment_shader_file.as_string(), game::ShaderType::FRAGMENT};
         resource_cache.insert<Material>("floor_material", checker_vertex_shader, checker_fragment_shader);
 
-        const auto floor_sampler = game::TextureSampler{};
+        game::log::info("Creating GL textures...");
+
+        resource_cache.insert<game::Texture>("barrel_albedo", reader, "barrel_base_albedo", sampler);
+        resource_cache.insert<game::Texture>("barrel_specular", reader, "barrel_metallic", sampler);
+        resource_cache.insert<game::Texture>("barrel_normal", reader, "barrel_normal_ogl", sampler);
 
         resource_cache.insert<Texture>(
             "floor_albedo",
@@ -133,8 +132,7 @@ namespace game
                 .width = 1u,
                 .height = 1u,
                 .data{static_cast<std::byte>(0xff), static_cast<std::byte>(0xff), static_cast<std::byte>(0xff)}},
-            &floor_sampler);
-        resource_cache.insert<Mesh>("floor", mesh_loader.cube());
+            sampler);
 
         auto level = game::levels::LevelApple{resource_cache, reader, player, bus};
 
