@@ -76,9 +76,6 @@ namespace game::levels
           _state{.camera = player.camera(), .aabb = {}, .camera_last_position = player.position()}
     {
 
-        _entities.emplace_back(game::Entity{barrel_mesh, barrel_material, {-5.f, -.2f, 0.f}, {0.4f}, {{0.f}, {1.f}, {0.707107f, 0.f, 0.f, 0.707107f}}, barrel_textures},
-                               game::AABB{{-5.6f, -.75f, -.6f}, {-4.4f, .75f, .6f}},
-                               std::make_unique<game::Chain<GameTransformState, CheckVisible, CameraDelta, Invert>>());
         _entities.emplace_back(game::Entity{barrel_mesh, barrel_material, {0.f, -.2f, 0.f}, {0.4f}, {{0.f}, {1.f}, {0.707107f, 0.f, 0.f, 0.707107f}}, barrel_textures},
                                game::AABB{{-.6f, -.75f, -.6f}, {.6f, .75f, .6f}},
                                std::make_unique<game::Chain<GameTransformState>>());
@@ -114,30 +111,35 @@ namespace game::levels
 
     auto LevelApple::update(const Player &player) -> void
     {
-        // for (const auto &[transformed_entity, light] : std::views::zip(entities, scene.points))
-        // {
-        //     auto &[entity, aabb, transformer] = transformed_entity;
-        //     state.aabb = aabb;
-        //     if (!show_debug)
-        //     {
-        //         const auto enitiy_delta = transformer->go({}, state);
-        //         entity.translate(enitiy_delta);
+        for (const auto &[transformed_entity, light] : std::views::zip(_entities, _scene.points))
+        {
+            auto &[entity, aabb, transformer] = transformed_entity;
+            _state.aabb = aabb;
+            if (!_show_debug)
+            {
+                const auto enitiy_delta = transformer->go({}, _state);
+                entity.translate(enitiy_delta);
 
-        //         aabb.min += enitiy_delta;
-        //         aabb.max += enitiy_delta;
-        //     }
+                aabb.min += enitiy_delta;
+                aabb.max += enitiy_delta;
+            }
 
-        //     debug_wireframe_renderer.draw(aabb);
+            // debug_wireframe_renderer.draw(aabb);
 
-        //     const auto position = entity.position();
-        //     light.position = {position.x, 5.f, position.z};
-        // }
+            const auto position = entity.position();
+            light.position = {position.x, 5.f, position.z};
+        }
 
         _state.camera_last_position = player.position();
     }
 
     auto LevelApple::restart() -> void
     {
+    }
+
+    auto LevelApple::complete() -> bool
+    {
+        return Vector3::distance(_entities[0].entity.position(), _entities[1].entity.position()) < 0.01f;
     }
 
     auto LevelApple::skybox() const -> const CubeMap &
