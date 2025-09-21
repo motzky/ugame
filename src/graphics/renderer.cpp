@@ -155,6 +155,7 @@ namespace game
             material->use();
             const auto model = Matrix4{entity->transform()};
             material->set_uniform("model", model);
+            material->invoke_uniform_callback(entity);
             material->bind_textures(entity->textures());
 
             mesh->bind();

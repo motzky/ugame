@@ -41,6 +41,7 @@
     DO(::PFNGLGETACTIVEUNIFORMPROC, glGetActiveUniform)                 \
     DO(::PFNGLUNIFORM1IPROC, glUniform1i)                               \
     DO(::PFNGLUNIFORM1FPROC, glUniform1f)                               \
+    DO(::PFNGLUNIFORM3FVPROC, glUniform3fv)                             \
     DO(::PFNGLCREATEBUFFERSPROC, glCreateBuffers)                       \
     DO(::PFNGLNAMEDBUFFERSTORAGEPROC, glNamedBufferStorage)             \
     DO(::PFNGLCREATEVERTEXARRAYSPROC, glCreateVertexArrays)             \

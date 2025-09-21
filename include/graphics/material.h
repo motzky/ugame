@@ -1,11 +1,14 @@
 #pragma once
 
+#include <cstdint>
+#include <functional>
 #include <span>
 #include <string>
 #include <string_view>
 #include <tuple>
 
 #include "cube_map.h"
+#include "graphics/color.h"
 #include "graphics/shader.h"
 #include "math/matrix4.h"
 #include "opengl.h"
@@ -16,12 +19,17 @@
 
 namespace game
 {
+    class Entity;
+
     class Material
     {
     public:
+        using UniformCallback = std::function<void(const Material *, const Entity *)>;
+
         Material(const Shader &vertex_shader, const Shader &fragment_shader);
 
         auto use() const -> void;
+        auto set_uniform(std::string_view name, const Color &obj) const -> void;
         auto set_uniform(std::string_view name, const Matrix4 &obj) const -> void;
         auto set_uniform(std::string_view name, std::int32_t obj) const -> void;
         auto set_uniform(std::string_view name, float obj) const -> void;
@@ -30,10 +38,14 @@ namespace game
         auto bind_texture(std::uint32_t index, const Texture *texture, const TextureSampler *sampler) const -> void;
         auto bind_textures(std::span<const Texture *const>) const -> void;
 
+        auto set_uniform_callback(UniformCallback callback) -> void;
+        auto invoke_uniform_callback(const Entity *entity) const -> void;
+
         auto native_handle() const -> ::GLuint;
 
     private:
         AutoRelease<::GLuint> _handle;
         StringUnorderedMap<::GLuint> _uniforms;
+        UniformCallback _uniform_callback;
     };
 }

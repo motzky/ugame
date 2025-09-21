@@ -17,7 +17,9 @@
 namespace game
 {
     Material::Material(const Shader &vertex_shader, const Shader &fragment_shader)
-        : _handle{}, _uniforms{}
+        : _handle{},
+          _uniforms{},
+          _uniform_callback{}
     {
         ensure(vertex_shader.type() == ShaderType::VERTEX, "vertex_shader is not a vertex shader");
         ensure(fragment_shader.type() == ShaderType::FRAGMENT, "fragment_shader is not a fragment shader");
@@ -70,6 +72,14 @@ namespace game
     auto Material::use() const -> void
     {
         ::glUseProgram(_handle);
+    }
+
+    auto Material::set_uniform(std::string_view name, const Color &obj) const -> void
+    {
+        const auto uniform = _uniforms.find(name);
+        ensure(uniform != std::ranges::cend(_uniforms), "uniform not found: {}", name);
+
+        ::glUniform3fv(uniform->second, 1, reinterpret_cast<const ::GLfloat *>(std::addressof(obj)));
     }
 
     auto Material::set_uniform(std::string_view name, const Matrix4 &obj) const -> void
@@ -125,6 +135,19 @@ namespace game
         for (const auto &[index, tex] : textures | std::views::enumerate)
         {
             bind_texture(static_cast<uint32_t>(index), tex, tex->sampler());
+        }
+    }
+
+    auto Material::set_uniform_callback(UniformCallback callback) -> void
+    {
+        _uniform_callback = std::move(callback);
+    }
+
+    auto Material::invoke_uniform_callback(const Entity *entity) const -> void
+    {
+        if (_uniform_callback)
+        {
+            _uniform_callback(this, entity);
         }
     }
 
