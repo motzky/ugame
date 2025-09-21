@@ -81,7 +81,8 @@
     "regex": "cpp",
     "csignal": "cpp",
     "shared_mutex": "cpp",
-    "hash_map": "cpp"
+    "hash_map": "cpp",
+    "future": "cpp"
   },
   "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools"
 }
