@@ -175,6 +175,7 @@ auto main(int argc, char **argv) -> int
                                 show_debug = !show_debug;
                                 window.show_cursor(show_debug);
                                 player.set_flying(show_debug);
+                                level.set_show_debug(show_debug);
                             }
                             else if (arg.key() == game::Key::F2 && arg.state() == game::KeyState::UP)
                             {
@@ -201,6 +202,11 @@ auto main(int argc, char **argv) -> int
 
             player.update();
             level.update(player);
+            if (level.complete())
+            {
+                game::log::info("YOU WIN !");
+                running = false;
+            }
 
             if (show_physics_debug)
             {
