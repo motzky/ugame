@@ -2,7 +2,7 @@
 #error This code unit is NOT for Windows
 #endif
 
-#include "debug_ui.h"
+#include "graphics/debug_ui.h"
 
 #include <cstring>
 #include <format>

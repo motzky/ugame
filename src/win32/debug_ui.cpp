@@ -2,7 +2,7 @@
 #error This code unit is ONLY for Windows !
 #endif
 
-#include "debug_ui.h"
+#include "graphics/debug_ui.h"
 
 #include <windows.h>
 
