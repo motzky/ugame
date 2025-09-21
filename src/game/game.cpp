@@ -88,7 +88,7 @@ namespace game
         auto mesh_loader = game::MeshLoader{resource_loader};
         auto resource_cache = game::DefaultCache{};
 
-        auto tex_data = std::optional<game::TextureDescription>{};
+        const auto *sampler = resource_cache.insert<game::TextureSampler>("default");
 
         game::log::info("loading resources...");
         const auto tlv_file = resource_loader.load("resources");
@@ -97,7 +97,6 @@ namespace game
 
         game::log::info("Creating GL textures...");
 
-        const auto *sampler = resource_cache.insert<game::TextureSampler>("default");
         resource_cache.insert<game::Texture>("barrel_albedo", reader, "barrel_base_albedo", sampler);
         resource_cache.insert<game::Texture>("barrel_specular", reader, "barrel_metallic", sampler);
         resource_cache.insert<game::Texture>("barrel_normal", reader, "barrel_normal_ogl", sampler);
@@ -116,7 +115,7 @@ namespace game
 
         auto renderer = game::Renderer{resource_loader, mesh_loader, width, height};
 
-        const auto checker_vertex_shader_file = resource_loader.load("checker.vert");
+        const auto checker_vertex_shader_file = resource_loader.load("simple.vert");
         const auto checker_fragment_shader_file = resource_loader.load("checker.frag");
 
         const auto checker_vertex_shader = game::Shader{checker_vertex_shader_file.as_string(), game::ShaderType::VERTEX};
@@ -137,11 +136,7 @@ namespace game
             &floor_sampler);
         resource_cache.insert<Mesh>("floor", mesh_loader.cube());
 
-        auto level = game::levels::LevelApple{
-            resource_cache,
-            reader,
-            player,
-            bus};
+        auto level = game::levels::LevelApple{resource_cache, reader, player, bus};
 
         auto gamma = 2.2f;
 
