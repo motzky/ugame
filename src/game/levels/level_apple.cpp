@@ -158,11 +158,6 @@ namespace game::levels
         //     });
     }
 
-    auto LevelApple::complete() -> bool
-    {
-        return Vector3::distance(_entities[0].entity.position(), _entities[1].entity.position()) < 0.01f;
-    }
-
     auto LevelApple::skybox() const -> const CubeMap &
     {
         return _skybox;

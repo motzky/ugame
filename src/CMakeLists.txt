@@ -98,11 +98,11 @@ elseif(UNIX)
 target_link_libraries(
     gamelib
     PUBLIC imguilib Jolt
-    PRIVATE GL Backtrace::Backtrace stdc++exp
+    PRIVATE GL glfw Backtrace::Backtrace stdc++exp
 )
 target_link_libraries(
     nathan_stream
     PUBLIC gamelib 
-    PRIVATE glfw GL Backtrace::Backtrace stdc++exp
+    PRIVATE Backtrace::Backtrace stdc++exp
 )
 endif()

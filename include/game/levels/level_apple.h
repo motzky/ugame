@@ -32,7 +32,6 @@ namespace game::levels
 
         virtual auto update(const Player &player) -> void override;
         virtual auto restart() -> void override;
-        virtual auto complete() -> bool override;
 
         auto skybox() const -> const CubeMap &;
 

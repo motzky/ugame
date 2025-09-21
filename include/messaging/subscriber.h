@@ -3,6 +3,8 @@
 #include <string_view>
 
 #include "events/key_event.h"
+#include "events/mouse_button_event.h"
+#include "events/mouse_event.h"
 #include "log.h"
 
 namespace game::messaging
