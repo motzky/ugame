@@ -5,7 +5,6 @@
 
 #include "camera.h"
 #include "core/buffer_writer.h"
-#include "ensure.h"
 #include "graphics/color.h"
 #include "graphics/cube_map.h"
 #include "graphics/frame_buffer.h"
@@ -18,6 +17,7 @@
 #include "loaders/mesh_loader.h"
 #include "primitives/entity.h"
 #include "resources/resource_loader.h"
+#include "utils/ensure.h"
 
 namespace
 {

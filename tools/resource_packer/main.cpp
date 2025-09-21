@@ -21,7 +21,6 @@
 #include <stb_image.h>
 
 #include "core/exception.h"
-#include "ensure.h"
 #include "file.h"
 #include "graphics/mesh_data.h"
 #include "graphics/vertex_data.h"
@@ -29,6 +28,7 @@
 #include "math/vector3.h"
 #include "tlv/tlv_writer.h"
 #include "utils/auto_release.h"
+#include "utils/ensure.h"
 
 namespace
 {

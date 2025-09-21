@@ -11,10 +11,10 @@
 
 // #include <stb_image.h>
 
-#include "ensure.h"
 #include "graphics/opengl.h"
 #include "log.h"
 #include "tlv/tlv_reader.h"
+#include "utils/ensure.h"
 
 namespace
 {

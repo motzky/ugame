@@ -7,10 +7,10 @@
 #include <string>
 #include <string_view>
 
-#include "ensure.h"
 #include "graphics/mesh.h"
 #include "graphics/texture.h"
 #include "tlv/tlv_reader.h"
+#include "utils/ensure.h"
 
 namespace game
 {

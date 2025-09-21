@@ -4,11 +4,11 @@
 #include <string_view>
 
 #include "core/buffer_writer.h"
-#include "ensure.h"
 #include "graphics/line_data.h"
 #include "graphics/opengl.h"
 #include "loaders/mesh_loader.h"
 #include "utils/auto_release.h"
+#include "utils/ensure.h"
 
 namespace game
 {

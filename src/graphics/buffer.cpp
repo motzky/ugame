@@ -4,9 +4,9 @@
 #include <cstdint>
 #include <span>
 
-#include "ensure.h"
 #include "graphics/opengl.h"
 #include "utils/auto_release.h"
+#include "utils/ensure.h"
 
 namespace game
 {

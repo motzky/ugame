@@ -19,7 +19,6 @@
 #include <Jolt/Physics/PhysicsSystem.h>
 #include <Jolt/RegisterTypes.h>
 
-#include "ensure.h"
 #include "log.h"
 #include "physics/box_shape.h"
 #include "physics/character_controller.h"
@@ -27,6 +26,7 @@
 #include "physics/jolt_utils.h"
 #include "physics/rigid_body.h"
 #include "physics/sphere_shape.h"
+#include "utils/ensure.h"
 
 using namespace ::JPH::literals;
 

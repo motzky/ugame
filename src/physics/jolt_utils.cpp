@@ -7,13 +7,13 @@
 #include <Jolt/Physics/EActivation.h>
 #include <Jolt/Renderer/DebugRendererSimple.h>
 
-#include "ensure.h"
 #include "graphics/color.h"
 #include "graphics/line_data.h"
 #include "log.h"
 #include "math/vector3.h"
 #include "physics/physics_sytem.h"
 #include "physics/rigid_body.h"
+#include "utils/ensure.h"
 
 namespace game
 {

@@ -5,7 +5,7 @@
 #include <iterator>
 #include <span>
 
-#include "ensure.h"
+#include "utils/ensure.h"
 
 namespace game
 {

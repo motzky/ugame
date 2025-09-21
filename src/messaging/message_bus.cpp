@@ -3,11 +3,11 @@
 #include <algorithm>
 #include <string_view>
 
-#include "ensure.h"
 #include "events/key_event.h"
 #include "events/mouse_button_event.h"
 #include "events/mouse_event.h"
 #include "messaging/subscriber.h"
+#include "utils/ensure.h"
 
 namespace
 {

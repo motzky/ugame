@@ -4,7 +4,6 @@
 #include <string_view>
 
 #include "core/buffer_writer.h"
-#include "ensure.h"
 #include "events/key_event.h"
 #include "graphics/buffer.h"
 #include "graphics/opengl.h"
@@ -12,6 +11,7 @@
 #include "loaders/mesh_loader.h"
 #include "tlv/tlv_reader.h"
 #include "utils/auto_release.h"
+#include "utils/ensure.h"
 
 namespace game
 {

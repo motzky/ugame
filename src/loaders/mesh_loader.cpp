@@ -5,11 +5,11 @@
 #include <span>
 #include <vector>
 
-#include "ensure.h"
 #include "graphics/vertex_data.h"
 #include "log.h"
 #include "math/vector3.h"
 #include "resources/resource_loader.h"
+#include "utils/ensure.h"
 #include "utils/string_unordered_map.h"
 
 namespace

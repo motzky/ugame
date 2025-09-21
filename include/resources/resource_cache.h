@@ -4,7 +4,7 @@
 #include <string_view>
 #include <tuple>
 
-#include "ensure.h"
+#include "utils/ensure.h"
 #include "utils/string_unordered_map.h"
 
 namespace game

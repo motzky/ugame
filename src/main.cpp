@@ -2,8 +2,8 @@
 #include <print>
 
 #include "core/exception.h"
-#include "ensure.h"
 #include "game/game.h"
+#include "utils/ensure.h"
 
 auto main(int argc, char **argv) -> int
 {
