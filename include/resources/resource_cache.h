@@ -14,10 +14,22 @@ namespace game
     class Material;
     class TextureSampler;
 
+    /**
+     * A generic resource cache. Allows you to store string keys against the templated types. Keys must be unique per type.
+     */
     template <class... T>
     class ResourceCache
     {
     public:
+        /**
+         * Insert an object into the cache (of the given type). Undefined behaviour if the object already exists.
+         *
+         * @param name
+         *   Name of object to insert.
+         *
+         * @param args
+         *   Arguments to pass to the constructor of the object.
+         */
         template <class U, class... Args>
         auto insert(std::string_view name, Args &&...args) -> U *
         {
@@ -31,6 +43,15 @@ namespace game
             return std::addressof(iter->second);
         }
 
+        /**
+         * Get an object.
+         *
+         * @param name
+         *   Name of object to get, undefined behaviour if it doesn't exist.
+         *
+         * @returns
+         *   Pointer to requested object.
+         */
         template <class U>
         auto get(std::string_view name)
         {
@@ -43,8 +64,10 @@ namespace game
         }
 
     private:
+        /** Object store for given types. */
         std::tuple<StringUnorderedMap<T>...> _maps;
     };
 
+    // default cache for the game
     using DefaultCache = ResourceCache<Mesh, Material, Texture, TextureSampler>;
 }
