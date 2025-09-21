@@ -10,6 +10,7 @@
 #include "graphics/scene.h"
 #include "graphics/texture_sampler.h"
 #include "messaging/message_bus.h"
+#include "resources/resource_cache.h"
 #include "tlv/tlv_reader.h"
 
 namespace game::levels
@@ -18,12 +19,7 @@ namespace game::levels
     {
     public:
         LevelApple(
-            const Mesh *floor_mesh,
-            const Material *floor_material,
-            std::span<const Texture *> floor_textures,
-            const Mesh *barrel_mesh,
-            Material *barrel_material,
-            std::span<const Texture *> barrel_textures,
+            DefaultCache &resource_cache,
             const TlvReader &reader,
             const Player &player,
             messaging::MessageBus &bus);
@@ -42,5 +38,6 @@ namespace game::levels
         TextureSampler _skybox_sampler;
         GameTransformState _state;
         messaging::MessageBus &_bus;
+        DefaultCache &_resource_cache;
     };
 }

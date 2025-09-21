@@ -2,14 +2,11 @@
 
 #include <array>
 #include <cmath>
-#include <format>
-#include <iostream>
 #include <memory>
 #include <numbers>
 #include <print>
 #include <random>
 #include <ranges>
-#include <unordered_map>
 #include <utility>
 #include <variant>
 
@@ -20,7 +17,7 @@
 #include "camera.h"
 #include "core/exception.h"
 #include "debug_ui.h"
-#include "ensure.h"
+// #include "ensure.h"
 #include "events/event.h"
 #include "events/key_event.h"
 #include "events/mouse_event.h"
@@ -42,6 +39,7 @@
 #include "math/frustum_plane.h"
 #include "messaging/message_bus.h"
 #include "primitives/entity.h"
+#include "resources/resource_cache.h"
 #include "resources/resource_loader.h"
 #include "tlv/tlv_entry.h"
 #include "tlv/tlv_reader.h"
@@ -87,8 +85,8 @@ namespace game
         auto player = game::Player{bus, std::move(camera)};
 
         auto resource_loader = game::ResourceLoader{resource_root};
-
         auto mesh_loader = game::MeshLoader{resource_loader};
+        auto resource_cache = game::DefaultCache{};
 
         auto tex_data = std::optional<game::TextureDescription>{};
 
@@ -99,24 +97,22 @@ namespace game
 
         game::log::info("Creating GL textures...");
 
-        auto sampler = game::TextureSampler{};
-        auto albedo_tex = game::Texture{reader, "barrel_base_albedo", &sampler};
-        auto spec_map = game::Texture{reader, "barrel_metallic", &sampler};
-        auto normal_map = game::Texture{reader, "barrel_normal_ogl", &sampler};
+        const auto *sampler = resource_cache.insert<game::TextureSampler>("default");
+        resource_cache.insert<game::Texture>("barrel_albedo", reader, "barrel_base_albedo", sampler);
+        resource_cache.insert<game::Texture>("barrel_specular", reader, "barrel_metallic", sampler);
+        resource_cache.insert<game::Texture>("barrel_normal", reader, "barrel_normal_ogl", sampler);
 
         game::log::info("Creating materials...");
-
-        const game::Texture *textures[]{&albedo_tex, &spec_map, &normal_map};
 
         const auto vertex_shader_file = resource_loader.load("simple.vert");
         const auto fragment_shader_file = resource_loader.load("barrel.frag");
 
         const auto vertex_shader = game::Shader{vertex_shader_file.as_string(), game::ShaderType::VERTEX};
         const auto fragment_shader = game::Shader{fragment_shader_file.as_string(), game::ShaderType::FRAGMENT};
-        auto material = game::Material{vertex_shader, fragment_shader};
+        resource_cache.insert<Material>("barrel_material", vertex_shader, fragment_shader);
 
         game::log::info("Loading meshes...");
-        const auto mesh = game::Mesh{reader, "Cylinder.014"};
+        resource_cache.insert<Mesh>("barrel", reader, "Cylinder.014");
 
         auto renderer = game::Renderer{resource_loader, mesh_loader, width, height};
 
@@ -125,11 +121,12 @@ namespace game
 
         const auto checker_vertex_shader = game::Shader{checker_vertex_shader_file.as_string(), game::ShaderType::VERTEX};
         const auto checker_fragment_shader = game::Shader{checker_fragment_shader_file.as_string(), game::ShaderType::FRAGMENT};
-        auto floor_material = game::Material{checker_vertex_shader, checker_fragment_shader};
+        resource_cache.insert<Material>("floor_material", checker_vertex_shader, checker_fragment_shader);
 
         const auto floor_sampler = game::TextureSampler{};
-        const auto floor_mesh = game::Mesh{mesh_loader.cube()};
-        const auto floor_texture = game::Texture{
+
+        resource_cache.insert<Texture>(
+            "floor_albedo",
             game::TextureDescription{
                 .name = "white",
                 .format = game::TextureFormat::RGB,
@@ -137,17 +134,11 @@ namespace game
                 .width = 1u,
                 .height = 1u,
                 .data{static_cast<std::byte>(0xff), static_cast<std::byte>(0xff), static_cast<std::byte>(0xff)}},
-            &floor_sampler};
-
-        const game::Texture *floor_textures[]{&floor_texture};
+            &floor_sampler);
+        resource_cache.insert<Mesh>("floor", mesh_loader.cube());
 
         auto level = game::levels::LevelApple{
-            &floor_mesh,
-            &floor_material,
-            floor_textures,
-            &mesh,
-            &material,
-            textures,
+            resource_cache,
             reader,
             player,
             bus};
