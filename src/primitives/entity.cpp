@@ -18,7 +18,7 @@ namespace game
                    const Material *material,
                    const Vector3 &position,
                    const Vector3 &scale,
-                   std::span<const Texture *> textures)
+                   std::span<const Texture *const> textures)
         : _mesh(mesh),
           _material(material),
           _transform(position, scale),
@@ -32,7 +32,7 @@ namespace game
                    const Vector3 &position,
                    const Vector3 &scale,
                    const Transform &local_transform,
-                   std::span<const Texture *> textures)
+                   std::span<const Texture *const> textures)
         : _mesh(mesh),
           _material(material),
           _transform(position, scale),

@@ -20,13 +20,13 @@ namespace game
                const Material *material,
                const Vector3 &position,
                const Vector3 &scale,
-               std::span<const Texture *> textures);
+               std::span<const Texture *const> textures);
         Entity(const Mesh *mesh,
                const Material *material,
                const Vector3 &position,
                const Vector3 &scale,
                const Transform &local_transform,
-               std::span<const Texture *> textures);
+               std::span<const Texture *const> textures);
 
         auto mesh() const -> const Mesh *;
         auto material() const -> const Material *;
