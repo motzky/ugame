@@ -16,8 +16,8 @@
 #include "graphics/texture.h"
 #include "graphics/texture_sampler.h"
 #include "loaders/mesh_loader.h"
-#include "loaders/resource_loader.h"
 #include "primitives/entity.h"
+#include "resources/resource_loader.h"
 
 namespace
 {

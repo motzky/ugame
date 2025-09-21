@@ -8,7 +8,7 @@
 #include "graphics/mesh.h"
 #include "graphics/texture_sampler.h"
 #include "loaders/mesh_loader.h"
-#include "loaders/resource_loader.h"
+#include "resources/resource_loader.h"
 #include "scene.h"
 
 namespace game

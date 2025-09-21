@@ -1,4 +1,4 @@
-#include "loaders/resource_loader.h"
+#include "resources/resource_loader.h"
 
 #include <cstddef>
 #include <filesystem>

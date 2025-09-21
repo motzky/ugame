@@ -39,6 +39,7 @@ add_subdirectory(loaders)
 add_subdirectory(math)
 add_subdirectory(messaging)
 add_subdirectory(physics)
+add_subdirectory(resources)
 add_subdirectory(tlv)
 
 add_executable(
