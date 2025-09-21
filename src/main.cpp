@@ -97,7 +97,7 @@ auto main(int argc, char **argv) -> int
         const game::Texture *textures[]{&albedo_tex, &spec_map, &normal_map};
 
         const auto vertex_shader_file = resource_loader.load("simple.vert");
-        const auto fragment_shader_file = resource_loader.load("simple.frag");
+        const auto fragment_shader_file = resource_loader.load("barrel.frag");
 
         const auto vertex_shader = game::Shader{vertex_shader_file.as_string(), game::ShaderType::VERTEX};
         const auto fragment_shader = game::Shader{fragment_shader_file.as_string(), game::ShaderType::FRAGMENT};
@@ -137,7 +137,8 @@ auto main(int argc, char **argv) -> int
             &material,
             textures,
             reader,
-            player};
+            player,
+            bus};
 
         auto gamma = 2.2f;
 

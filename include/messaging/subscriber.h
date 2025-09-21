@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string_view>
+
 #include "events/key_event.h"
 #include "log.h"
 
@@ -19,6 +21,10 @@ namespace game::messaging
         };
 
         virtual auto handle_mouse_button(const MouseButtonEvent &) -> void
+        {
+            log::error("unhandled message");
+        };
+        virtual auto handle_level_complete(const std::string_view &) -> void
         {
             log::error("unhandled message");
         };

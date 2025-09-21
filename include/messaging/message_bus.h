@@ -17,7 +17,7 @@ namespace game::messaging
         MOUSE_BUTTON_PRESS,
         MOUSE_SCROLL,
         KEY_PRESS,
-
+        LEVEL_COMPLETE,
     };
 
     class MessageBus
@@ -28,6 +28,7 @@ namespace game::messaging
         auto post_key_press(const KeyEvent &event) -> void;
         auto post_mouse_move(const MouseEvent &event) -> void;
         auto post_mouse_button(const MouseButtonEvent &event) -> void;
+        auto post_level_complete(const std::string_view &level_name) -> void;
 
     private:
         std::unordered_map<MessageType, std::vector<Subscriber *>> _subscribers;

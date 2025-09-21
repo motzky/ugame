@@ -1,6 +1,7 @@
 #include "messaging/message_bus.h"
 
 #include <algorithm>
+#include <string_view>
 
 #include "ensure.h"
 #include "events/key_event.h"
@@ -46,5 +47,11 @@ namespace game::messaging
     {
         post_message(MessageType::MOUSE_BUTTON_PRESS, _subscribers, [](auto *sub, const MouseButtonEvent &evt)
                      { sub->handle_mouse_button(evt); }, event);
+    }
+
+    auto MessageBus::post_level_complete(const std::string_view &level_name) -> void
+    {
+        post_message(MessageType::LEVEL_COMPLETE, _subscribers, [](auto *sub, const auto &level_name)
+                     { sub->handle_level_complete(level_name); }, level_name);
     }
 }

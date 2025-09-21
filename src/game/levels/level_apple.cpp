@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "game/transformed_entity.h"
+#include "graphics/color.h"
 #include "graphics/cube_map.h"
 #include "graphics/mesh.h"
 #include "graphics/texture.h"
@@ -65,15 +66,17 @@ namespace game::levels
         const Material *floor_material,
         std::span<const Texture *> floor_textures,
         const Mesh *barrel_mesh,
-        const Material *barrel_material,
+        Material *barrel_material,
         std::span<const Texture *> barrel_textures,
         const TlvReader &reader,
-        const Player &player)
+        const Player &player,
+        messaging::MessageBus &bus)
         : _entities{},
           _floor{game::Entity{floor_mesh, floor_material, {0.f, -2.f, 0}, {100.f, 1.f, 100.f}, floor_textures}},
           _skybox{reader, {"skybox_right", "skybox_left", "skybox_top", "skybox_bottom", "skybox_front", "skybox_back"}},
           _skybox_sampler{},
-          _state{.camera = player.camera(), .aabb = {}, .camera_last_position = player.position()}
+          _state{.camera = player.camera(), .aabb = {}, .camera_last_position = player.position()},
+          _bus(bus)
     {
 
         _entities.emplace_back(game::Entity{barrel_mesh, barrel_material, {0.f, -.2f, 0.f}, {0.4f}, {{0.f}, {1.f}, {0.707107f, 0.f, 0.f, 0.707107f}}, barrel_textures},
@@ -82,6 +85,12 @@ namespace game::levels
         _entities.emplace_back(game::Entity{barrel_mesh, barrel_material, {5.f, -.2f, 0.f}, {0.4f}, {{0.f}, {1.f}, {0.707107f, 0.f, 0.f, 0.707107f}}, barrel_textures},
                                game::AABB{{4.4f, -.75f, -.6f}, {5.6f, .75f, .6f}},
                                std::make_unique<game::Chain<GameTransformState, CheckVisible, CameraDelta>>());
+
+        barrel_material->set_uniform_callback([this](const Material *material, const Entity *entity)
+                                              {
+            const auto tint_amount = entity == std::addressof(_entities[0].entity) ? .2f : .05f;
+            material->set_uniform("tint_color", Color{.r = 0.f, .g = 0.f, .b = 1.f});
+            material->set_uniform("tint_amount", tint_amount); });
 
         _scene = game::Scene{
             .entities = _entities |
@@ -131,10 +140,22 @@ namespace game::levels
         }
 
         _state.camera_last_position = player.position();
+
+        if (Vector3::distance(_entities[0].entity.position(), _entities[1].entity.position()) < 1.f)
+        {
+            _bus.post_level_complete("apple");
+        }
     }
 
     auto LevelApple::restart() -> void
     {
+        // resource_cache_.get<Material>("barrel")->set_uniform_callback(
+        //     [this](const Material *material, const Entity *entity)
+        //     {
+        //         const auto tint_amount = entity == std::addressof(_entities[0].entity) ? .2f : .05f;
+        //         material->set_uniform("tint_colour", Color{.r = 0.0f, .g = 0.0f, .b = 1.0f});
+        //         material->set_uniform("tint_amount", tint_amount);
+        //     });
     }
 
     auto LevelApple::complete() -> bool

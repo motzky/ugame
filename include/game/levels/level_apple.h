@@ -22,10 +22,11 @@ namespace game::levels
             const Material *floor_material,
             std::span<const Texture *> floor_textures,
             const Mesh *barrel_mesh,
-            const Material *barrel_material,
+            Material *barrel_material,
             std::span<const Texture *> barrel_textures,
             const TlvReader &reader,
-            const Player &player);
+            const Player &player,
+            messaging::MessageBus &bus);
 
         ~LevelApple() override = default;
 
@@ -41,6 +42,6 @@ namespace game::levels
         CubeMap _skybox;
         TextureSampler _skybox_sampler;
         GameTransformState _state;
-        // messaging::MessageBus &_bus;
+        messaging::MessageBus &_bus;
     };
 }
