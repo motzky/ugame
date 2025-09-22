@@ -40,6 +40,7 @@ add_subdirectory(math)
 add_subdirectory(messaging)
 add_subdirectory(physics)
 add_subdirectory(resources)
+add_subdirectory(scripting)
 add_subdirectory(tlv)
 
 add_executable(
@@ -69,7 +70,7 @@ endif()
 
 target_include_directories(imguilib PUBLIC ${imgui_SOURCE_DIR})
 target_include_directories(nathan_stream PUBLIC ${stb_lib_SOURCE_DIR} ${imgui_SOURCE_DIR} ${imguizmo_SOURCE_DIR})
-target_include_directories(gamelib PUBLIC ${stb_lib_SOURCE_DIR} ${imgui_SOURCE_DIR} ${imguizmo_SOURCE_DIR} ${JoltPhysics_SOURCE_DIR})
+target_include_directories(gamelib PUBLIC ${stb_lib_SOURCE_DIR} ${imgui_SOURCE_DIR} ${imguizmo_SOURCE_DIR} ${JoltPhysics_SOURCE_DIR} ${lua_SOURCE_DIR})
 
 target_compile_features(gamelib PUBLIC cxx_std_23)
 target_compile_features(nathan_stream PUBLIC cxx_std_23)
@@ -88,7 +89,7 @@ endif()
 if(WIN32)
 target_link_libraries(
     gamelib
-    PUBLIC imguilib Jolt opengl32 
+    PUBLIC imguilib Jolt opengl32 lua
 )
 target_link_libraries(
     nathan_stream
@@ -98,7 +99,7 @@ target_link_libraries(
 elseif(UNIX)
 target_link_libraries(
     gamelib
-    PUBLIC imguilib Jolt
+    PUBLIC imguilib Jolt lua
     PRIVATE GL glfw Backtrace::Backtrace stdc++exp
 )
 target_link_libraries(

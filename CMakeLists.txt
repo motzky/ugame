@@ -85,17 +85,19 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(assimp)
 
+FetchContent_Declare(
+    lua
+    GIT_REPOSITORY https://github.com/lua/lua
+    GIT_TAG v5.4.7
+)
+FetchContent_MakeAvailable(lua)
+
 
 if(UNIX)
 find_package(glfw3 REQUIRED)
 find_package(Backtrace REQUIRED)
 endif()
 
-# if(MSVC)
-# set (CMAKE_CXX_FLAGS /std:c++latest)
-# else()
-# set (CMAKE_CXX_FLAGS -std=c++23)
-# endif()
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(FETCHCONTENT_QUIET FALSE)
@@ -105,6 +107,8 @@ if(WIN32)
 include_directories(third_party)
 endif()
 
+add_library(lua STATIC ${lua_SOURCE_DIR}/onelua.c)
+target_compile_definitions(lua PRIVATE MAKE_LIB)
 
 add_subdirectory(src)
 add_subdirectory(tools)
