@@ -23,7 +23,9 @@
 #include "events/mouse_event.h"
 #include "events/stop_event.h"
 #include "game/chain.h"
+#include "game/levels/level.h"
 #include "game/levels/level_apple.h"
+#include "game/levels/level_kiwi.h"
 #include "game/player.h"
 #include "graphics/cube_map.h"
 #include "graphics/material.h"
@@ -49,7 +51,8 @@ namespace game
 {
     Game::Game()
         : _running(true),
-          _level_num{1ul}
+          _levels{},
+          _level_num{0ul}
     {
     }
 
@@ -134,12 +137,14 @@ namespace game
                 .data{static_cast<std::byte>(0xff), static_cast<std::byte>(0xff), static_cast<std::byte>(0xff)}},
             sampler);
 
-        auto level = game::levels::LevelApple{resource_cache, reader, player, bus};
+        _levels.push_back(std::make_unique<levels::LevelApple>(resource_cache, reader, player, bus));
+        _levels.push_back(std::make_unique<levels::LevelKiwi>(resource_cache, reader, player, bus));
+        _levels[_level_num]->restart();
 
         auto gamma = 2.2f;
 
         auto show_debug = false;
-        const auto debug_ui = game::DebugUi(window.native_handle(), level.scene(), player.camera(), gamma);
+        // const auto debug_ui = game::DebugUi(window.native_handle(), level.scene(), player.camera(), gamma);
 
         auto show_physics_debug = false;
 
@@ -147,6 +152,8 @@ namespace game
 
         while (_running)
         {
+            auto *level = _levels[_level_num].get();
+
 #pragma region EventHandling
             auto event = window.pump_event();
             while (event && _running)
@@ -170,7 +177,7 @@ namespace game
                                 show_debug = !show_debug;
                                 window.show_cursor(show_debug);
                                 player.set_flying(show_debug);
-                                level.set_show_debug(show_debug);
+                                level->set_show_debug(show_debug);
                             }
                             else if (arg.key() == game::Key::F2 && arg.state() == game::KeyState::UP)
                             {
@@ -187,7 +194,7 @@ namespace game
                         else if constexpr (std::same_as<T, game::MouseButtonEvent>)
                         {
                             bus.post_mouse_button(arg);
-                            debug_ui.add_mouse_event(arg);
+                            // debug_ui.add_mouse_event(arg);
                         }
                     },
                     *event);
@@ -196,29 +203,29 @@ namespace game
 #pragma endregion
 
             player.update();
-            level.update(player);
+            level->update(player);
 
             if (show_physics_debug)
             {
-                level.scene().debug_lines = game::DebugLines{debug_wireframe_renderer.yield()};
+                level->scene().debug_lines = game::DebugLines{debug_wireframe_renderer.yield()};
             }
             else
             {
-                level.scene().debug_lines.reset();
+                level->scene().debug_lines.reset();
             }
 
-            renderer.render(player.camera(), level.scene(), gamma);
+            renderer.render(player.camera(), level->scene(), gamma);
             if (show_debug)
             {
-                debug_ui.render();
+                // debug_ui.render();
             }
             window.swap();
         }
     }
 
-    auto Game::handle_level_complete(const std::string_view &) -> void
+    auto Game::handle_level_complete(const std::string_view &level_name) -> void
     {
-        game::log::info("YOU WIN !");
-        _running = false;
+        game::log::info("level complete: {}", level_name);
+        _level_num = (_level_num + 1) % _levels.size();
     }
 }
