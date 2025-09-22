@@ -150,7 +150,7 @@ namespace game::levels
         _resource_cache.get<Material>("barrel_material")->set_uniform_callback([this](const Material *material, const Entity *entity)
                                                                                {
                 const auto tint_amount = entity == std::addressof(_entities[0].entity) ? .2f : .05f;
-                material->set_uniform("tint_colour", Color{.r = 0.0f, .g = 0.0f, .b = 1.0f});
+                material->set_uniform("tint_color", Color{.r = 0.0f, .g = 0.0f, .b = 1.0f});
                 material->set_uniform("tint_amount", tint_amount); });
     }
 

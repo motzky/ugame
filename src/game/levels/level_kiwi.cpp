@@ -88,7 +88,7 @@ namespace game::levels
                                std::make_unique<game::Chain<GameTransformState>>());
         _entities.emplace_back(game::Entity{_resource_cache.get<Mesh>("barrel"), resource_cache.get<Material>("barrel_material"), {5.f, -.2f, 0.f}, {0.4f}, {{0.f}, {1.f}, {0.707107f, 0.f, 0.f, 0.707107f}}, barrel_textures},
                                game::AABB{{4.4f, -.75f, -.6f}, {5.6f, .75f, .6f}},
-                               std::make_unique<game::Chain<GameTransformState, CheckVisible, CameraDelta>>());
+                               std::make_unique<game::Chain<GameTransformState, CheckVisible, CameraDelta, Invert>>());
 
         _scene = game::Scene{
             .entities = _entities |
@@ -141,7 +141,7 @@ namespace game::levels
 
         if (Vector3::distance(_entities[0].entity.position(), _entities[1].entity.position()) < 1.f)
         {
-            _bus.post_level_complete("apple");
+            _bus.post_level_complete("kiwi");
         }
     }
 
@@ -150,7 +150,7 @@ namespace game::levels
         _resource_cache.get<Material>("barrel_material")->set_uniform_callback([this](const Material *material, const Entity *entity)
                                                                                {
                 const auto tint_amount = entity == std::addressof(_entities[0].entity) ? .2f : .05f;
-                material->set_uniform("tint_colour", Color{.r = 0.0f, .g = 0.0f, .b = 1.0f});
+                material->set_uniform("tint_color", Color{.r = 0.0f, .g = 0.0f, .b = 1.0f});
                 material->set_uniform("tint_amount", tint_amount); });
     }
 
