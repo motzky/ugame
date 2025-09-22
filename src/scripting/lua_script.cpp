@@ -13,6 +13,7 @@ extern "C"
 #include <lualib.h>
 }
 
+#include "core/exception.h"
 #include "utils/ensure.h"
 
 namespace
@@ -54,7 +55,37 @@ namespace game
             "failed to load lua script");
 
         ensure(::lua_pcall(_lua.get(), 0, 0, 0) == LUA_OK, "failed to execute script");
-
-        ::lua_pop(_lua.get(), 0);
     }
+
+    auto LuaScript::set_function(const std::string &name) const -> void
+    {
+        const auto ret_type = ::lua_getglobal(_lua.get(), name.c_str());
+        ensure(ret_type == LUA_TFUNCTION, "not a lua function: {}", name);
+    }
+
+    auto LuaScript::set_argument(std::string_view value) const -> void
+    {
+        ::lua_pushlstring(_lua.get(), value.data(), value.size());
+    }
+
+    auto LuaScript::get_result(std::int64_t &result) const -> void
+    {
+        ensure(::lua_gettop(_lua.get()) != 0, "no reuslt to get");
+        ensure(::lua_isinteger(_lua.get(), -1) == 1, "result not an integer");
+        result = ::lua_tointeger(_lua.get(), -1);
+        ::lua_pop(_lua.get(), 1);
+    }
+
+    auto LuaScript::execute(std::uint32_t num_args, std::uint32_t num_results) const -> void
+    {
+        if (::lua_pcall(_lua.get(), num_args, num_results, 0) != LUA_OK)
+        {
+            const auto res = ::lua_tostring(_lua.get(), -1);
+
+            ::lua_pop(_lua.get(), 1);
+
+            throw Exception(std::format("failed to execture ({})", res));
+        }
+    }
+
 }
