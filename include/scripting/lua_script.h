@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <string_view>
 
 extern "C"
 {
@@ -12,7 +13,7 @@ namespace game
     class LuaScript
     {
     public:
-        LuaScript();
+        LuaScript(std::string_view source);
 
     private:
         std::unique_ptr<::lua_State, decltype(&::lua_close)> _lua;
