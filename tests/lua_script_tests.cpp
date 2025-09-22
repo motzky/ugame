@@ -48,6 +48,18 @@ end)"};
     ASSERT_THROW(script.set_function("hell"), game::Exception);
 }
 
+TEST(lua_script, bad_function_call)
+{
+    auto script = game::LuaScript{R"(
+function hello()
+        foo()
+end)"};
+
+    script.set_function("hello");
+
+    ASSERT_THROW(script.execute(0u, 0u), game::Exception);
+}
+
 TEST(lua_script, function_call_single_arg)
 {
     auto script = game::LuaScript{R"(
