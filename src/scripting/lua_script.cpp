@@ -3,6 +3,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <memory>
+#include <string>
 #include <string_view>
 
 extern "C"
@@ -93,6 +94,22 @@ namespace game
         ensure(::lua_gettop(_lua.get()) != 0, "no reuslt to get");
         ensure(::lua_isinteger(_lua.get(), -1) == 1, "result not an integer");
         result = ::lua_tointeger(_lua.get(), -1);
+        ::lua_pop(_lua.get(), 1);
+    }
+
+    auto LuaScript::get_result(float &result) const -> void
+    {
+        ensure(::lua_gettop(_lua.get()) != 0, "no reuslt to get");
+        ensure(::lua_isnumber(_lua.get(), -1) == 1, "result not a float");
+        result = static_cast<float>(::lua_tonumber(_lua.get(), -1));
+        ::lua_pop(_lua.get(), 1);
+    }
+
+    auto LuaScript::get_result(std::string &result) const -> void
+    {
+        ensure(::lua_gettop(_lua.get()) != 0, "no reuslt to get");
+        ensure(::lua_isstring(_lua.get(), -1) == 1, "result not a string");
+        result = ::lua_tostring(_lua.get(), -1);
         ::lua_pop(_lua.get(), 1);
     }
 
