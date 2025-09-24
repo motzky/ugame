@@ -14,6 +14,7 @@ extern "C"
 }
 
 #include "core/exception.h"
+#include "math/vector3.h"
 #include "utils/ensure.h"
 
 namespace
@@ -66,6 +67,25 @@ namespace game
     auto LuaScript::set_argument(std::string_view value) const -> void
     {
         ::lua_pushlstring(_lua.get(), value.data(), value.size());
+    }
+
+    auto LuaScript::set_argument(std::int64_t value) const -> void
+    {
+        ::lua_pushinteger(_lua.get(), value);
+    }
+
+    auto LuaScript::set_argument(float value) const -> void
+    {
+        ::lua_pushnumber(_lua.get(), value);
+    }
+
+    auto LuaScript::set_argument(const Vector3 &value) const -> void
+    {
+        set_argument(value.x);
+        set_argument(value.y);
+        set_argument(value.z);
+
+        // vector3_constructor(lua_.get());
     }
 
     auto LuaScript::get_result(std::int64_t &result) const -> void
