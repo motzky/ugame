@@ -98,6 +98,7 @@ namespace game
 
     auto LuaScript::execute(std::uint32_t num_args, std::uint32_t num_results) const -> void
     {
+        ensure(::lua_gettop(_lua.get()) >= static_cast<int>(num_args), "arg count mismatch {}", num_args);
         if (::lua_pcall(_lua.get(), num_args, num_results, 0) != LUA_OK)
         {
             const auto res = ::lua_tostring(_lua.get(), -1);
