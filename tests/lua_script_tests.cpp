@@ -160,6 +160,28 @@ end
     }
 }
 
+TEST(lua_script, multiple_nested_function_calls)
+{
+    auto script = game::LuaScript{R"(
+function get_num1(num)
+        return get_num2(num) + 1
+end
+function get_num2(num)
+        return num + 2
+end
+    )"};
+
+    {
+        script.set_function("get_num1");
+        script.set_argument(static_cast<std::int64_t>(42l));
+        script.execute(1u, 1u);
+        auto res = std::int64_t{};
+        script.get_result(res);
+
+        ASSERT_EQ(res, 45);
+    }
+}
+
 // TEST(lua_script, function_call_vector3_arg)
 // {
 //     auto script = game::LuaScript{R"(
