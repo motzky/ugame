@@ -82,7 +82,11 @@
     "csignal": "cpp",
     "shared_mutex": "cpp",
     "hash_map": "cpp",
-    "future": "cpp"
+    "future": "cpp",
+    "complex": "cpp",
+    "hash_set": "cpp",
+    "cfenv": "cpp",
+    "typeindex": "cpp"
   },
   "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools"
 }
