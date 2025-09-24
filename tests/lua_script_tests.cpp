@@ -77,6 +77,21 @@ end)"};
     ASSERT_EQ(output, "hello world\n");
 }
 
+TEST(lua_script, function_call_get_single_arg)
+{
+    auto script = game::LuaScript{R"(
+function get_num()
+        return 42
+end)"};
+
+    script.set_function("get_num");
+    script.execute(0u, 1u);
+    auto res = std::int64_t{};
+    script.get_result(res);
+
+    ASSERT_EQ(res, 42);
+}
+
 TEST(lua_script, function_call_get_no_arg)
 {
     auto script = game::LuaScript{R"(
@@ -97,9 +112,9 @@ function get_nums(val1, val2, val3)
 end)"};
 
     script.set_function("get_nums");
-    script.set_argument(1l);
-    script.set_argument(2l);
-    script.set_argument(3l);
+    script.set_argument(static_cast<std::int64_t>(1));
+    script.set_argument(static_cast<std::int64_t>(2));
+    script.set_argument(static_cast<std::int64_t>(3));
     script.execute(3u, 3u);
     auto res1 = std::int64_t{};
     script.get_result(res1);
@@ -126,7 +141,7 @@ end
 
     {
         script.set_function("get_num1");
-        script.set_argument(42l);
+        script.set_argument(static_cast<std::int64_t>(42l));
         script.execute(1u, 1u);
         auto res = std::int64_t{};
         script.get_result(res);
@@ -136,7 +151,7 @@ end
 
     {
         script.set_function("get_num2");
-        script.set_argument(43l);
+        script.set_argument(static_cast<std::int64_t>(43l));
         script.execute(1u, 1u);
         auto res = std::int64_t{};
         script.get_result(res);
