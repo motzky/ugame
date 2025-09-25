@@ -1,9 +1,9 @@
 #pragma once
 
 #include <cmath>
-#include <format>
 
 #include "log.h"
+#include "utils/formatter.h"
 
 namespace game
 {
@@ -62,6 +62,8 @@ namespace game
         static auto distance(const Vector3 &v1, const Vector3 &v2) -> float;
 
         constexpr auto operator==(const Vector3 &) const -> bool = default;
+
+        auto to_string() const -> std::string;
     };
 
     constexpr auto operator-=(Vector3 &v1, const Vector3 &v2) -> Vector3 &
@@ -107,22 +109,4 @@ namespace game
     {
         return {-v.x, -v.y, -v.z};
     }
-
 }
-
-template <>
-struct std::formatter<game::Vector3>
-{
-    constexpr auto parse(std::format_parse_context &ctx)
-    {
-        return std::begin(ctx);
-    }
-
-    auto format(const game::Vector3 &obj, std::format_context &ctx) const
-    {
-        return std::format_to(ctx.out(), "x={} y={} z={}",
-                              obj.x,
-                              obj.y,
-                              obj.z);
-    }
-};
