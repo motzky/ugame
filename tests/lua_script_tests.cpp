@@ -182,14 +182,18 @@ end
     }
 }
 
-// TEST(lua_script, function_call_vector3_arg)
-// {
-//     auto script = game::LuaScript{R"(
-//  function print_v(v)
-//          print(v.x, v.y, v.z)
-//  end)"};
+TEST(lua_script, function_call_vector3_arg)
+{
+    auto script = game::LuaScript{R"(
+ function print_v(v)
+         print(v.x, v.y, v.z)
+ end)"};
 
-//     script.set_function("print_v");
-//     script.set_argument(game::Vector3{1.0f, 2.0f, 3.0f});
-//     script.execute(1u, 0u);
-// }
+    script.set_function("print_v");
+    script.set_argument(game::Vector3{1.0f, 2.0f, 3.0f});
+    ::testing::internal::CaptureStdout();
+    script.execute(1u, 0u);
+    const auto output = ::testing::internal::GetCapturedStdout();
+
+    ASSERT_EQ(output, "1.0\t2.0\t3.0\n");
+}

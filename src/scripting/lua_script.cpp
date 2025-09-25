@@ -16,6 +16,7 @@ extern "C"
 
 #include "core/exception.h"
 #include "math/vector3.h"
+#include "scripting/vector3_interop.h"
 #include "utils/ensure.h"
 
 namespace
@@ -49,6 +50,7 @@ namespace game
         ensure(_lua, "failed to create lua state");
 
         ::luaL_openlibs(_lua.get());
+        lua_register(_lua.get(), "Vector3", &vector3_constructor);
 
         auto load_data = LoadData{.source = source, .counter = 0};
 
@@ -86,7 +88,7 @@ namespace game
         set_argument(value.y);
         set_argument(value.z);
 
-        // vector3_constructor(lua_.get());
+        vector3_constructor(_lua.get());
     }
 
     auto LuaScript::get_result(std::int64_t &result) const -> void
