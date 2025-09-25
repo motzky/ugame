@@ -9,6 +9,7 @@ add_executable(unit_tests
     chain_tests.cpp
     frustum_tests.cpp
     lua_script_tests.cpp
+    lua_interop_tests.cpp
     matrix3_tests.cpp
     matrix4_tests.cpp
     message_bus_tests.cpp
