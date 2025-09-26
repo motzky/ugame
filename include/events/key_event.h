@@ -4,7 +4,6 @@
 
 namespace game
 {
-
     class KeyEvent
     {
 
