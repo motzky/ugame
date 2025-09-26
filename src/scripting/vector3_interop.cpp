@@ -7,8 +7,10 @@ extern "C"
 #include <lua.h>
 }
 
-#include "math/vector3.h"
 #include "scripting/lua_script.h"
+#include "utils/formatter.h"
+
+#include "math/vector3.h"
 #include "utils/ensure.h"
 
 namespace
@@ -33,11 +35,11 @@ namespace game
 {
     auto vector3_constructor(::lua_State *state) -> int
     {
-        ensure(::lua_isnumber(state, -3) == 1, "stach index 1 is not number");
+        ensure(::lua_isnumber(state, -3) == 1, "stack index 1 is not number: {}", state);
         const auto x = static_cast<float>(::lua_tonumber(state, -3));
-        ensure(::lua_isnumber(state, -2) == 1, "stach index 2 is not number");
+        ensure(::lua_isnumber(state, -2) == 1, "stack index 2 is not number: {}", state);
         const auto y = static_cast<float>(::lua_tonumber(state, -2));
-        ensure(::lua_isnumber(state, -1) == 1, "stach index 3 is not number");
+        ensure(::lua_isnumber(state, -1) == 1, "stack index 3 is not number: {}", state);
         const auto z = static_cast<float>(::lua_tonumber(state, -1));
 
         ::lua_pop(state, 3);

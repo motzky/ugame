@@ -5,8 +5,6 @@ extern "C"
 #include <lstate.h>
 }
 
-#include "math/vector3.h"
-
 namespace game
 {
     auto vector3_constructor(::lua_State *state) -> int;

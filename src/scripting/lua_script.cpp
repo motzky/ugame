@@ -2,7 +2,10 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <format>
 #include <memory>
+#include <ranges>
+#include <sstream>
 #include <string>
 #include <string_view>
 
@@ -128,4 +131,71 @@ namespace game
         }
     }
 
+    auto LuaScript::to_string() const -> std::string
+    {
+        return game::to_string(_lua.get());
+    }
+
+    auto to_string(::lua_State *state) -> std::string
+    {
+        auto ss = std::stringstream{};
+
+        const auto stack_size = ::lua_gettop(state);
+        if (stack_size == 0)
+        {
+            return "<empty stack>";
+        }
+
+        for (const auto index : std::views::iota(1, stack_size + 1) | std::views::reverse)
+        {
+            const auto type = ::lua_type(state, index);
+            switch (type)
+            {
+            case LUA_TNIL:
+                ss << "LUA_TNIL";
+                break;
+            case LUA_TNUMBER:
+            {
+                if (::lua_isinteger(state, index) == 1)
+                {
+                    ss << std::format("LUA_NUMBER (int) {}", ::lua_tointeger(state, index));
+                }
+                else
+                {
+                    ss << std::format("LUA_NUMBER (float) {}", ::lua_tonumber(state, index));
+                }
+                break;
+            }
+            break;
+            case LUA_TBOOLEAN:
+                ss << std::format("LUA_TBOOLEAN {}", ::lua_toboolean(state, index));
+                break;
+            case LUA_TSTRING:
+                ss << std::format("LUA_TSTRING '{}'", ::lua_tostring(state, index));
+                break;
+            case LUA_TTABLE:
+                ss << "LUA_TTABLE";
+                break;
+            case LUA_TFUNCTION:
+                ss << "LUA_TFUNCTION";
+                break;
+            case LUA_TUSERDATA:
+                ss << "LUA_TUSERDATA";
+                break;
+            case LUA_TTHREAD:
+                ss << "LUA_TTHREAD";
+                break;
+            case LUA_TLIGHTUSERDATA:
+                ss << "LUA_TLIGHTUSERDATA";
+                break;
+            default:
+                ss << "unknown";
+                break;
+            }
+
+            ss << "\n";
+        }
+
+        return ss.str();
+    }
 }

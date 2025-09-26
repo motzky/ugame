@@ -3,6 +3,7 @@
 #include "core/exception.h"
 #include "math/vector3.h"
 #include "scripting/lua_script.h"
+#include "utils/formatter.h"
 
 TEST(lua_script, simple_script)
 {
@@ -182,12 +183,47 @@ end
     }
 }
 
+TEST(lua_script, to_string_with_empty_stack)
+{
+    auto script = game::LuaScript{R"(
+function print_v(i, f, s)
+        print(i, f, s)
+end)"};
+
+    const auto str = std::format("{}", script);
+
+    ASSERT_EQ(str, "<empty stack>");
+}
+
+TEST(lua_script, to_string_with_func)
+{
+    auto script = game::LuaScript{R"(
+function print_v(i, f, s)
+        print(i, f, s)
+end)"};
+
+    script.set_argument(static_cast<std::int64_t>(1));
+    script.set_argument(3.f);
+    script.set_argument("hello");
+    script.set_function("print_v");
+
+    const auto str = std::format("{}", script);
+
+    const auto expected = R"(LUA_TFUNCTION
+LUA_TSTRING 'hello'
+LUA_NUMBER (float) 3
+LUA_NUMBER (int) 1
+)";
+
+    ASSERT_EQ(str, expected);
+}
+
 TEST(lua_script, function_call_vector3_arg)
 {
     auto script = game::LuaScript{R"(
- function print_v(v)
-         print(v.x, v.y, v.z)
- end)"};
+function print_v(v)
+        print(v.x, v.y, v.z)
+end)"};
 
     script.set_function("print_v");
     script.set_argument(game::Vector3{1.0f, 2.0f, 3.0f});

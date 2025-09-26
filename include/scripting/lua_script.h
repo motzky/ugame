@@ -10,10 +10,10 @@ extern "C"
 #include <lstate.h>
 }
 
-#include "math/vector3.h"
-
 namespace game
 {
+    class Vector3;
+
     class LuaScript
     {
     public:
@@ -32,7 +32,12 @@ namespace game
 
         auto execute(std::uint32_t num_args, std::uint32_t num_results) const -> void;
 
+        auto to_string() const -> std::string;
+
     private:
         std::unique_ptr<::lua_State, decltype(&::lua_close)> _lua;
     };
+
+    auto to_string(::lua_State *state) -> std::string;
+
 }
