@@ -9,6 +9,7 @@
 #include "core/exception.h"
 #include "log.h"
 #include "utils/auto_release.h"
+#include "utils/formatter.h"
 
 namespace game
 {

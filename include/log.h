@@ -5,6 +5,8 @@
 #include <print>
 #include <source_location>
 
+#include "utils/formatter.h"
+
 namespace game::log
 {
     enum class Level
@@ -52,7 +54,7 @@ namespace game::log
         }
     };
 
-    template <Level L = {}, class... Args>
+    template <Level L = Level::INFO, class... Args>
     Print(std::format_string<Args...>, Args &&...) -> Print<L, Args...>;
 
     template <class... Args>
