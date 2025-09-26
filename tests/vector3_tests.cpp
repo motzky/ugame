@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 
 #include "math/vector3.h"
+#include "utils/formatter.h"
 
 TEST(vector3, emtpy_ctor)
 {
@@ -151,4 +152,20 @@ TEST(vector3, dot_product_with_self)
     const auto dot = game::Vector3::dot(v1, v1);
 
     ASSERT_FLOAT_EQ(dot, expected);
+}
+
+TEST(vector3, to_string)
+{
+    const auto v = game::Vector3{1.f, 2.f, 3.f};
+    const auto str = v.to_string();
+
+    ASSERT_EQ(str, "x=1 y=2 z=3");
+}
+
+TEST(vector3, format)
+{
+    const auto v = game::Vector3{1.f, 2.f, 3.f};
+    const auto str = std::format("{}", v);
+
+    ASSERT_EQ(str, "x=1 y=2 z=3");
 }
