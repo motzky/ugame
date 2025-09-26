@@ -1,15 +1,13 @@
 #pragma once
 
 #include <format>
-#include <string_view>
+#include <string>
 
 #ifdef _WIN32
 #include <windows.h>
 #endif
 
 #include "log.h"
-
-using namespace std::literals;
 
 namespace game
 {
@@ -142,264 +140,183 @@ namespace game
 
     inline auto to_string(KeyState obj) -> std::string
     {
-        auto s = "?"sv;
-
         switch (obj)
         {
             using enum game::KeyState;
         case UP:
-            s = "UP"sv;
-            break;
+            return "UP";
         case DOWN:
-            s = "DOWN"sv;
-            break;
+            return "DOWN";
+        default:
+            return "?";
         }
-
-        return std::format("{}", s);
     }
 
     inline auto to_string(Key obj) -> std::string
     {
-        auto s = "?"sv;
 
         switch (obj)
         {
             using enum game::Key;
         case TAB:
-            s = "TAB"sv;
-            break;
+            return "TAB";
         case RETURN:
-            s = "RETURN"sv;
-            break;
+            return "RETURN";
         case LSHIFT:
-            s = "LSHIFT"sv;
-            break;
+            return "LSHIFT";
         case LCTRL:
-            s = "LCTRL"sv;
-            break;
+            return "LCTRL";
         case ESC:
-            s = "ESC"sv;
-            break;
+            return "ESC";
         case SPACE:
-            s = "SPACE"sv;
-            break;
+            return "SPACE";
         case PG_UP:
-            s = "PG_UP"sv;
-            break;
+            return "PG_UP";
         case PG_DOWN:
-            s = "PG_DOWN"sv;
-            break;
+            return "PG_DOWN";
         case END:
-            s = "END"sv;
-            break;
+            return "END";
         case HOME:
-            s = "HOME"sv;
-            break;
+            return "HOME";
         case LEFT_ARROW:
-            s = "LEFT_ARROW"sv;
-            break;
+            return "LEFT_ARROW";
         case UP_ARROW:
-            s = "UP_ARROW"sv;
-            break;
+            return "UP_ARROW";
         case RIGHT_ARROW:
-            s = "RIGHT_ARROW"sv;
-            break;
+            return "RIGHT_ARROW";
         case DOWN_ARROW:
-            s = "DOWN_ARROW"sv;
-            break;
+            return "DOWN_ARROW";
         case INSERT:
-            s = "INSERT"sv;
-            break;
+            return "INSERT";
 #ifdef _WIN32
         case DELETE_KEY:
 #else
         case DELETE:
 #endif
-            s = "DELETE"sv;
-            break;
+            return "DELETE";
 
         case KEY_0:
-            s = "0"sv;
-            break;
+            return "0";
         case KEY_1:
-            s = "1"sv;
-            break;
+            return "1";
         case KEY_2:
-            s = "2"sv;
-            break;
+            return "2";
         case KEY_3:
-            s = "3"sv;
-            break;
+            return "3";
         case KEY_4:
-            s = "4"sv;
-            break;
+            return "4";
         case KEY_5:
-            s = "5"sv;
-            break;
+            return "5";
         case KEY_6:
-            s = "6"sv;
-            break;
+            return "6";
         case KEY_7:
-            s = "7"sv;
-            break;
+            return "7";
         case KEY_8:
-            s = "8"sv;
-            break;
+            return "8";
         case KEY_9:
-            s = "9"sv;
-            break;
+            return "9";
 
         case NUMPAD_0:
-            s = "0"sv;
-            break;
+            return "0";
         case NUMPAD_1:
-            s = "1"sv;
-            break;
+            return "1";
         case NUMPAD_2:
-            s = "2"sv;
-            break;
+            return "2";
         case NUMPAD_3:
-            s = "3"sv;
-            break;
+            return "3";
         case NUMPAD_4:
-            s = "4"sv;
-            break;
+            return "4";
         case NUMPAD_5:
-            s = "5"sv;
-            break;
+            return "5";
         case NUMPAD_6:
-            s = "6"sv;
-            break;
+            return "6";
         case NUMPAD_7:
-            s = "7"sv;
-            break;
+            return "7";
         case NUMPAD_8:
-            s = "8"sv;
-            break;
+            return "8";
         case NUMPAD_9:
-            s = "9"sv;
-            break;
+            return "9";
 
         case A:
-            s = "A"sv;
-            break;
+            return "A";
         case B:
-            s = "B"sv;
-            break;
+            return "B";
         case C:
-            s = "C"sv;
-            break;
+            return "C";
         case D:
-            s = "D"sv;
-            break;
+            return "D";
         case E:
-            s = "E"sv;
-            break;
+            return "E";
         case F:
-            s = "F"sv;
-            break;
+            return "F";
         case G:
-            s = "G"sv;
-            break;
+            return "G";
         case H:
-            s = "H"sv;
-            break;
+            return "H";
         case I:
-            s = "I"sv;
-            break;
+            return "I";
         case J:
-            s = "J"sv;
-            break;
+            return "J";
         case K:
-            s = "K"sv;
-            break;
+            return "K";
         case L:
-            s = "L"sv;
-            break;
+            return "L";
         case M:
-            s = "M"sv;
-            break;
+            return "M";
         case N:
-            s = "N"sv;
-            break;
+            return "N";
         case O:
-            s = "O"sv;
-            break;
+            return "O";
         case P:
-            s = "P"sv;
-            break;
+            return "P";
         case Q:
-            s = "Q"sv;
-            break;
+            return "Q";
         case R:
-            s = "R"sv;
-            break;
+            return "R";
         case S:
-            s = "S"sv;
-            break;
+            return "S";
         case T:
-            s = "T"sv;
-            break;
+            return "T";
         case U:
-            s = "U"sv;
-            break;
+            return "U";
         case V:
-            s = "V"sv;
-            break;
+            return "V";
         case W:
-            s = "W"sv;
-            break;
+            return "W";
         case X:
-            s = "X"sv;
-            break;
+            return "X";
         case Y:
-            s = "Y"sv;
-            break;
+            return "Y";
         case Z:
-            s = "Z"sv;
-            break;
+            return "Z";
 
         case F1:
-            s = "F1"sv;
-            break;
+            return "F1";
         case F2:
-            s = "F2"sv;
-            break;
+            return "F2";
         case F3:
-            s = "F3"sv;
-            break;
+            return "F3";
         case F4:
-            s = "F4"sv;
-            break;
+            return "F4";
         case F5:
-            s = "F5"sv;
-            break;
+            return "F5";
         case F6:
-            s = "F6"sv;
-            break;
+            return "F6";
         case F7:
-            s = "F7"sv;
-            break;
+            return "F7";
         case F8:
-            s = "F8"sv;
-            break;
+            return "F8";
         case F9:
-            s = "F9"sv;
-            break;
+            return "F9";
         case F10:
-            s = "F10"sv;
-            break;
+            return "F10";
         case F11:
-            s = "F11"sv;
-            break;
+            return "F11";
         case F12:
-            s = "F12"sv;
-            break;
+            return "F12";
         default:
             game::log::debug("key pressed raw: {}", static_cast<int>(obj));
-            break;
+            return "?";
         }
-
-        return std::format("{}", s);
     }
 }
