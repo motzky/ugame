@@ -1,6 +1,6 @@
 #pragma once
 
-#include <format>
+#include <string>
 
 #include <Jolt/Jolt.h>
 
@@ -25,21 +25,10 @@ namespace game
 
         virtual auto native_handle() const -> const ::JPH::ShapeSettings * override;
 
+        auto to_string() const -> std::string;
+
     private:
         Vector3 _dimensions;
         ::JPH::BoxShapeSettings _shape_settings;
     };
 }
-
-template <>
-struct std::formatter<game::BoxShape>
-{
-    constexpr auto parse(std::format_parse_context &ctx)
-    {
-        return std::begin(ctx);
-    }
-    auto format(const game::BoxShape &obj, std::format_context &ctx) const
-    {
-        return std::format_to(ctx.out(), "BoxShape: {}", obj.dimensions());
-    }
-};

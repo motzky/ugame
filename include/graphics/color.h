@@ -1,6 +1,7 @@
 #pragma once
 
 #include <format>
+#include <string>
 
 namespace game
 {
@@ -11,21 +12,9 @@ namespace game
         float b;
     };
 
+    inline auto to_string(Color obj) -> std::string
+    {
+        return std::format("r={} g={} b={}", obj.r, obj.g, obj.b);
+    }
+
 }
-
-template <>
-struct std::formatter<game::Color>
-{
-    constexpr auto parse(std::format_parse_context &ctx)
-    {
-        return std::begin(ctx);
-    }
-
-    auto format(const game::Color &obj, std::format_context &ctx) const
-    {
-        return std::format_to(ctx.out(), "r={} g={} b={}",
-                              obj.r,
-                              obj.g,
-                              obj.b);
-    }
-};

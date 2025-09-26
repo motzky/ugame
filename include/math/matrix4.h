@@ -183,6 +183,8 @@ namespace game
 
         constexpr auto operator==(const Matrix4 &) const -> bool = default;
 
+        auto to_string() const -> std::string;
+
     private:
         std::array<float, 16u> _elements;
     };
@@ -250,23 +252,14 @@ namespace game
         return m;
     }
 
+    inline auto Matrix4::to_string() const -> std::string
+    {
+        const auto *d = data().data();
+        return std::format("{} {} {} {}\n{} {} {} {}\n{} {} {} {}\n{} {} {} {}",
+                           d[0], d[4], d[8], d[12],
+                           d[1], d[5], d[9], d[13],
+                           d[2], d[6], d[10], d[14],
+                           d[3], d[7], d[11], d[15]);
+    }
+
 }
-
-template <>
-struct std::formatter<game::Matrix4>
-{
-    constexpr auto parse(std::format_parse_context &ctx)
-    {
-        return std::begin(ctx);
-    }
-
-    auto format(const game::Matrix4 &obj, std::format_context &ctx) const
-    {
-        const auto *data = obj.data().data();
-        return std::format_to(ctx.out(), "{} {} {} {}\n{} {} {} {}\n{} {} {} {}\n{} {} {} {}",
-                              data[0], data[4], data[8], data[12],
-                              data[1], data[5], data[9], data[13],
-                              data[2], data[6], data[10], data[14],
-                              data[3], data[7], data[11], data[15]);
-    }
-};

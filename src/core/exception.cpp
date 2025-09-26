@@ -1,7 +1,7 @@
 #include "core/exception.h"
 
+#include <format>
 #include <iostream>
-#include <print>
 
 namespace game
 {
@@ -15,4 +15,10 @@ namespace game
     {
         return std::to_string(_trace);
     }
+
+    auto Exception::to_string() const -> std::string
+    {
+        return std::format("{}\n{}", what(), stacktrace());
+    }
+
 }

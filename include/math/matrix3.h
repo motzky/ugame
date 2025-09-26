@@ -123,6 +123,8 @@ namespace game
             return {inv_arr};
         }
 
+        auto to_string() const -> std::string;
+
     private:
         std::array<float, 9u>
             _elements;
@@ -160,22 +162,13 @@ namespace game
                 m[1] * v.x + m[4] * v.y + m[7] * v.z,
                 m[2] * v.x + m[5] * v.y + m[8] * v.z};
     }
+
+    inline auto Matrix3::to_string() const -> std::string
+    {
+        const auto *d = data().data();
+        return std::format("{} {} {}\n{} {} {}\n{} {} {}",
+                           d[0], d[3], d[6],
+                           d[1], d[4], d[7],
+                           d[2], d[5], d[8]);
+    }
 }
-
-template <>
-struct std::formatter<game::Matrix3>
-{
-    constexpr auto parse(std::format_parse_context &ctx)
-    {
-        return std::begin(ctx);
-    }
-
-    auto format(const game::Matrix3 &obj, std::format_context &ctx) const
-    {
-        const auto *data = obj.data().data();
-        return std::format_to(ctx.out(), "{} {} {}\n{} {} {}\n{} {} {}",
-                              data[0], data[3], data[6],
-                              data[1], data[4], data[7],
-                              data[2], data[5], data[8]);
-    }
-};

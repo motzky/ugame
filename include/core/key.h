@@ -139,17 +139,26 @@ namespace game
         UP,
         DOWN
     };
-}
 
-template <>
-struct std::formatter<game::Key>
-{
-    constexpr auto parse(std::format_parse_context &ctx)
+    inline auto to_string(KeyState obj) -> std::string
     {
-        return std::begin(ctx);
+        auto s = "?"sv;
+
+        switch (obj)
+        {
+            using enum game::KeyState;
+        case UP:
+            s = "UP"sv;
+            break;
+        case DOWN:
+            s = "DOWN"sv;
+            break;
+        }
+
+        return std::format("{}", s);
     }
 
-    auto format(const game::Key &obj, std::format_context &ctx) const
+    inline auto to_string(Key obj) -> std::string
     {
         auto s = "?"sv;
 
@@ -391,33 +400,6 @@ struct std::formatter<game::Key>
             break;
         }
 
-        return std::format_to(ctx.out(), "{}", s);
+        return std::format("{}", s);
     }
-};
-
-template <>
-struct std::formatter<game::KeyState>
-{
-    constexpr auto parse(std::format_parse_context &ctx)
-    {
-        return std::begin(ctx);
-    }
-
-    auto format(const game::KeyState &obj, std::format_context &ctx) const
-    {
-        auto s = "?"sv;
-
-        switch (obj)
-        {
-            using enum game::KeyState;
-        case UP:
-            s = "UP"sv;
-            break;
-        case DOWN:
-            s = "DOWN"sv;
-            break;
-        }
-
-        return std::format_to(ctx.out(), "{}", s);
-    }
-};
+}

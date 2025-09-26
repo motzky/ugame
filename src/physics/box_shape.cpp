@@ -1,5 +1,8 @@
 #include "physics/box_shape.h"
 
+#include <format>
+#include <string>
+
 #include <Jolt/Jolt.h>
 
 #include <Jolt/Core/Reference.h>
@@ -32,4 +35,10 @@ namespace game
     {
         return std::addressof(_shape_settings);
     }
+
+    auto BoxShape::to_string() const -> std::string
+    {
+        return std::format("BoxShape: {}", _dimensions);
+    }
+
 }

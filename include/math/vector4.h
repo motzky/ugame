@@ -51,6 +51,8 @@ namespace game
             return {v.x / length, v.y / length, v.z / length, v.w / length};
         }
 
+        inline auto to_string() const -> std::string;
+
         constexpr auto operator==(const Vector4 &) const -> bool = default;
     };
 
@@ -101,22 +103,9 @@ namespace game
         return {-v.x, -v.y, -v.z, -v.w};
     }
 
+    inline auto Vector4::to_string() const -> std::string
+    {
+        return std::format("x={} y={} z={} w={}", x, y, z, w);
+    }
+
 }
-
-template <>
-struct std::formatter<game::Vector4>
-{
-    constexpr auto parse(std::format_parse_context &ctx)
-    {
-        return std::begin(ctx);
-    }
-
-    auto format(const game::Vector4 &obj, std::format_context &ctx) const
-    {
-        return std::format_to(ctx.out(), "x={} y={} z={} w={}",
-                              obj.x,
-                              obj.y,
-                              obj.z,
-                              obj.w);
-    }
-};

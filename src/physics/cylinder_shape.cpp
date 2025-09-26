@@ -1,5 +1,8 @@
 #include "physics/cylinder_shape.h"
 
+#include <format>
+#include <string>
+
 #include <Jolt/Jolt.h>
 
 #include <Jolt/Core/Reference.h>
@@ -35,4 +38,10 @@ namespace game
     {
         return std::addressof(_shape_settings);
     }
+
+    auto CylinderShape::to_string() const -> std::string
+    {
+        return std::format("CylinderShape: {} {}", _half_height, _radius);
+    }
+
 }

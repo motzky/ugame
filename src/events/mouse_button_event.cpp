@@ -1,5 +1,10 @@
 #include "events/mouse_button_event.h"
 
+#include <format>
+#include <string>
+
+#include "utils/formatter.h"
+
 namespace game
 {
 
@@ -20,4 +25,24 @@ namespace game
     {
         return _state;
     }
+
+    auto MouseButtonEvent::to_string() const -> std::string
+    {
+        return std::format("MouseButtonEvent: {} @ {} {}", _state, _x, _y);
+    }
+
+    auto to_string(MouseButtonState obj) -> std::string
+    {
+        switch (obj)
+        {
+            using enum game::MouseButtonState;
+        case UP:
+            return "UP";
+        case DOWN:
+            return "DOWN";
+        default:
+            return "UNKNOWN";
+        }
+    }
+
 }

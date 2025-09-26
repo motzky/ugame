@@ -3,6 +3,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
+#include <format>
 #include <span>
 #include <string>
 #include <string_view>
@@ -11,6 +12,8 @@
 #include "graphics/texture.h"
 #include "tlv/tlv_reader.h"
 #include "utils/ensure.h"
+
+using namespace std::literals;
 
 namespace game
 {
@@ -204,6 +207,45 @@ namespace game
     auto TlvEntry::size() const -> std::uint32_t
     {
         return static_cast<std::uint32_t>(sizeof(_type)) + static_cast<std::uint32_t>(sizeof(std::uint32_t)) + static_cast<std::uint32_t>(_value.size());
+    }
+    auto TlvEntry::to_string() -> std::string
+    {
+        auto str = "unknown"sv;
+        switch (_type)
+        {
+            using enum game::TlvType;
+        case UINT32:
+            str = "UINT32"sv;
+            break;
+        case UINT32_ARRAY:
+            str = "UINT32_ARRAY"sv;
+            break;
+        case STRING:
+            str = "STRING"sv;
+            break;
+        case BYTE_ARRAY:
+            str = "BYTE_ARRAY"sv;
+            break;
+        case TEXTURE_FORMAT:
+            str = "TEXTURE_FORMAT"sv;
+            break;
+        case TEXTURE_USAGE:
+            str = "TEXTURE_USAGE"sv;
+            break;
+        case TEXTURE_DESCRIPTION:
+            str = "TEXTURE_DESCRIPTION"sv;
+            break;
+        case VERTEX_DATA:
+            str = "VERTEX_DATA"sv;
+            break;
+        case VERTEX_DATA_ARRAY:
+            str = "VERTEX_DATA_ARRAY"sv;
+            break;
+        case MESH_DATA:
+            str = "MESH_DATA"sv;
+            break;
+        }
+        return std::format("{}", str);
     }
 
 }

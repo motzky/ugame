@@ -1,5 +1,7 @@
 #include "physics/sphere_shape.h"
 
+#include <format>
+
 #include <Jolt/Jolt.h>
 
 #include <Jolt/Core/Reference.h>
@@ -32,4 +34,10 @@ namespace game
     {
         return std::addressof(_shape_settings);
     }
+
+    auto SphereShape::to_string() const -> std::string
+    {
+        return std::format("SphereShape: {}", _radius);
+    }
+
 }

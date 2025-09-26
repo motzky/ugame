@@ -7,6 +7,7 @@
 #include <optional>
 #include <ranges>
 #include <span>
+#include <string>
 
 // #define STB_IMAGE_IMPLEMENTATION
 // #include <stb_image.h>
@@ -15,6 +16,7 @@
 #include "log.h"
 #include "tlv/tlv_reader.h"
 #include "utils/ensure.h"
+#include "utils/formatter.h"
 
 namespace
 {
@@ -139,34 +141,6 @@ namespace game
         }
     }
 
-    // Texture::Texture(TextureUsage usage, std::span<const std::byte> data, std::uint32_t /*width*/, std::uint32_t /*height*/, const TextureSampler *sampler)
-    //     : _handle{0u, [](auto texture)
-    //               { ::glDeleteTextures(1u, &texture); }}
-    // {
-    //     TextureUsage valid_usage[] = {TextureUsage::SRGB, TextureUsage::DATA};
-    //     ensure(std::ranges::contains(valid_usage, usage), "invalid usage");
-
-    //     auto w = int{0};
-    //     auto h = int{0};
-    //     auto num_channels = int{0};
-
-    //     auto raw_data = std::unique_ptr<::stbi_uc, decltype(&::stbi_image_free)>{
-    //         ::stbi_load_from_memory(reinterpret_cast<const stbi_uc *>(data.data()),
-    //                                 static_cast<int>(data.size_bytes()),
-    //                                 &w,
-    //                                 &h,
-    //                                 &num_channels,
-    //                                 0),
-    //         ::stbi_image_free};
-
-    //     ensure(raw_data, "failed to load texture date");
-
-    //     ::glCreateTextures(GL_TEXTURE_2D, 1u, &_handle);
-
-    //     ::glTextureStorage2D(_handle, 1, get_storage_format(usage, num_channels), w, h);
-    //     ::glTextureSubImage2D(_handle, 0, 0, 0, w, h, get_sub_image_format(num_channels), GL_UNSIGNED_BYTE, raw_data.get());
-    // }
-
     auto Texture::native_handle() const -> ::GLuint
     {
         return _handle;
@@ -174,6 +148,50 @@ namespace game
     auto Texture::sampler() const -> const TextureSampler *
     {
         return _sampler;
+    }
+
+    auto to_string(TextureUsage obj) -> std::string
+    {
+        switch (obj)
+        {
+            using enum game::TextureUsage;
+        case FRAMEBUFFER:
+            return "FRAMEBUFFER";
+        case DEPTH:
+            return "DEPTH";
+        case SRGB:
+            return "SRGB";
+        case DATA:
+            return "DATA";
+        default:
+            return std::format("{}", std::to_underlying(obj));
+        }
+    }
+
+    auto to_string(TextureFormat obj) -> std::string
+    {
+        switch (obj)
+        {
+            using enum game::TextureFormat;
+        case R:
+            return "R";
+        case RGB:
+            return "RGB";
+        case RGBA:
+            return "RGBA";
+        default:
+            return std::format("{}", std::to_underlying(obj));
+        }
+    }
+
+    auto to_string(const TextureDescription &obj) -> std::string
+    {
+        return std::format("width={} height={} format={} usage={} data={}",
+                           obj.width,
+                           obj.height,
+                           obj.format,
+                           obj.usage,
+                           obj.data.size());
     }
 
 }

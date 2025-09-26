@@ -1,9 +1,11 @@
 #include "math/frustum_plane.h"
 
 #include <format>
+#include <string>
 
 #include "math/matrix3.h"
 #include "math/vector3.h"
+#include "utils/formatter.h"
 
 namespace game
 {
@@ -27,5 +29,8 @@ namespace game
 
         return Matrix3::invert(Matrix3::transpose(m)) * v;
     }
-
+    auto FrustumPlane::to_string() const -> std::string
+    {
+        return std::format("normal={} distance={}", normal, distance);
+    }
 };

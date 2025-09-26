@@ -1,11 +1,14 @@
 #include "graphics/shader.h"
 
+#include <format>
+#include <string>
 #include <string_view>
 #include <utility>
 
 #include "core/exception.h"
 #include "graphics/opengl.h"
 #include "utils/auto_release.h"
+#include "utils/formatter.h"
 
 namespace
 {
@@ -59,4 +62,21 @@ namespace game
     {
         return _handle;
     }
+
+    auto to_string(ShaderType obj) -> std::string
+    {
+        switch (obj)
+        {
+            using enum game::ShaderType;
+        case VERTEX:
+            return "VERTEX";
+        case FRAGMENT:
+            return "FRAGMENT";
+        case COMPUTE:
+            return "COMPUTE";
+        }
+
+        throw game::Exception("unknown shader type: {}", std::to_underlying(obj));
+    }
+
 }

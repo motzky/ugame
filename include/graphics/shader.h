@@ -1,6 +1,5 @@
 #pragma once
 
-#include <format>
 #include <string_view>
 #include <utility>
 
@@ -31,29 +30,6 @@ namespace game
         ShaderType _type;
     };
 
+    auto to_string(ShaderType obj) -> std::string;
+
 }
-
-template <>
-struct std::formatter<game::ShaderType>
-{
-    constexpr auto parse(std::format_parse_context &ctx)
-    {
-        return std::begin(ctx);
-    }
-
-    auto format(const game::ShaderType &obj, std::format_context &ctx) const
-    {
-        switch (obj)
-        {
-            using enum game::ShaderType;
-        case VERTEX:
-            return std::format_to(ctx.out(), "VERTEX");
-        case FRAGMENT:
-            return std::format_to(ctx.out(), "FRAGMENT");
-        case COMPUTE:
-            return std::format_to(ctx.out(), "COMPUTE");
-        }
-
-        throw game::Exception("unknown shader type: {}", std::to_underlying(obj));
-    }
-};

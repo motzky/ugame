@@ -1,6 +1,9 @@
 #include "events/key_event.h"
 
+#include <format>
+
 #include "core/key.h"
+#include "utils/formatter.h"
 
 namespace game
 {
@@ -18,4 +21,10 @@ namespace game
     {
         return _state;
     }
+
+    auto KeyEvent::to_string() const -> std::string
+    {
+        return std::format("KeyEvent {} {}", _key, _state);
+    }
+
 }
