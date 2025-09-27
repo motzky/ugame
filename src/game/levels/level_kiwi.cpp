@@ -20,18 +20,18 @@ namespace
         for (const auto &plane : planes)
         {
 
-            auto pos_vert = aabb.min;
+            auto pos_vert = aabb.get_min();
             if (plane.normal.x >= 0)
             {
-                pos_vert.x = aabb.max.x;
+                pos_vert.x = aabb.get_max().x;
             }
             if (plane.normal.y >= 0)
             {
-                pos_vert.y = aabb.max.y;
+                pos_vert.y = aabb.get_max().y;
             }
             if (plane.normal.z >= 0)
             {
-                pos_vert.z = aabb.max.z;
+                pos_vert.z = aabb.get_max().z;
             }
 
             if (game::Vector3::dot(plane.normal, pos_vert) + plane.distance < 0.f)
@@ -84,10 +84,10 @@ namespace game::levels
         };
 
         _entities.emplace_back(game::Entity{_resource_cache.get<Mesh>("barrel"), resource_cache.get<Material>("barrel_material"), {0.f, -.2f, 0.f}, {0.4f}, {{0.f}, {1.f}, {0.707107f, 0.f, 0.f, 0.707107f}}, barrel_textures},
-                               game::AABB{{-.6f, -.75f, -.6f}, {.6f, .75f, .6f}},
+                               game::AABB{{-.6f, -.75f, -.6f}, {.6f, .75f, .6f}, {0.f, -.2f, 0.f}},
                                std::make_unique<game::Chain<GameTransformState>>());
         _entities.emplace_back(game::Entity{_resource_cache.get<Mesh>("barrel"), resource_cache.get<Material>("barrel_material"), {5.f, -.2f, 0.f}, {0.4f}, {{0.f}, {1.f}, {0.707107f, 0.f, 0.f, 0.707107f}}, barrel_textures},
-                               game::AABB{{4.4f, -.75f, -.6f}, {5.6f, .75f, .6f}},
+                               game::AABB{{4.4f, -.75f, -.6f}, {5.6f, .75f, .6f}, {5.f, -.2f, 0.f}},
                                std::make_unique<game::Chain<GameTransformState, CheckVisible, CameraDelta, Invert>>());
 
         _scene = game::Scene{
@@ -124,11 +124,10 @@ namespace game::levels
             _state.aabb = aabb;
             if (!_show_debug)
             {
-                const auto enitiy_delta = transformer->go({}, _state);
-                entity.translate(enitiy_delta);
+                const auto entity_delta = transformer->go({}, _state);
+                entity.translate(entity_delta);
 
-                aabb.min += enitiy_delta;
-                aabb.max += enitiy_delta;
+                aabb.set_position(entity.position());
             }
 
             // debug_wireframe_renderer.draw(aabb);

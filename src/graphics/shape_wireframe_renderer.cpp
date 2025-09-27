@@ -44,18 +44,21 @@ namespace game
     {
         auto color_aabb = Color{0.f, 1.f, 0.f};
 
-        draw(aabb.max, {aabb.min.x, aabb.max.y, aabb.max.z}, color_aabb);
-        draw({aabb.min.x, aabb.max.y, aabb.max.z}, {aabb.min.x, aabb.max.y, aabb.min.z}, color_aabb);
-        draw({aabb.min.x, aabb.max.y, aabb.min.z}, {aabb.max.x, aabb.max.y, aabb.min.z}, color_aabb);
-        draw({aabb.max.x, aabb.max.y, aabb.min.z}, aabb.max, color_aabb);
-        draw(aabb.max, {aabb.max.x, aabb.min.y, aabb.max.z}, color_aabb);
-        draw({aabb.min.x, aabb.max.y, aabb.max.z}, {aabb.min.x, aabb.min.y, aabb.max.z}, color_aabb);
-        draw({aabb.max.x, aabb.max.y, aabb.min.z}, {aabb.max.x, aabb.min.y, aabb.min.z}, color_aabb);
-        draw({aabb.min.x, aabb.max.y, aabb.min.z}, aabb.min, color_aabb);
-        draw(aabb.min, {aabb.min.x, aabb.min.y, aabb.max.z}, color_aabb);
-        draw({aabb.min.x, aabb.min.y, aabb.max.z}, {aabb.max.x, aabb.min.y, aabb.max.z}, color_aabb);
-        draw({aabb.max.x, aabb.min.y, aabb.max.z}, {aabb.max.x, aabb.min.y, aabb.min.z}, color_aabb);
-        draw({aabb.max.x, aabb.min.y, aabb.min.z}, aabb.min, color_aabb);
+        const auto aabb_min = aabb.get_min();
+        const auto aabb_max = aabb.get_max();
+
+        draw(aabb_max, {aabb_min.x, aabb_max.y, aabb_max.z}, color_aabb);
+        draw({aabb_min.x, aabb_max.y, aabb_max.z}, {aabb_min.x, aabb_max.y, aabb_min.z}, color_aabb);
+        draw({aabb_min.x, aabb_max.y, aabb_min.z}, {aabb_max.x, aabb_max.y, aabb_min.z}, color_aabb);
+        draw({aabb_max.x, aabb_max.y, aabb_min.z}, aabb_max, color_aabb);
+        draw(aabb_max, {aabb_max.x, aabb_min.y, aabb_max.z}, color_aabb);
+        draw({aabb_min.x, aabb_max.y, aabb_max.z}, {aabb_min.x, aabb_min.y, aabb_max.z}, color_aabb);
+        draw({aabb_max.x, aabb_max.y, aabb_min.z}, {aabb_max.x, aabb_min.y, aabb_min.z}, color_aabb);
+        draw({aabb_min.x, aabb_max.y, aabb_min.z}, aabb_min, color_aabb);
+        draw(aabb_min, {aabb_min.x, aabb_min.y, aabb_max.z}, color_aabb);
+        draw({aabb_min.x, aabb_min.y, aabb_max.z}, {aabb_max.x, aabb_min.y, aabb_max.z}, color_aabb);
+        draw({aabb_max.x, aabb_min.y, aabb_max.z}, {aabb_max.x, aabb_min.y, aabb_min.z}, color_aabb);
+        draw({aabb_max.x, aabb_min.y, aabb_min.z}, aabb_min, color_aabb);
     }
 
     auto ShapeWireframeRenderer::yield() -> std::vector<LineData>

@@ -1,6 +1,8 @@
 #include "game/levels/lua_level.h"
 
+#include <ranges>
 #include <string_view>
+#include <vector>
 
 #include "game/player.h"
 #include "graphics/cube_map.h"
@@ -49,7 +51,7 @@ namespace game::levels
                                                 {0.4f},
                                                 {{0.f}, {1.f}, {0.707107f, 0.f, 0.f, 0.707107f}},
                                                 barrel_textures},
-                                   game::AABB{pos + Vector3{-.6f, -.75f, -.6f}, pos + Vector3{.6f, .75f, .6f}},
+                                   game::AABB{{.6f, .75f, .6f}, {.6f, .75f, .6f}, pos},
                                    //    std::make_unique<game::Chain<GameTransformState>>()
                                    nullptr);
         }
@@ -84,6 +86,13 @@ namespace game::levels
     {
         const auto runner = ScriptRunner{_script};
         runner.execute("update_level", player.position());
+
+        for (const auto &[index, entity] : std::views::enumerate(_entities))
+        {
+            const auto position = runner.execute<Vector3>("barrel_position", index + 1);
+            entity.entity.set_position(position);
+            entity.bounding_box.set_position(position);
+        }
     }
 
     auto LuaLevel::restart() -> void
