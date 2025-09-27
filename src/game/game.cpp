@@ -26,6 +26,7 @@
 #include "game/levels/level.h"
 #include "game/levels/level_apple.h"
 #include "game/levels/level_kiwi.h"
+#include "game/levels/lua_level.h"
 #include "game/player.h"
 #include "graphics/cube_map.h"
 #include "graphics/material.h"
@@ -137,8 +138,11 @@ namespace game
                 .data{static_cast<std::byte>(0xff), static_cast<std::byte>(0xff), static_cast<std::byte>(0xff)}},
             sampler);
 
-        _levels.push_back(std::make_unique<levels::LevelApple>(resource_cache, reader, player, bus));
-        _levels.push_back(std::make_unique<levels::LevelKiwi>(resource_cache, reader, player, bus));
+        // _levels.push_back(std::make_unique<levels::LevelApple>(resource_cache, reader, player, bus));
+        // _levels.push_back(std::make_unique<levels::LevelKiwi>(resource_cache, reader, player, bus));
+
+        _levels.push_back(std::make_unique<levels::LuaLevel>(resource_loader, "level_apple.lua", resource_cache, reader));
+
         _levels[_level_num]->restart();
 
         auto gamma = 2.2f;
