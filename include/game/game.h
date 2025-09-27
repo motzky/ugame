@@ -5,7 +5,7 @@
 #include <string_view>
 #include <vector>
 
-#include "game/levels/level.h"
+#include "game/levels/lua_level.h"
 #include "messaging/message_bus.h"
 #include "messaging/subscriber.h"
 
@@ -24,7 +24,7 @@ namespace game
 
     private:
         bool _running;
-        std::vector<std::unique_ptr<levels::Level>> _levels;
+        std::vector<std::unique_ptr<levels::LuaLevel>> _levels;
 
         std::size_t _level_num;
     };

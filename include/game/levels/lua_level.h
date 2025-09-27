@@ -4,12 +4,11 @@
 #include <vector>
 
 #include "game/levels/level.h"
-#include "resources/resource_loader.h"
+#include "game/transformed_entity.h"
 #include "resources/resource_cache.h"
+#include "resources/resource_loader.h"
 #include "scripting/lua_script.h"
 #include "tlv/tlv_reader.h"
-#include "game/transformed_entity.h"
-
 
 namespace game::levels
 {
@@ -21,10 +20,12 @@ namespace game::levels
         virtual auto update(const Player &player) -> void override;
         virtual auto restart() -> void override;
 
+        auto entities() const -> const std::vector<TransformedEntity> &;
+
     private:
         LuaScript _script;
 
-                std::vector<TransformedEntity> _entities;
+        std::vector<TransformedEntity> _entities;
         Entity _floor;
         CubeMap _skybox;
         TextureSampler _skybox_sampler;

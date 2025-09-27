@@ -211,6 +211,10 @@ namespace game
 
             if (show_physics_debug)
             {
+                for (const auto &entity : level->entities())
+                {
+                    debug_wireframe_renderer.draw(entity.bounding_box);
+                }
                 level->scene().debug_lines = game::DebugLines{debug_wireframe_renderer.yield()};
             }
             else
