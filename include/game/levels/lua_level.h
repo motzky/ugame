@@ -15,7 +15,12 @@ namespace game::levels
     class LuaLevel : public Level
     {
     public:
-        LuaLevel(const game::ResourceLoader &loader, std::string_view script_name, DefaultCache &resource_cache, const TlvReader &reader);
+        LuaLevel(
+            const game::ResourceLoader &loader,
+            std::string_view script_name,
+            DefaultCache &resource_cache,
+            const TlvReader &reader,
+            const Player &player);
 
         virtual auto update(const Player &player) -> void override;
         virtual auto restart() -> void override;

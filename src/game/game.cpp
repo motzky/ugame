@@ -141,7 +141,7 @@ namespace game
         // _levels.push_back(std::make_unique<levels::LevelApple>(resource_cache, reader, player, bus));
         // _levels.push_back(std::make_unique<levels::LevelKiwi>(resource_cache, reader, player, bus));
 
-        _levels.push_back(std::make_unique<levels::LuaLevel>(resource_loader, "level_apple.lua", resource_cache, reader));
+        _levels.push_back(std::make_unique<levels::LuaLevel>(resource_loader, "level_apple.lua", resource_cache, reader, player));
 
         _levels[_level_num]->restart();
 

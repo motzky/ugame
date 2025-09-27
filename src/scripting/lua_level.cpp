@@ -17,7 +17,12 @@
 
 namespace game::levels
 {
-    LuaLevel::LuaLevel(const game::ResourceLoader &loader, std::string_view script_name, DefaultCache &resource_cache, const TlvReader &reader)
+    LuaLevel::LuaLevel(
+        const game::ResourceLoader &loader,
+        std::string_view script_name,
+        DefaultCache &resource_cache,
+        const TlvReader &reader,
+        const Player &player)
         : _script(loader.load(script_name).as_string()),
           _entities{},
           _floor{
@@ -33,7 +38,7 @@ namespace game::levels
           _resource_cache(resource_cache)
     {
         const auto runner = ScriptRunner{_script};
-        runner.execute("init_level");
+        runner.execute("init_level", player.position());
 
         const Texture *barrel_textures[]{
             resource_cache.get<Texture>("barrel_albedo"),
