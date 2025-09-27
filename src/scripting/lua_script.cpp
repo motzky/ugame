@@ -151,15 +151,15 @@ namespace game
         ensure(lua_istable(_lua.get(), -1), "result not a table:\n{}", *this);
 
         ensure(::lua_getfield(_lua.get(), -1, "x") == LUA_TNUMBER, "could not get x field\n{}", *this);
-        result.x = ::lua_tonumber(_lua.get(), -1);
+        result.x = static_cast<float>(::lua_tonumber(_lua.get(), -1));
         ::lua_pop(_lua.get(), 1);
 
         ensure(::lua_getfield(_lua.get(), -1, "y") == LUA_TNUMBER, "could not get y field\n{}", *this);
-        result.y = ::lua_tonumber(_lua.get(), -1);
+        result.y = static_cast<float>(::lua_tonumber(_lua.get(), -1));
         ::lua_pop(_lua.get(), 1);
 
         ensure(::lua_getfield(_lua.get(), -1, "z") == LUA_TNUMBER, "could not get z field\n{}", *this);
-        result.z = ::lua_tonumber(_lua.get(), -1);
+        result.z = static_cast<float>(::lua_tonumber(_lua.get(), -1));
         ::lua_pop(_lua.get(), 1);
 
         ::lua_pop(_lua.get(), 1);
