@@ -3,10 +3,10 @@
 #include <string_view>
 #include <utility>
 
-#include "core/exception.h"
 #include "graphics/opengl.h"
 #include "utils/auto_release.h"
 #include "utils/ensure.h"
+#include "utils/exception.h"
 
 namespace game
 {

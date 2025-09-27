@@ -17,10 +17,10 @@ extern "C"
 #include <lualib.h>
 }
 
-#include "core/exception.h"
 #include "math/vector3.h"
 #include "scripting/vector3_interop.h"
 #include "utils/ensure.h"
+#include "utils/exception.h"
 
 namespace
 {
@@ -174,7 +174,7 @@ namespace game
 
             ::lua_pop(_lua.get(), 1);
 
-            throw Exception(std::format("failed to execute ({})", res));
+            throw Exception("failed to execute ({})", res);
         }
     }
 

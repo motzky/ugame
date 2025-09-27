@@ -1,9 +1,9 @@
 #include <gtest/gtest.h>
 
-#include "core/exception.h"
 #include "math/vector3.h"
 #include "scripting/lua_script.h"
 #include "scripting/script_runner.h"
+#include "utils/exception.h"
 
 #include "utils.h"
 

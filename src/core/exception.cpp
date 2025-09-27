@@ -1,16 +1,10 @@
-#include "core/exception.h"
+#include "utils/exception.h"
 
 #include <format>
 #include <iostream>
 
 namespace game
 {
-    Exception::Exception(const std::string &what, std::uint32_t skip)
-        : _what(std::move(what)), _trace(std::stacktrace::current(skip))
-
-    {
-    }
-
     auto Exception::stacktrace() const -> std::string
     {
         return std::to_string(_trace);

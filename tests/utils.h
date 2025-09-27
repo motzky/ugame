@@ -4,7 +4,7 @@
 
 #include <gtest/gtest.h>
 
-#include "core/exception.h"
+#include "utils/exception.h"
 
 #define TEST_IMPL(imple)             \
     try                              \

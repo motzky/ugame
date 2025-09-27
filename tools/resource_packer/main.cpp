@@ -20,7 +20,6 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
-#include "core/exception.h"
 #include "file.h"
 #include "graphics/mesh_data.h"
 #include "graphics/vertex_data.h"
@@ -29,6 +28,7 @@
 #include "tlv/tlv_writer.h"
 #include "utils/auto_release.h"
 #include "utils/ensure.h"
+#include "utils/exception.h"
 
 namespace
 {
@@ -43,7 +43,7 @@ namespace
         case 4:
             return game::TextureFormat::RGBA;
         default:
-            throw game::Exception(std::format("unsupported number of channesl: {}", num_channels));
+            throw game::Exception("unsupported number of channesl: {}", num_channels);
         }
     }
 
@@ -58,7 +58,7 @@ namespace
             return game::TextureUsage::SRGB;
         }
 
-        throw game::Exception(std::format("unsupported usage type: {}", path));
+        throw game::Exception("unsupported usage type: {}", path);
     }
 
     template <class... Args>
@@ -167,7 +167,7 @@ auto write_mesh(const std::string &path, const std::string &asset_name, const st
     auto importer = ::Assimp::Importer{};
     const auto *scene = importer.ReadFile(path.c_str(), ::aiProcess_Triangulate | ::aiProcess_FlipUVs | ::aiProcess_CalcTangentSpace);
 
-    game::ensure(scene != nullptr, std::format("failed to load model {} from {}", asset_name, file_name));
+    game::ensure(scene != nullptr, "failed to load model {} from {}", asset_name, file_name);
     game::ensure(!(scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE), "failed to load model {} from {}", asset_name, file_name);
 
     const auto loaded_meshes = std::span<::aiMesh *>{scene->mMeshes, scene->mMeshes + scene->mNumMeshes};

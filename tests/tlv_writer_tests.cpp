@@ -9,10 +9,10 @@
 
 #include <gtest/gtest.h>
 
-#include "core/exception.h"
 #include "tlv/tlv_entry.h"
 #include "tlv/tlv_reader.h"
 #include "tlv/tlv_writer.h"
+#include "utils/exception.h"
 
 namespace
 {

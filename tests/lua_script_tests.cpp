@@ -1,8 +1,8 @@
 #include <gtest/gtest.h>
 
-#include "core/exception.h"
 #include "math/vector3.h"
 #include "scripting/lua_script.h"
+#include "utils/exception.h"
 #include "utils/formatter.h"
 
 TEST(lua_script, simple_script)

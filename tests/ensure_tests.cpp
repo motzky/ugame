@@ -3,8 +3,8 @@
 #include <string>
 #include <string_view>
 
-#include "core/exception.h"
 #include "utils/ensure.h"
+#include "utils/exception.h"
 
 using namespace std::literals;
 

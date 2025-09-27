@@ -15,8 +15,8 @@
 #endif
 
 #include "camera.h"
-#include "core/exception.h"
 #include "graphics/debug_ui.h"
+#include "utils/exception.h"
 // #include "utils/ensure.h"
 #include "events/event.h"
 #include "events/key_event.h"

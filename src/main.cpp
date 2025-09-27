@@ -1,9 +1,9 @@
 #include <iostream>
 #include <print>
 
-#include "core/exception.h"
 #include "game/game.h"
 #include "utils/ensure.h"
+#include "utils/exception.h"
 
 auto main(int argc, char **argv) -> int
 {
