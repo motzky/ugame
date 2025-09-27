@@ -15,20 +15,16 @@
 #endif
 
 #include "camera.h"
-#include "graphics/debug_ui.h"
-#include "utils/exception.h"
-// #include "utils/ensure.h"
 #include "events/event.h"
 #include "events/key_event.h"
 #include "events/mouse_event.h"
 #include "events/stop_event.h"
 #include "game/chain.h"
 #include "game/levels/level.h"
-#include "game/levels/level_apple.h"
-#include "game/levels/level_kiwi.h"
 #include "game/levels/lua_level.h"
 #include "game/player.h"
 #include "graphics/cube_map.h"
+#include "graphics/debug_ui.h"
 #include "graphics/material.h"
 #include "graphics/renderer.h"
 #include "graphics/scene.h"
@@ -46,6 +42,7 @@
 #include "resources/resource_loader.h"
 #include "tlv/tlv_entry.h"
 #include "tlv/tlv_reader.h"
+#include "utils/exception.h"
 #include "window.h"
 
 namespace game
@@ -137,9 +134,6 @@ namespace game
                 .height = 1u,
                 .data{static_cast<std::byte>(0xff), static_cast<std::byte>(0xff), static_cast<std::byte>(0xff)}},
             sampler);
-
-        // _levels.push_back(std::make_unique<levels::LevelApple>(resource_cache, reader, player, bus));
-        // _levels.push_back(std::make_unique<levels::LevelKiwi>(resource_cache, reader, player, bus));
 
         _levels.push_back(std::make_unique<levels::LuaLevel>(resource_loader, "level_apple.lua", resource_cache, reader, player, bus));
 
