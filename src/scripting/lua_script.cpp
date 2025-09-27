@@ -118,6 +118,26 @@ namespace game
         ::lua_pop(_lua.get(), 1);
     }
 
+    auto LuaScript::get_result(Vector3 &result) const -> void
+    {
+        ensure(::lua_gettop(_lua.get()) != 0, "no reuslt to get:\n{}", *this);
+        ensure(lua_istable(_lua.get(), -1), "result not a table:\n{}", *this);
+
+        ensure(::lua_getfield(_lua.get(), -1, "x") == LUA_TNUMBER, "could not get x field\n{}", *this);
+        result.x = ::lua_tonumber(_lua.get(), -1);
+        ::lua_pop(_lua.get(), 1);
+
+        ensure(::lua_getfield(_lua.get(), -1, "y") == LUA_TNUMBER, "could not get y field\n{}", *this);
+        result.y = ::lua_tonumber(_lua.get(), -1);
+        ::lua_pop(_lua.get(), 1);
+
+        ensure(::lua_getfield(_lua.get(), -1, "z") == LUA_TNUMBER, "could not get z field\n{}", *this);
+        result.z = ::lua_tonumber(_lua.get(), -1);
+        ::lua_pop(_lua.get(), 1);
+
+        ::lua_pop(_lua.get(), 1);
+    }
+
     auto LuaScript::execute(std::uint32_t num_args, std::uint32_t num_results) const -> void
     {
         ensure(::lua_gettop(_lua.get()) >= static_cast<int>(num_args), "arg count mismatch {}", num_args);

@@ -233,3 +233,22 @@ end)"};
 
     ASSERT_EQ(output, "1.0\t2.0\t3.0\n");
 }
+
+TEST(lua_script, function_call_vector3_return)
+{
+    auto script = game::LuaScript{R"(
+function get_v()
+        local v = Vector3(1.0, 2.0, 3.0)
+        return v
+end)"};
+
+    script.set_function("get_v");
+    script.execute(0u, 1u);
+
+    auto res = game::Vector3{};
+    script.get_result(res);
+
+    ASSERT_NEAR(res.x, 1.f, 0.001f);
+    ASSERT_NEAR(res.y, 2.f, 0.001f);
+    ASSERT_NEAR(res.z, 3.f, 0.001f);
+}
