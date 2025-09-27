@@ -94,6 +94,14 @@ namespace game
         vector3_constructor(_lua.get());
     }
 
+    auto LuaScript::get_result(bool &result) const -> void
+    {
+        ensure(::lua_gettop(_lua.get()) != 0, "no reuslt to get\n{}", *this);
+        ensure(lua_isboolean(_lua.get(), -1) == 1, "result not a boolean\n{}", *this);
+        result = ::lua_toboolean(_lua.get(), -1);
+        ::lua_pop(_lua.get(), 1);
+    }
+
     auto LuaScript::get_result(std::int64_t &result) const -> void
     {
         ensure(::lua_gettop(_lua.get()) != 0, "no reuslt to get\n{}", *this);

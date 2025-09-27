@@ -26,6 +26,7 @@ namespace game
         auto set_argument(float value) const -> void;
         auto set_argument(const Vector3 &value) const -> void;
 
+        auto get_result(bool &result) const -> void;
         auto get_result(std::int64_t &result) const -> void;
         auto get_result(float &result) const -> void;
         auto get_result(std::string &result) const -> void;
