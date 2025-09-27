@@ -4,9 +4,12 @@
 #include <vector>
 
 #include "game/levels/level.h"
+#include "game/player.h"
 #include "game/transformed_entity.h"
+#include "graphics/cube_map.h"
+#include "graphics/texture_sampler.h"
+#include "messaging/message_bus.h"
 #include "resources/resource_cache.h"
-#include "resources/resource_loader.h"
 #include "scripting/lua_script.h"
 #include "tlv/tlv_reader.h"
 

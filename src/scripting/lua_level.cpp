@@ -10,6 +10,7 @@
 #include "graphics/mesh.h"
 #include "graphics/texture.h"
 #include "graphics/texture_sampler.h"
+#include "messaging/message_bus.h"
 #include "resources/resource_cache.h"
 #include "resources/resource_loader.h"
 #include "scripting/script_runner.h"
