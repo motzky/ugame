@@ -141,7 +141,6 @@ TEST(matrix4, look_at)
     const auto exp_spn = expected.data();
     for (auto i = 0u; i < 16u; i++)
     {
-        std::println("{}", i);
         ASSERT_NEAR(view_spn[i], exp_spn[i], 0.00001f);
     }
 }
