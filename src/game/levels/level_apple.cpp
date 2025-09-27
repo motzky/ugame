@@ -20,18 +20,18 @@ namespace
         for (const auto &plane : planes)
         {
 
-            auto pos_vert = aabb.get_min();
+            auto pos_vert = aabb.min;
             if (plane.normal.x >= 0)
             {
-                pos_vert.x = aabb.get_max().x;
+                pos_vert.x = aabb.max.x;
             }
             if (plane.normal.y >= 0)
             {
-                pos_vert.y = aabb.get_max().y;
+                pos_vert.y = aabb.max.y;
             }
             if (plane.normal.z >= 0)
             {
-                pos_vert.z = aabb.get_max().z;
+                pos_vert.z = aabb.max.z;
             }
 
             if (game::Vector3::dot(plane.normal, pos_vert) + plane.distance < 0.f)
@@ -126,8 +126,6 @@ namespace game::levels
             {
                 const auto entity_delta = transformer->go({}, _state);
                 entity.translate(entity_delta);
-
-                aabb.set_position(entity.position());
             }
 
             // debug_wireframe_renderer.draw(aabb);

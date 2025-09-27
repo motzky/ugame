@@ -59,7 +59,7 @@ namespace game::levels
                                                 {0.4f},
                                                 {{0.f}, {1.f}, {0.707107f, 0.f, 0.f, 0.707107f}},
                                                 barrel_textures},
-                                   game::AABB{{.6f, .75f, .6f}, {.6f, .75f, .6f}, pos},
+                                   game::AABB{pos - Vector3{.6f, .75f, .6f}, Vector3{.6f, .75f, .6f} + pos},
                                    //    std::make_unique<game::Chain<GameTransformState>>()
                                    nullptr);
         }
@@ -99,7 +99,6 @@ namespace game::levels
         {
             const auto position = runner.execute<Vector3>("barrel_position", index + 1);
             entity.entity.set_position(position);
-            entity.bounding_box.set_position(position);
         }
 
         if (runner.execute<bool>("is_complete"))
