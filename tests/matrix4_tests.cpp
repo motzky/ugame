@@ -161,3 +161,33 @@ TEST(matrix4, perspective)
         ASSERT_NEAR(view_spn[i], exp_spn[i], 0.00001f);
     }
 }
+
+TEST(matrix4, mul_vector4)
+{
+    const auto m = game::Matrix4{
+        {1.f,
+         2.f,
+         3.f,
+         4.f,
+         5.f,
+         6.f,
+         7.f,
+         8.f,
+         9.f,
+         10.f,
+         11.f,
+         12.f,
+         13.f,
+         14.f,
+         15.f,
+         16.f}};
+
+    const auto v = game::Vector4{.5f, 1.5f, 2.5f, 3.5f};
+
+    const auto result = m * v;
+    std::println("{}", result);
+
+    const auto expected = game::Vector4{76.f, 84.f, 92.f, 100.f};
+
+    ASSERT_EQ(result, expected);
+}

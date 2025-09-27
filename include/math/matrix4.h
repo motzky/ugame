@@ -172,9 +172,9 @@ namespace game
             return self._elements[index];
         }
 
-        auto row(std::size_t index) const -> Vector4
+        constexpr auto row(std::size_t index) const -> Vector4
         {
-            ensure(index < 4, "index out of range");
+            expect(index < 4, "index out of range");
 
             return {_elements[index], _elements[index + 4u], _elements[index + 8u], _elements[index + 12u]};
         }
@@ -213,6 +213,16 @@ namespace game
     {
         auto tmp{m1};
         return tmp *= m2;
+    }
+
+    constexpr auto operator*(const Matrix4 &m, const Vector4 &v) -> Vector4
+    {
+        return {
+            m[0] * v.x + m[4] * v.y + m[8] * v.z + m[12] * v.w,
+            m[1] * v.x + m[5] * v.y + m[9] * v.z + m[13] * v.w,
+            m[2] * v.x + m[6] * v.y + m[10] * v.z + m[14] * v.w,
+            m[3] * v.x + m[7] * v.y + m[11] * v.z + m[15] * v.w,
+        };
     }
 
     inline auto Matrix4::look_at(const Vector3 &eye, const Vector3 &look_at, const Vector3 &up) -> Matrix4
