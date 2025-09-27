@@ -20,7 +20,8 @@ namespace game::levels
             std::string_view script_name,
             DefaultCache &resource_cache,
             const TlvReader &reader,
-            const Player &player);
+            const Player &player,
+            messaging::MessageBus &bus);
 
         virtual auto update(const Player &player) -> void override;
         virtual auto restart() -> void override;
@@ -34,6 +35,7 @@ namespace game::levels
         Entity _floor;
         CubeMap _skybox;
         TextureSampler _skybox_sampler;
+        messaging::MessageBus &_bus;
         DefaultCache &_resource_cache;
     };
 }

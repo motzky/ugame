@@ -141,7 +141,7 @@ namespace game
         // _levels.push_back(std::make_unique<levels::LevelApple>(resource_cache, reader, player, bus));
         // _levels.push_back(std::make_unique<levels::LevelKiwi>(resource_cache, reader, player, bus));
 
-        _levels.push_back(std::make_unique<levels::LuaLevel>(resource_loader, "level_apple.lua", resource_cache, reader, player));
+        _levels.push_back(std::make_unique<levels::LuaLevel>(resource_loader, "level_apple.lua", resource_cache, reader, player, bus));
 
         _levels[_level_num]->restart();
 
@@ -234,6 +234,11 @@ namespace game
     auto Game::handle_level_complete(const std::string_view &level_name) -> void
     {
         game::log::info("level complete: {}", level_name);
-        _level_num = (_level_num + 1) % _levels.size();
+        _level_num++;
+        if (_level_num >= _levels.size())
+        {
+            log::info("YOU WIN !");
+            _running = false;
+        }
     }
 }

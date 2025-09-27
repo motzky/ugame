@@ -19,6 +19,14 @@ function restart_level()
     print('restart_level');
 end
 
+function is_complete()
+    return distance(barrels[1], barrels[2]) < 1.0
+end
+
+function level_name()
+    return 'apple'
+end
+
 function barrel_count()
     return #barrels
 end

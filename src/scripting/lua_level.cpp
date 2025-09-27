@@ -22,7 +22,8 @@ namespace game::levels
         std::string_view script_name,
         DefaultCache &resource_cache,
         const TlvReader &reader,
-        const Player &player)
+        const Player &player,
+        messaging::MessageBus &bus)
         : _script(loader.load(script_name).as_string()),
           _entities{},
           _floor{
@@ -35,6 +36,7 @@ namespace game::levels
                   resource_cache.get<Texture>("floor_albedo")}},
           _skybox{reader, {"skybox_right", "skybox_left", "skybox_top", "skybox_bottom", "skybox_front", "skybox_back"}},
           _skybox_sampler{},
+          _bus(bus),
           _resource_cache(resource_cache)
     {
         const auto runner = ScriptRunner{_script};
@@ -97,6 +99,12 @@ namespace game::levels
             const auto position = runner.execute<Vector3>("barrel_position", index + 1);
             entity.entity.set_position(position);
             entity.bounding_box.set_position(position);
+        }
+
+        if (runner.execute<bool>("is_complete"))
+        {
+            const auto name = runner.execute<std::string>("level_name");
+            _bus.post_level_complete(name);
         }
     }
 
