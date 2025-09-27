@@ -96,24 +96,24 @@ namespace game
 
     auto LuaScript::get_result(std::int64_t &result) const -> void
     {
-        ensure(::lua_gettop(_lua.get()) != 0, "no reuslt to get");
-        ensure(::lua_isinteger(_lua.get(), -1) == 1, "result not an integer");
+        ensure(::lua_gettop(_lua.get()) != 0, "no reuslt to get\n{}", *this);
+        ensure(::lua_isinteger(_lua.get(), -1) == 1, "result not an integer\n{}", *this);
         result = ::lua_tointeger(_lua.get(), -1);
         ::lua_pop(_lua.get(), 1);
     }
 
     auto LuaScript::get_result(float &result) const -> void
     {
-        ensure(::lua_gettop(_lua.get()) != 0, "no reuslt to get");
-        ensure(::lua_isnumber(_lua.get(), -1) == 1, "result not a float");
+        ensure(::lua_gettop(_lua.get()) != 0, "no reuslt to get\n{}", *this);
+        ensure(::lua_isnumber(_lua.get(), -1) == 1, "result not a float\n{}", *this);
         result = static_cast<float>(::lua_tonumber(_lua.get(), -1));
         ::lua_pop(_lua.get(), 1);
     }
 
     auto LuaScript::get_result(std::string &result) const -> void
     {
-        ensure(::lua_gettop(_lua.get()) != 0, "no reuslt to get");
-        ensure(::lua_isstring(_lua.get(), -1) == 1, "result not a string");
+        ensure(::lua_gettop(_lua.get()) != 0, "no reuslt to get\n{}", *this);
+        ensure(::lua_isstring(_lua.get(), -1) == 1, "result not a string\n{}", *this);
         result = ::lua_tostring(_lua.get(), -1);
         ::lua_pop(_lua.get(), 1);
     }
@@ -147,7 +147,7 @@ namespace game
 
             ::lua_pop(_lua.get(), 1);
 
-            throw Exception(std::format("failed to execture ({})", res));
+            throw Exception(std::format("failed to execute ({})", res));
         }
     }
 
