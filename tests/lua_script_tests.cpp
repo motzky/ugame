@@ -252,3 +252,24 @@ end)"};
     ASSERT_NEAR(res.y, 2.f, 0.001f);
     ASSERT_NEAR(res.z, 3.f, 0.001f);
 }
+
+TEST(lua_script, function_call_vector3_arg_and_return)
+{
+
+    auto script = game::LuaScript{R"(
+function mutate_v(v)
+        v.x = v.x + 10.0
+        return v
+end)"};
+
+    script.set_function("mutate_v");
+    script.set_argument(game::Vector3{1.0f, 2.0f, 3.0f});
+    script.execute(1u, 1u);
+
+    auto res = game::Vector3{};
+    script.get_result(res);
+
+    ASSERT_NEAR(res.x, 11.f, 0.001f);
+    ASSERT_NEAR(res.y, 2.f, 0.001f);
+    ASSERT_NEAR(res.z, 3.f, 0.001f);
+}
