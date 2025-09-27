@@ -54,6 +54,24 @@ namespace game
 
         ::luaL_openlibs(_lua.get());
         lua_register(_lua.get(), "Vector3", &vector3_constructor);
+        lua_register(_lua.get(), "distance", &vector3_distance);
+
+        ::luaL_newmetatable(_lua.get(), "Vector3");
+
+        ::lua_pushcfunction(_lua.get(), &vector3_add);
+        ::lua_setfield(_lua.get(), -2, "__add");
+        ::lua_pushcfunction(_lua.get(), &vector3_sub);
+        ::lua_setfield(_lua.get(), -2, "__sub");
+        ::lua_pushcfunction(_lua.get(), &vector3_mul);
+        ::lua_setfield(_lua.get(), -2, "__mul");
+        ::lua_pushcfunction(_lua.get(), &vector3_unm);
+        ::lua_setfield(_lua.get(), -2, "__unm");
+        ::lua_pushcfunction(_lua.get(), &vector3_eq);
+        ::lua_setfield(_lua.get(), -2, "__eq");
+        ::lua_pushcfunction(_lua.get(), &vector3_tostring);
+        ::lua_setfield(_lua.get(), -2, "__tostring");
+
+        ::lua_getmetatable(_lua.get(), -1);
 
         auto load_data = LoadData{.source = source, .counter = 0};
 
@@ -129,6 +147,7 @@ namespace game
     auto LuaScript::get_result(Vector3 &result) const -> void
     {
         ensure(::lua_gettop(_lua.get()) != 0, "no reuslt to get:\n{}", *this);
+
         ensure(lua_istable(_lua.get(), -1), "result not a table:\n{}", *this);
 
         ensure(::lua_getfield(_lua.get(), -1, "x") == LUA_TNUMBER, "could not get x field\n{}", *this);

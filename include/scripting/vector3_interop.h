@@ -14,5 +14,5 @@ namespace game
     auto vector3_unm(::lua_State *state) -> int;
     auto vector3_eq(::lua_State *state) -> int;
     auto vector3_distance(::lua_State *state) -> int;
-    // auto vector3_tostring(::lua_State *state) -> int;
+    auto vector3_tostring(::lua_State *state) -> int;
 }

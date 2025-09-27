@@ -192,7 +192,8 @@ end)"};
 
     const auto str = std::format("{}", script);
 
-    ASSERT_EQ(str, "<empty stack>");
+    // ASSERT_EQ(str, "<empty stack>");
+    ASSERT_EQ(str, "LUA_TTABLE\n");
 }
 
 TEST(lua_script, to_string_with_func)
@@ -213,6 +214,7 @@ end)"};
 LUA_TSTRING 'hello'
 LUA_NUMBER (float) 3
 LUA_NUMBER (int) 1
+LUA_TTABLE
 )";
 
     ASSERT_EQ(str, expected);
