@@ -101,9 +101,6 @@ namespace game
 
     Game::~Game()
     {
-#ifndef WIN32
-        ::glfwTerminate();
-#endif
     }
 
     auto Game::run(std::string_view resource_root) -> void
