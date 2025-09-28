@@ -6,10 +6,6 @@
 #include <ranges>
 #include <span>
 
-#include <Jolt/Jolt.h>
-#include <Jolt/Math/Mat44.h>
-#include <Jolt/Math/Quat.h>
-
 #include "math/quaternion.h"
 #include "math/vector3.h"
 #include "math/vector4.h"
