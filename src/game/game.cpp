@@ -155,8 +155,12 @@ namespace game
                 .data{static_cast<std::byte>(0xff), static_cast<std::byte>(0xff), static_cast<std::byte>(0xff)}},
             sampler);
 
-        _levels.push_back(std::make_unique<levels::LuaLevel>(resource_loader, "level_apple.lua", resource_cache, reader, _player, _message_bus));
-        _levels.push_back(std::make_unique<levels::LuaLevel>(resource_loader, "level_kiwi.lua", resource_cache, reader, _player, _message_bus));
+        std::string_view levels[] = {"level_apple.lua", "level_kiwi.lua", "level_mango.lua"};
+
+        for (const auto level : levels)
+        {
+            _levels.push_back(std::make_unique<levels::LuaLevel>(resource_loader, level, resource_cache, reader, _player, _message_bus));
+        }
 
         _levels[_level_num]->restart();
         _player.restart();
