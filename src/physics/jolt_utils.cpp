@@ -87,7 +87,7 @@ namespace game
         return static_cast<::JPH::ObjectLayer>(layer);
     }
 
-    auto to_jolt([[maybe_unused]] const Transform &transform) -> ::JPH::RMat44
+    auto to_jolt(const Transform &transform) -> ::JPH::RMat44
     {
         const auto mat = static_cast<Matrix4>(transform);
         const auto chunks = mat.data() | std::views::chunk(4u);

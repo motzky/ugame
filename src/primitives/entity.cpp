@@ -15,7 +15,7 @@
 
 namespace
 {
-    auto calculate_bounding_box(const game::Mesh *mesh, [[maybe_unused]] const game::Transform &transform) -> game::AABB
+    auto calculate_bounding_box(const game::Mesh *mesh, const game::Transform &transform) -> game::AABB
     {
         const auto minmax_x = std::ranges::minmax(mesh->mesh_data().vertices, std::less<>{}, [](const auto &v)
                                                   { return v.position.x; });
