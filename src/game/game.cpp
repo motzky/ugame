@@ -155,7 +155,11 @@ namespace game
                 .data{static_cast<std::byte>(0xff), static_cast<std::byte>(0xff), static_cast<std::byte>(0xff)}},
             sampler);
 
-        std::string_view levels[] = {"level_apple.lua", "level_kiwi.lua", "level_mango.lua"};
+        std::string_view levels[] = {
+            "level_mango.lua",
+            "level_apple.lua",
+            "level_kiwi.lua",
+        };
 
         for (const auto level : levels)
         {
