@@ -45,6 +45,36 @@
 #include "utils/exception.h"
 #include "window.h"
 
+namespace
+{
+    auto intersects_frustum(const game::AABB &aabb, const std::array<game::FrustumPlane, 6u> &planes) -> bool
+    {
+        for (const auto &plane : planes)
+        {
+
+            auto pos_vert = aabb.min;
+            if (plane.normal.x >= 0)
+            {
+                pos_vert.x = aabb.max.x;
+            }
+            if (plane.normal.y >= 0)
+            {
+                pos_vert.y = aabb.max.y;
+            }
+            if (plane.normal.z >= 0)
+            {
+                pos_vert.z = aabb.max.z;
+            }
+
+            if (game::Vector3::dot(plane.normal, pos_vert) + plane.distance < 0.f)
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+}
+
 namespace game
 {
     Game::Game()
@@ -203,10 +233,13 @@ namespace game
             player.update();
             level->update(player);
 
-            for (const auto &entity : level->scene().entities)
+            for (auto &entity : level->scene().entities)
             {
+                entity->set_visibility(intersects_frustum(entity->bounding_box(), player.camera().frustum_planes()));
+
                 debug_wireframe_renderer.draw(entity->bounding_box());
             }
+
             if (show_physics_debug)
             {
                 level->scene().debug_lines = game::DebugLines{debug_wireframe_renderer.yield()};
