@@ -19,7 +19,6 @@
 #include "events/key_event.h"
 #include "events/mouse_event.h"
 #include "events/stop_event.h"
-#include "game/chain.h"
 #include "game/levels/level.h"
 #include "game/levels/lua_level.h"
 #include "game/player.h"
