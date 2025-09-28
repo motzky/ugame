@@ -18,6 +18,8 @@
 
 namespace game
 {
+    class Transform;
+
     auto to_native(::JPH::RVec3Arg v) -> Vector3;
     auto to_native(::JPH::QuatArg &q) -> Quaternion;
     auto to_native(::JPH::ColorArg c) -> Color;
@@ -26,7 +28,10 @@ namespace game
     // auto to_jolt(const Color &c) -> ::JPH::Color;
     auto to_jolt(const Quaternion &q) -> ::JPH::Quat;
     auto to_jolt(RigidBodyType type) -> ::JPH::EMotionType;
-    auto to_jolt(PhysicsLayer) -> ::JPH::ObjectLayer;
+    auto to_jolt(PhysicsLayer layer) -> ::JPH::ObjectLayer;
+
+    auto to_jolt(const Transform &transform) -> ::JPH::RMat44;
+
     auto to_jolt_layer(RigidBodyType type) -> ::JPH::ObjectLayer;
 
     auto to_layer(RigidBodyType type) -> PhysicsLayer;
