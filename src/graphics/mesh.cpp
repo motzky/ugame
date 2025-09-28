@@ -32,14 +32,16 @@ namespace game
         std::ranges::swap(_vbo, mesh._vbo);
         std::ranges::swap(_index_count, mesh._index_count);
         std::ranges::swap(_index_offset, mesh._index_offset);
+        std::ranges::swap(_meshData, mesh._meshData);
     }
 
-    Mesh::Mesh(const MeshData &data)
+    Mesh::Mesh(MeshData data)
         : _vao{0u, [](auto vao)
                { ::glDeleteVertexArrays(1, &vao); }},
           _vbo{static_cast<std::uint32_t>(data.vertices.size_bytes() + data.indices.size_bytes())},
           _index_count(static_cast<std::uint32_t>(data.indices.size())),
-          _index_offset{data.vertices.size_bytes()}
+          _index_offset{data.vertices.size_bytes()},
+          _meshData(data)
     {
         {
             auto writer = BufferWriter{_vbo};
@@ -86,4 +88,8 @@ namespace game
         return _index_offset;
     }
 
+    auto Mesh::mesh_data() const -> MeshData
+    {
+        return _meshData;
+    }
 }

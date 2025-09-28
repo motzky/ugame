@@ -16,7 +16,7 @@ namespace game
     class Mesh
     {
     public:
-        Mesh(const MeshData &data);
+        Mesh(MeshData data);
         Mesh(const TlvReader &reader, std::string_view name);
 
         auto bind() const -> void;
@@ -24,12 +24,15 @@ namespace game
         auto index_count() const -> std::uint32_t;
         auto index_offset() const -> std::uintptr_t;
 
+        auto mesh_data() const -> MeshData;
+
     private:
         AutoRelease<GLuint> _vao;
         Buffer _vbo;
 
         std::uint32_t _index_count;
         std::uintptr_t _index_offset;
+        MeshData _meshData;
     };
 
 }
