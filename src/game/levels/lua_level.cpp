@@ -64,7 +64,7 @@ namespace game::levels
 
         _scene = Scene{
             .entities = _entities |
-                        std::views::transform([](const auto &e)
+                        std::views::transform([](auto &e)
                                               { return std::addressof(e); }) |
                         std::ranges::to<std::vector>(),
             .ambient = {.r = .2f, .g = .2f, .b = .2f},
