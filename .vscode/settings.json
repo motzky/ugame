@@ -88,5 +88,6 @@
     "cfenv": "cpp",
     "typeindex": "cpp"
   },
-  "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools"
+  "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
+  "Lua.diagnostics.globals": ["Vector3", "distance"]
 }
