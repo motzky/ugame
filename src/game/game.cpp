@@ -156,6 +156,7 @@ namespace game
             sampler);
 
         _levels.push_back(std::make_unique<levels::LuaLevel>(resource_loader, "level_apple.lua", resource_cache, reader, _player, _message_bus));
+        _levels.push_back(std::make_unique<levels::LuaLevel>(resource_loader, "level_kiwi.lua", resource_cache, reader, _player, _message_bus));
 
         _levels[_level_num]->restart();
         _player.restart();
