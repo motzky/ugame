@@ -1,6 +1,7 @@
 #include "game/levels/lua_level.h"
 
 #include <ranges>
+#include <span>
 #include <string_view>
 #include <vector>
 
@@ -53,21 +54,18 @@ namespace game::levels
         for (std::int64_t i = 0; i < barrel_count; ++i)
         {
             const auto pos = runner.execute<Vector3>("barrel_position", i + 1);
-            _entities.emplace_back(game::Entity{_resource_cache.get<Mesh>("barrel"),
-                                                resource_cache.get<Material>("barrel_material"),
-                                                pos,
-                                                {0.4f},
-                                                {{0.f}, {1.f}, {0.707107f, 0.f, 0.f, 0.707107f}},
-                                                barrel_textures},
-                                   game::AABB{pos - Vector3{.6f, .75f, .6f}, Vector3{.6f, .75f, .6f} + pos},
-                                   //    std::make_unique<game::Chain<GameTransformState>>()
-                                   nullptr);
+            _entities.emplace_back(Entity{_resource_cache.get<Mesh>("barrel"),
+                                          resource_cache.get<Material>("barrel_material"),
+                                          pos,
+                                          {0.4f},
+                                          {{0.f}, {1.f}, {0.707107f, 0.f, 0.f, 0.707107f}},
+                                          barrel_textures});
         }
 
-        _scene = game::Scene{
+        _scene = Scene{
             .entities = _entities |
                         std::views::transform([](const auto &e)
-                                              { return std::addressof(e.entity); }) |
+                                              { return std::addressof(e); }) |
                         std::ranges::to<std::vector>(),
             .ambient = {.r = .2f, .g = .2f, .b = .2f},
             .directional = {.direction = {-1.f, -1.f, -1.f}, .color = {.r = .3f, .g = .3f, .b = .3f}},
@@ -98,7 +96,7 @@ namespace game::levels
         for (const auto &[index, entity] : std::views::enumerate(_entities))
         {
             const auto position = runner.execute<Vector3>("barrel_position", index + 1);
-            entity.entity.set_position(position);
+            entity.set_position(position);
         }
 
         if (runner.execute<bool>("is_complete"))
@@ -114,7 +112,7 @@ namespace game::levels
         runner.execute("restart_level");
     }
 
-    auto LuaLevel::entities() const -> const std::vector<TransformedEntity> &
+    auto LuaLevel::entities() const -> std::span<const Entity>
     {
         return _entities;
     }

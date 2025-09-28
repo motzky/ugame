@@ -7,6 +7,7 @@
 #include "graphics/mesh.h"
 #include "graphics/texture.h"
 #include "graphics/texture_sampler.h"
+#include "math/aabb.h"
 #include "math/quaternion.h"
 #include "math/tranform.h"
 #include "math/vector3.h"
@@ -34,6 +35,9 @@ namespace game
         auto transform() const -> const Transform &;
         auto local_transform() const -> const Transform &;
         auto position() const -> Vector3;
+        auto is_visible() const -> bool;
+        auto set_visibility(bool visible) -> void;
+        auto bounding_box() const -> AABB;
 
         auto set_position(const Vector3 &position) -> void;
         auto set_rotation(const Quaternion &rotation) -> void;
@@ -45,6 +49,8 @@ namespace game
         Transform _transform;
         Transform _local_transform;
         std::vector<const Texture *> _textures;
+        bool _visible;
+        AABB _aabb;
     };
 
 }
