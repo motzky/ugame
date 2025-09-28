@@ -105,6 +105,19 @@ namespace game
         auto tmp = v1;
         return tmp *= scale;
     }
+    constexpr auto operator/=(Vector3 &v1, const float scale) -> Vector3 &
+    {
+        v1.x /= scale;
+        v1.y /= scale;
+        v1.z /= scale;
+
+        return v1;
+    }
+    constexpr auto operator/(const Vector3 &v1, const float scale) -> Vector3
+    {
+        auto tmp = v1;
+        return tmp /= scale;
+    }
     constexpr auto operator-(const Vector3 &v) -> Vector3
     {
         return {-v.x, -v.y, -v.z};
