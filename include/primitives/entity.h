@@ -9,7 +9,7 @@
 #include "graphics/texture_sampler.h"
 #include "math/aabb.h"
 #include "math/quaternion.h"
-#include "math/tranform.h"
+#include "math/transform.h"
 #include "math/vector3.h"
 
 namespace game
