@@ -50,10 +50,10 @@ namespace game::levels
             resource_cache.get<Texture>("barrel_normal"),
         };
 
-        const auto barrel_count = runner.execute<std::int64_t>("barrel_count");
+        const auto barrel_count = runner.execute<std::int64_t>("Level_entity_count");
         for (std::int64_t i = 0; i < barrel_count; ++i)
         {
-            const auto pos = runner.execute<Vector3>("barrel_position", i + 1);
+            const auto pos = runner.execute<Vector3>("Level_entity_position", i + 1);
             _entities.emplace_back(Entity{_resource_cache.get<Mesh>("barrel"),
                                           resource_cache.get<Material>("barrel_material"),
                                           pos,
@@ -94,14 +94,14 @@ namespace game::levels
 
         for (const auto &[index, entity] : std::views::enumerate(_entities))
         {
-            runner.execute("set_barrel_visibility", index + 1, entity.is_visible());
+            runner.execute("Level_set_entity_visibility", index + 1, entity.is_visible());
         }
 
         runner.execute("Level_update_level", player.position());
 
         for (const auto &[index, entity] : std::views::enumerate(_entities))
         {
-            const auto position = runner.execute<Vector3>("barrel_position", index + 1);
+            const auto position = runner.execute<Vector3>("Level_entity_position", index + 1);
             entity.set_position(position);
         }
 

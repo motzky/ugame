@@ -35,14 +35,14 @@ function Level_name()
     return 'apple'
 end
 
-function barrel_count()
+function Level_entity_count()
     return #barrels
 end
 
-function barrel_position(index)
+function Level_entity_position(index)
     return barrels[index].position
 end
 
-function set_barrel_visibility(index, visibility)
+function Level_set_entity_visibility(index, visibility)
     barrels[index].visibility = visibility
 end
