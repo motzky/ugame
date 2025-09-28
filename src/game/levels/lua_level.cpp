@@ -12,6 +12,8 @@
 #include "graphics/texture.h"
 #include "graphics/texture_sampler.h"
 #include "messaging/message_bus.h"
+#include "physics/box_shape.h"
+#include "physics/physics_sytem.h"
 #include "resources/resource_cache.h"
 #include "resources/resource_loader.h"
 #include "scripting/script_runner.h"
@@ -25,7 +27,8 @@ namespace game::levels
         DefaultCache &resource_cache,
         const TlvReader &reader,
         const Player &player,
-        messaging::MessageBus &bus)
+        messaging::MessageBus &bus,
+        PhysicsSystem &ps)
         : _script(loader.load(script_name).as_string()),
           _entities{},
           _floor{
@@ -40,7 +43,9 @@ namespace game::levels
           _skybox_sampler{},
           _bus(bus),
           _resource_cache(resource_cache),
-          _barrel_info{}
+          _barrel_info{},
+          _ps{ps},
+          _shapes{}
     {
         const auto runner = ScriptRunner{_script};
         runner.execute("Level_init_level", player.position());
@@ -55,13 +60,25 @@ namespace game::levels
         for (std::int64_t i = 0; i < barrel_count; ++i)
         {
             const auto info = runner.execute<Vector3, Vector3, float>("Level_entity_info", i + 1);
-            _entities.emplace_back(Entity{_resource_cache.get<Mesh>("barrel"),
-                                          _resource_cache.get<Material>("barrel_material"),
-                                          std::get<0>(info),
-                                          {0.4f},
-                                          {{0.f}, {1.f}, {0.707107f, 0.f, 0.f, 0.707107f}},
-                                          barrel_textures});
-        }
+            const auto &ent = _entities.emplace_back(Entity{_resource_cache.get<Mesh>("barrel"),
+                                                            _resource_cache.get<Material>("barrel_material"),
+                                                            std::get<0>(info),
+                                                            {0.4f},
+                                                            {{0.f}, {1.f}, {0.707107f, 0.f, 0.f, 0.707107f}},
+                                                            barrel_textures});
+
+            const auto aabb = ent.bounding_box();
+            const auto dif = aabb.max - aabb.min;
+            const auto dif_2 = dif / 2.f;
+            const auto half_extents = dif_2; // + aabb.min;
+            auto *shape = _ps.create_shape<BoxShape>(
+                Vector3{
+                    std::fabs(half_extents.x),
+                    std::fabs(half_extents.y),
+                    std::fabs(half_extents.z),
+                });
+            _shapes.push_back(shape);
+                }
 
         _scene = Scene{
             .entities = _entities |
@@ -106,6 +123,8 @@ namespace game::levels
             entity.set_position(position);
 
             _barrel_info[std::addressof(entity)] = {.tint_color = {.r = color.x, .g = color.y, .b = color.z}, .tint_amount = tint_amount};
+
+            [[maybe_unused]] auto candidates = _ps.query_collisions(_shapes[index], entity.transform());
         }
 
         if (runner.execute<bool>("Level_is_complete"))

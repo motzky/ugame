@@ -161,9 +161,11 @@ namespace game
             "level_kiwi.lua",
         };
 
+        auto physics = PhysicsSystem{};
+
         for (const auto level : levels)
         {
-            _levels.push_back(std::make_unique<levels::LuaLevel>(resource_loader, level, resource_cache, reader, _player, _message_bus));
+            _levels.push_back(std::make_unique<levels::LuaLevel>(resource_loader, level, resource_cache, reader, _player, _message_bus, physics));
         }
 
         _levels[_level_num]->restart();
