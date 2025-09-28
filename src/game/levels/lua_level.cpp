@@ -116,6 +116,16 @@ namespace game::levels
     {
         const auto runner = ScriptRunner{_script};
         runner.execute("Level_restart_level");
+
+        // read the reset entity values from LUA
+        for (const auto &[index, entity] : std::views::enumerate(_entities))
+        {
+            const auto position = runner.execute<Vector3>("Level_entity_position", index + 1);
+            entity.set_position(position);
+
+            const auto visibility = runner.execute<bool>("Level_entity_visibility", index + 1);
+            entity.set_visibility(visibility);
+        }
     }
 
     auto LuaLevel::entities() const -> std::span<const Entity>
