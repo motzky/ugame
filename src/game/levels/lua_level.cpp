@@ -42,7 +42,7 @@ namespace game::levels
           _resource_cache(resource_cache)
     {
         const auto runner = ScriptRunner{_script};
-        runner.execute("init_level", player.position());
+        runner.execute("Level_init_level", player.position());
 
         const Texture *barrel_textures[]{
             resource_cache.get<Texture>("barrel_albedo"),
@@ -91,7 +91,7 @@ namespace game::levels
     auto LuaLevel::update(const Player &player) -> void
     {
         const auto runner = ScriptRunner{_script};
-        runner.execute("update_level", player.position());
+        runner.execute("Level_update_level", player.position());
 
         for (const auto &[index, entity] : std::views::enumerate(_entities))
         {
@@ -99,9 +99,9 @@ namespace game::levels
             entity.set_position(position);
         }
 
-        if (runner.execute<bool>("is_complete"))
+        if (runner.execute<bool>("Level_is_complete"))
         {
-            const auto name = runner.execute<std::string>("level_name");
+            const auto name = runner.execute<std::string>("Level_name");
             _bus.post_level_complete(name);
         }
     }
@@ -109,7 +109,7 @@ namespace game::levels
     auto LuaLevel::restart() -> void
     {
         const auto runner = ScriptRunner{_script};
-        runner.execute("restart_level");
+        runner.execute("Level_restart_level");
     }
 
     auto LuaLevel::entities() const -> std::span<const Entity>
