@@ -13,13 +13,17 @@
 #include <Jolt/Core/Factory.h>
 #include <Jolt/Core/JobSystemThreadPool.h>
 #include <Jolt/Core/TempAllocator.h>
+#include <Jolt/Math/Vec3.h>
 #include <Jolt/Physics/Body/BodyCreationSettings.h>
 #include <Jolt/Physics/Collision/BroadPhase/BroadPhaseLayer.h>
-#include <Jolt/Physics/Collision/Shape/SphereShape.h>
+#include <Jolt/Physics/Collision/CollideShape.h>
+#include <Jolt/Physics/Collision/CollisionCollector.h>
+#include <Jolt/Physics/Collision/Shape/Shape.h>
 #include <Jolt/Physics/PhysicsSystem.h>
 #include <Jolt/RegisterTypes.h>
 
 #include "log.h"
+#include "math/transform.h"
 #include "physics/box_shape.h"
 #include "physics/character_controller.h"
 #include "physics/debug_renderer.h"
@@ -90,7 +94,7 @@ namespace
     class SimpleObjectLayerPairFilter : public ::JPH::ObjectLayerPairFilter
     {
     public:
-        virtual auto ShouldCollide([[maybe_unused]] ::JPH::ObjectLayer layer1, [[maybe_unused]] ::JPH::ObjectLayer layer2) const -> bool override
+        virtual auto ShouldCollide(::JPH::ObjectLayer layer1, ::JPH::ObjectLayer layer2) const -> bool override
         {
             return std::ranges::any_of(
                 std::set{game::PhysicsLayer{layer1}, game::PhysicsLayer{layer2}},
@@ -98,6 +102,20 @@ namespace
                 { return e == game::PhysicsLayer::MOVING; });
         }
     };
+
+    class SimpleCollideShapeCollector : public ::JPH::CollideShapeCollector
+    {
+        virtual auto AddHit([[maybe_unused]] const ::JPH::CollideShapeCollector::ResultType &inResult) -> void override
+        {
+            game::log::debug("collision AddHit");
+        }
+
+        virtual auto OnBody(const ::JPH::Body &) -> void override
+        {
+            game::log::debug("collision OnBody");
+        }
+    };
+
 }
 
 namespace game
@@ -119,7 +137,8 @@ namespace game
     };
 
     PhysicsSystem::PhysicsSystem()
-        : _impl{}
+        : _impl{},
+          _shapes{}
     {
         static bool once = false;
 
@@ -193,5 +212,24 @@ namespace game
     auto PhysicsSystem::character_controller() const -> CharacterController &
     {
         return *_impl->character_controller;
+    }
+
+    auto PhysicsSystem::query_collisions(const Shape *shape, const Transform &transform) -> std::vector<const Shape *>
+    {
+        const auto &narrow_phase = _impl->physics_system.GetNarrowPhaseQuery();
+
+        const auto center_of_mass = to_jolt(transform);
+        const auto collide_shape_settings = ::JPH::CollideShapeSettings{};
+        auto collector = SimpleCollideShapeCollector{};
+
+        narrow_phase.CollideShape(
+            shape->native_handle(),
+            ::JPH::Vec3::sOne(),
+            center_of_mass,
+            collide_shape_settings,
+            center_of_mass.GetTranslation(),
+            collector);
+
+        return {};
     }
 }
