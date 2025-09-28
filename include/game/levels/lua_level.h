@@ -2,10 +2,12 @@
 
 #include <span>
 #include <string_view>
+#include <unordered_map>
 #include <vector>
 
 #include "game/levels/level.h"
 #include "game/player.h"
+#include "graphics/color.h"
 #include "graphics/cube_map.h"
 #include "graphics/texture_sampler.h"
 #include "messaging/message_bus.h"
@@ -19,6 +21,12 @@ namespace game::levels
     class LuaLevel : public Level
     {
     public:
+        struct BarrelInfo
+        {
+            Color tint_color;
+            float tint_amount;
+        };
+
         LuaLevel(
             const game::ResourceLoader &loader,
             std::string_view script_name,
@@ -41,5 +49,6 @@ namespace game::levels
         TextureSampler _skybox_sampler;
         messaging::MessageBus &_bus;
         DefaultCache &_resource_cache;
+        std::unordered_map<const Entity *, BarrelInfo> _barrel_info;
     };
 }

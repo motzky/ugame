@@ -14,12 +14,15 @@ function Level_update_level(player_position)
     if barrels[2].visibility then
         barrels[2].position = barrels[2].position + (player_position - last_player_position)
     end
+    if barrels[4].visibility then
+        barrels[4].position = barrels[4].position + (last_player_position - player_position)
+    end
     last_player_position = player_position
 end
 
 function Level_restart_level()
     barrels[1] = {
-        position = Vector3(0.0, -0.2, 0.0),
+        position = Vector3(0.0, -0.2, 5.0),
         visibility = true,
         color = Vector3(1.0, 0.0, 0.0),
         tint = 1.0
@@ -30,16 +33,29 @@ function Level_restart_level()
         color = Vector3(1.0, 0.0, 0.0),
         tint = 0.5
     }
+    barrels[3] = {
+        position = Vector3(0.0, -0.2, -5.0),
+        visibility = true,
+        color = Vector3(0.0, 0.0, 1.0),
+        tint = 1.0
+    }
+    barrels[4] = {
+        position = Vector3(-5.0, -0.2, 0.0),
+        visibility = true,
+        color = Vector3(0.0, 0.0, 1.0),
+        tint = 0.5
+    }
 
     last_player_position = initial_player_position
 end
 
 function Level_is_complete()
-    return distance(barrels[1].position, barrels[2].position) < 1.0
+    return distance(barrels[1].position, barrels[2].position) < 1.0 and
+        distance(barrels[3].position, barrels[4].position) < 1.0
 end
 
 function Level_name()
-    return 'apple'
+    return 'mango'
 end
 
 function Level_entity_count()

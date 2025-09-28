@@ -39,24 +39,25 @@ namespace game::levels
           _skybox{reader, {"skybox_right", "skybox_left", "skybox_top", "skybox_bottom", "skybox_front", "skybox_back"}},
           _skybox_sampler{},
           _bus(bus),
-          _resource_cache(resource_cache)
+          _resource_cache(resource_cache),
+          _barrel_info{}
     {
         const auto runner = ScriptRunner{_script};
         runner.execute("Level_init_level", player.position());
 
         const Texture *barrel_textures[]{
-            resource_cache.get<Texture>("barrel_albedo"),
-            resource_cache.get<Texture>("barrel_specular"),
-            resource_cache.get<Texture>("barrel_normal"),
+            _resource_cache.get<Texture>("barrel_albedo"),
+            _resource_cache.get<Texture>("barrel_specular"),
+            _resource_cache.get<Texture>("barrel_normal"),
         };
 
         const auto barrel_count = runner.execute<std::int64_t>("Level_entity_count");
         for (std::int64_t i = 0; i < barrel_count; ++i)
         {
-            const auto pos = runner.execute<Vector3>("Level_entity_position", i + 1);
+            const auto info = runner.execute<Vector3, Vector3, float>("Level_entity_info", i + 1);
             _entities.emplace_back(Entity{_resource_cache.get<Mesh>("barrel"),
-                                          resource_cache.get<Material>("barrel_material"),
-                                          pos,
+                                          _resource_cache.get<Material>("barrel_material"),
+                                          std::get<0>(info),
                                           {0.4f},
                                           {{0.f}, {1.f}, {0.707107f, 0.f, 0.f, 0.707107f}},
                                           barrel_textures});
@@ -101,8 +102,10 @@ namespace game::levels
 
         for (const auto &[index, entity] : std::views::enumerate(_entities))
         {
-            const auto position = runner.execute<Vector3>("Level_entity_position", index + 1);
+            const auto &[position, color, tint_amount] = runner.execute<Vector3, Vector3, float>("Level_entity_info", index + 1);
             entity.set_position(position);
+
+            _barrel_info[std::addressof(entity)] = {.tint_color = {.r = color.x, .g = color.y, .b = color.z}, .tint_amount = tint_amount};
         }
 
         if (runner.execute<bool>("Level_is_complete"))
@@ -120,12 +123,23 @@ namespace game::levels
         // read the reset entity values from LUA
         for (const auto &[index, entity] : std::views::enumerate(_entities))
         {
-            const auto position = runner.execute<Vector3>("Level_entity_position", index + 1);
+            const auto &[position, color, tint_amount] = runner.execute<Vector3, Vector3, float>("Level_entity_info", index + 1);
             entity.set_position(position);
+
+            _barrel_info[std::addressof(entity)] = {.tint_color = {.r = color.x, .g = color.y, .b = color.z}, .tint_amount = tint_amount};
 
             const auto visibility = runner.execute<bool>("Level_entity_visibility", index + 1);
             entity.set_visibility(visibility);
         }
+
+        _resource_cache.get<Material>("barrel_material")->set_uniform_callback([this](const auto *mat, const auto *ent)
+                                                                               {
+            if(const auto info = _barrel_info.find(ent); info != std::ranges::cend(_barrel_info))
+            {
+                mat->set_uniform("tint_color", info->second.tint_color);
+                mat->set_uniform("tint_amount", info->second.tint_amount);
+
+            } });
     }
 
     auto LuaLevel::entities() const -> std::span<const Entity>
