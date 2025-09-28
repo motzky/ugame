@@ -54,6 +54,11 @@ namespace game
         inline auto to_string() const -> std::string;
 
         constexpr auto operator==(const Vector4 &) const -> bool = default;
+
+        explicit constexpr operator Vector3() const
+        {
+            return Vector3{x, y, z};
+        }
     };
 
     constexpr auto operator-=(Vector4 &v1, const Vector4 &v2) -> Vector4 &
