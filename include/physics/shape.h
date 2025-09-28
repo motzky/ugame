@@ -15,7 +15,8 @@ namespace game
     {
     public:
         Shape(PassKey<PhysicsSystem>);
+        virtual ~Shape() = default;
 
-        virtual auto native_handle() const -> const ::JPH::ShapeSettings * = 0;
+        virtual auto native_handle() const -> const ::JPH::Shape * = 0;
     };
 }

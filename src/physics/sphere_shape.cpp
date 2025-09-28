@@ -19,8 +19,8 @@ namespace game
     SphereShape::SphereShape(float radius, PassKey<PhysicsSystem> pk)
         : Shape(pk),
           _radius(radius),
-          _shape_settings(::JPH::SphereShapeSettings{radius})
-
+          _shape_settings(::JPH::SphereShapeSettings{radius}),
+          _shape(radius)
     {
         _shape_settings.SetEmbedded();
     }
@@ -30,9 +30,9 @@ namespace game
         return _radius;
     }
 
-    auto SphereShape::native_handle() const -> const ::JPH::ShapeSettings *
+    auto SphereShape::native_handle() const -> const ::JPH::Shape *
     {
-        return std::addressof(_shape_settings);
+        return std::addressof(_shape);
     }
 
     auto SphereShape::to_string() const -> std::string

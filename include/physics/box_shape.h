@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <vector>
 
 #include <Jolt/Jolt.h>
 
@@ -23,12 +24,13 @@ namespace game
 
         auto dimensions() const -> Vector3;
 
-        virtual auto native_handle() const -> const ::JPH::ShapeSettings * override;
+        virtual auto native_handle() const -> const ::JPH::Shape * override;
 
         auto to_string() const -> std::string;
 
     private:
         Vector3 _dimensions;
         ::JPH::BoxShapeSettings _shape_settings;
+        ::JPH::BoxShape _shape;
     };
 }

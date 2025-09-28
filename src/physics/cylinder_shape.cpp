@@ -18,7 +18,8 @@ namespace game
         : Shape(pk),
           _half_height(half_height),
           _radius(radius),
-          _shape_settings{_half_height, _radius}
+          _shape_settings{_half_height, _radius},
+          _shape(half_height, radius)
 
     {
         _shape_settings.SetEmbedded();
@@ -34,9 +35,9 @@ namespace game
         return _radius;
     }
 
-    auto CylinderShape::native_handle() const -> const ::JPH::ShapeSettings *
+    auto CylinderShape::native_handle() const -> const ::JPH::Shape *
     {
-        return std::addressof(_shape_settings);
+        return std::addressof(_shape);
     }
 
     auto CylinderShape::to_string() const -> std::string

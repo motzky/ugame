@@ -25,10 +25,10 @@ namespace game
         _lines.push_back({to_native(to), to_native(color)});
     }
 
-    auto DebugRenderer::DrawTriangle([[maybe_unused]] ::JPH::RVec3Arg v1,
-                                     [[maybe_unused]] ::JPH::RVec3Arg v2,
-                                     [[maybe_unused]] ::JPH::RVec3Arg v3,
-                                     [[maybe_unused]] ::JPH::ColorArg color,
+    auto DebugRenderer::DrawTriangle(::JPH::RVec3Arg v1,
+                                     ::JPH::RVec3Arg v2,
+                                     ::JPH::RVec3Arg v3,
+                                     ::JPH::ColorArg color,
                                      [[maybe_unused]] ::JPH::DebugRenderer::ECastShadow castShadow) -> void
     {
         DrawLine(v1, v2, color);

@@ -20,7 +20,7 @@ namespace game
     BoxShape::BoxShape(const Vector3 &dimensions, PassKey<PhysicsSystem> pk)
         : Shape(pk),
           _dimensions(dimensions),
-          _shape_settings(::JPH::BoxShapeSettings{to_jolt(_dimensions)})
+          _shape(to_jolt(dimensions))
 
     {
         _shape_settings.SetEmbedded();
@@ -31,9 +31,9 @@ namespace game
         return _dimensions;
     }
 
-    auto BoxShape::native_handle() const -> const ::JPH::ShapeSettings *
+    auto BoxShape::native_handle() const -> const ::JPH::Shape *
     {
-        return std::addressof(_shape_settings);
+        return std::addressof(_shape);
     }
 
     auto BoxShape::to_string() const -> std::string

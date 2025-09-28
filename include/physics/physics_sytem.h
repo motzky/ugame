@@ -1,5 +1,6 @@
 #pragma once
 
+#include <concepts>
 #include <memory>
 
 #include "physics/character_controller.h"
@@ -17,6 +18,11 @@ namespace game
         MAX_LAYER
     };
 
+    class Transform;
+
+    template <class T>
+    concept IsShape = std::derived_from<T, Shape>;
+
     class PhysicsSystem
     {
     public:
@@ -27,10 +33,11 @@ namespace game
         auto optimize() const -> void;
         auto debug_renderer() const -> const DebugRenderer &;
 
-        template <class T, class... Args>
-        auto create_shape(Args &&...args) const -> T
+        template <IsShape T, class... Args>
+        auto create_shape(Args &&...args) -> T *
         {
-            return T{std::forward<Args>(args)..., PassKey<PhysicsSystem>{}};
+            auto &shape = _shapes.emplace_back(std::make_unique<T>(std::forward<Args>(args)..., PassKey<PhysicsSystem>{}));
+            return static_cast<T *>(shape.get());
         }
 
         auto create_rigid_body(const Shape &shape,
@@ -38,8 +45,12 @@ namespace game
 
         auto character_controller() const -> CharacterController &;
 
+        auto query_collisions(const Shape *shape, const Transform &transform) -> std::vector<const Shape *>;
+
     private:
         struct Implementation;
         std::unique_ptr<Implementation> _impl;
+
+        std::vector<std::unique_ptr<Shape>> _shapes;
     };
 }

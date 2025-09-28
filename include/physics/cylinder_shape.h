@@ -23,7 +23,7 @@ namespace game
         auto half_height() const -> float;
         auto radius() const -> float;
 
-        virtual auto native_handle() const -> const ::JPH::ShapeSettings * override;
+        virtual auto native_handle() const -> const ::JPH::Shape * override;
 
         auto to_string() const -> std::string;
 
@@ -31,5 +31,6 @@ namespace game
         float _half_height;
         float _radius;
         ::JPH::CylinderShapeSettings _shape_settings;
+        ::JPH::CylinderShape _shape;
     };
 }

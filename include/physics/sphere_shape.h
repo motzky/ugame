@@ -21,12 +21,13 @@ namespace game
 
         auto radius() const -> float;
 
-        virtual auto native_handle() const -> const ::JPH::ShapeSettings * override;
+        virtual auto native_handle() const -> const ::JPH::Shape * override;
 
         auto to_string() const -> std::string;
 
     private:
         float _radius;
         ::JPH::SphereShapeSettings _shape_settings;
+        ::JPH::SphereShape _shape;
     };
 }
