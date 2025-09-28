@@ -25,8 +25,10 @@ namespace game
         auto view() const -> std::span<const float>;
         auto projection() const -> std::span<const float>;
 
-        auto adjust_pitch(float adjust) -> void;
-        auto adjust_yaw(float adjust) -> void;
+        auto set_pitch(float value) -> void;
+        auto set_yaw(float value) -> void;
+        auto adjust_pitch(float value) -> void;
+        auto adjust_yaw(float value) -> void;
 
         auto fov() const -> float;
         auto width() const -> float;
@@ -61,5 +63,6 @@ namespace game
         // bool _invert_yaw;
 
         auto recalculate_view() -> void;
+        auto clamp_pitch() -> void;
     };
 }

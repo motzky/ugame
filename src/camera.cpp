@@ -78,35 +78,34 @@ namespace game
     {
         return _projection.data();
     }
+    auto Camera::set_pitch(float value) -> void
+    {
+        _pitch = value;
+    }
+    auto Camera::set_yaw(float value) -> void
+    {
+        _yaw = value;
+    }
 
-    auto Camera::adjust_pitch(float adjust) -> void
+    auto Camera::adjust_pitch(float value) -> void
     {
         // if (_invert_pitch)
         // {
         //     _pitch -= adjust;
         //     return;
         // }
-        _pitch += adjust;
+        _pitch += value;
 
-        if (_pitch > 1.55334303f)
-        {
-            _pitch = 1.55334303f;
-            return;
-        }
-        if (_pitch < -1.55334303f)
-        {
-            _pitch = -1.55334303f;
-            return;
-        }
+        clamp_pitch();
     }
-    auto Camera::adjust_yaw(float adjust) -> void
+    auto Camera::adjust_yaw(float value) -> void
     {
         // if (_invert_yaw)
         // {
         //     _yaw -= adjust;
         //     return;
         // }
-        _yaw += adjust;
+        _yaw += value;
     }
 
     // auto Camera::invert_pitch(bool invert) -> void
@@ -192,19 +191,6 @@ namespace game
 
     auto Camera::frustum_planes() const -> std::array<FrustumPlane, 6u>
     {
-        // auto planes = std::array<FrustumPlane, 6u>{};
-
-        // const float half_v_side = _far_plane * std::tan(_fov * .5f);
-        // const float half_h_side = half_v_side * _width / _height;
-        // const auto front_mult_far = _far_plane * _direction;
-
-        // return {{{_position + _near_plane * _direction, _direction},                        // 0: near
-        //          {_position + front_mult_far, -_direction},                                 // 1: far
-        //          {_position, Vector3::cross(front_mult_far - _right * half_h_side, _up)},   // 2: right
-        //          {_position, Vector3::cross(_up, front_mult_far + _right * half_h_side)},   // 3: left
-        //          {_position, Vector3::cross(_right, front_mult_far - _up * half_v_side)},   // 4: top
-        //          {_position, Vector3::cross(front_mult_far + _up * half_v_side, _right)}}}; // 5: bottom
-
         const auto view_proj = _projection * _view;
         return {{
             {view_proj[3] - view_proj[2],
@@ -232,6 +218,20 @@ namespace game
              view_proj[11] - view_proj[9],
              view_proj[15] - view_proj[13]},
         }};
+    }
+
+    auto Camera::clamp_pitch() -> void
+    {
+        if (_pitch > 1.55334303f)
+        {
+            _pitch = 1.55334303f;
+            return;
+        }
+        if (_pitch < -1.55334303f)
+        {
+            _pitch = -1.55334303f;
+            return;
+        }
     }
 
 }
