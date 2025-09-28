@@ -9,7 +9,7 @@ auto main(int argc, char **argv) -> int
 {
     game::log::info("starting game...");
 
-    auto g = game::Game{};
+    auto g = game::Game{1920u, 1080u};
 
     try
     {

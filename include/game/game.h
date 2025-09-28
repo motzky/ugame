@@ -6,8 +6,10 @@
 #include <vector>
 
 #include "game/levels/lua_level.h"
+#include "game/player.h"
 #include "messaging/message_bus.h"
 #include "messaging/subscriber.h"
+#include "window.h"
 
 namespace game
 {
@@ -15,7 +17,7 @@ namespace game
     class Game : public messaging::Subscriber
     {
     public:
-        Game();
+        Game(std::uint32_t width, std::uint32_t height);
         ~Game();
 
         auto run(std::string_view resource_root) -> void;
@@ -27,5 +29,8 @@ namespace game
         std::vector<std::unique_ptr<levels::LuaLevel>> _levels;
 
         std::size_t _level_num;
+        messaging::MessageBus _message_bus;
+        Window _window;
+        Player _player;
     };
 }

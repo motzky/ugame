@@ -28,9 +28,12 @@ namespace game
 
         auto update() -> void;
 
+        auto restart() -> void;
+
     private:
         Camera _camera;
         std::unordered_map<game::Key, bool> _key_state;
         bool _flying;
+        Vector3 _start_position;
     };
 }

@@ -77,11 +77,27 @@ namespace
 
 namespace game
 {
-    Game::Game()
+    auto create_camera(const Window &window) -> Camera
+    {
+        return {{0.f, 2.f, 20.f},
+                {0.f, 0.f, 0.f},
+                {0.f, 1.f, 0.f},
+                std::numbers::pi_v<float> / 4.f,
+                static_cast<float>(window.width()),
+                static_cast<float>(window.height()),
+                0.1f,
+                500.f};
+    }
+
+    Game::Game(std::uint32_t width, std::uint32_t height)
         : _running(true),
           _levels{},
-          _level_num{0ul}
+          _level_num{0ul},
+          _message_bus{},
+          _window{width, height},
+          _player{_message_bus, create_camera(_window)}
     {
+        _message_bus.subscribe(messaging::MessageType::LEVEL_COMPLETE, this);
     }
 
     Game::~Game()
@@ -93,28 +109,6 @@ namespace game
 
     auto Game::run(std::string_view resource_root) -> void
     {
-        auto bus = game::messaging::MessageBus{};
-
-        bus.subscribe(messaging::MessageType::LEVEL_COMPLETE, this);
-
-        auto width = 1920u;
-        auto height = 1080u;
-        // auto width = 1280u;
-        // auto height = 720u;
-        game::log::info("Creating Window {} x {}...", width, height);
-        auto window = game::Window{width, height};
-
-        auto camera = game::Camera{{0.f, 2.f, 20.f},
-                                   {0.f, 0.f, 0.f},
-                                   {0.f, 1.f, 0.f},
-                                   std::numbers::pi_v<float> / 4.f,
-                                   static_cast<float>(window.width()),
-                                   static_cast<float>(window.height()),
-                                   0.1f,
-                                   500.f};
-
-        auto player = game::Player{bus, std::move(camera)};
-
         auto resource_loader = game::ResourceLoader{resource_root};
         auto mesh_loader = game::MeshLoader{resource_loader};
         auto resource_cache = game::DefaultCache{};
@@ -139,7 +133,7 @@ namespace game
         const auto fragment_shader = game::Shader{fragment_shader_file.as_string(), game::ShaderType::FRAGMENT};
         resource_cache.insert<Material>("barrel_material", vertex_shader, fragment_shader);
 
-        auto renderer = game::Renderer{resource_loader, mesh_loader, width, height};
+        auto renderer = game::Renderer{resource_loader, mesh_loader, _window.width(), _window.height()};
 
         const auto checker_vertex_shader_file = resource_loader.load("simple.vert");
         const auto checker_fragment_shader_file = resource_loader.load("checker.frag");
@@ -165,9 +159,10 @@ namespace game
                 .data{static_cast<std::byte>(0xff), static_cast<std::byte>(0xff), static_cast<std::byte>(0xff)}},
             sampler);
 
-        _levels.push_back(std::make_unique<levels::LuaLevel>(resource_loader, "level_apple.lua", resource_cache, reader, player, bus));
+        _levels.push_back(std::make_unique<levels::LuaLevel>(resource_loader, "level_apple.lua", resource_cache, reader, _player, _message_bus));
 
         _levels[_level_num]->restart();
+        _player.restart();
 
         auto gamma = 2.2f;
 
@@ -183,7 +178,7 @@ namespace game
             auto *level = _levels[_level_num].get();
 
 #pragma region EventHandling
-            auto event = window.pump_event();
+            auto event = _window.pump_event();
             while (event && _running)
             {
                 std::visit(
@@ -198,13 +193,13 @@ namespace game
                         {
                             // game::log::debug("{}", arg);
 
-                            bus.post_key_press(arg);
+                            _message_bus.post_key_press(arg);
 
                             if (arg.key() == game::Key::F1 && arg.state() == game::KeyState::UP)
                             {
                                 show_debug = !show_debug;
-                                window.show_cursor(show_debug);
-                                player.set_flying(show_debug);
+                                _window.show_cursor(show_debug);
+                                _player.set_flying(show_debug);
                                 level->set_show_debug(show_debug);
                             }
                             else if (arg.key() == game::Key::F2 && arg.state() == game::KeyState::UP)
@@ -216,26 +211,26 @@ namespace game
                         {
                             if (!show_debug)
                             {
-                                bus.post_mouse_move(arg);
+                                _message_bus.post_mouse_move(arg);
                             }
                         }
                         else if constexpr (std::same_as<T, game::MouseButtonEvent>)
                         {
-                            bus.post_mouse_button(arg);
+                            _message_bus.post_mouse_button(arg);
                             // debug_ui.add_mouse_event(arg);
                         }
                     },
                     *event);
-                event = window.pump_event();
+                event = _window.pump_event();
             }
 #pragma endregion
 
-            player.update();
-            level->update(player);
+            _player.update();
+            level->update(_player);
 
             for (auto &entity : level->scene().entities)
             {
-                entity->set_visibility(intersects_frustum(entity->bounding_box(), player.camera().frustum_planes()));
+                entity->set_visibility(intersects_frustum(entity->bounding_box(), _player.camera().frustum_planes()));
 
                 debug_wireframe_renderer.draw(entity->bounding_box());
             }
@@ -249,12 +244,12 @@ namespace game
                 level->scene().debug_lines.reset();
             }
 
-            renderer.render(player.camera(), level->scene(), gamma);
+            renderer.render(_player.camera(), level->scene(), gamma);
             if (show_debug)
             {
                 // debug_ui.render();
             }
-            window.swap();
+            _window.swap();
         }
     }
 
@@ -265,7 +260,14 @@ namespace game
         if (_level_num >= _levels.size())
         {
             log::info("YOU WIN !");
-            _running = false;
+            // _running = false;
+            _level_num = 0;
+        }
+
+        if (_running)
+        {
+            _levels[_level_num]->restart();
+            _player.restart();
         }
     }
 }

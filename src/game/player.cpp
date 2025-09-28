@@ -1,5 +1,6 @@
 #include "game/player.h"
 
+#include <numbers>
 #include <queue>
 
 #include "camera.h"
@@ -12,7 +13,8 @@ namespace game
     Player::Player(messaging::MessageBus &bus, Camera camera)
         : _camera(std::move(camera)),
           _key_state{},
-          _flying{false}
+          _flying{false},
+          _start_position(camera.position())
     {
         bus.subscribe(messaging::MessageType::KEY_PRESS, this);
         bus.subscribe(messaging::MessageType::MOUSE_MOVE, this);
@@ -86,6 +88,15 @@ namespace game
 
         const auto speed = _key_state[game::Key::LSHIFT] ? 30.f : 10.f;
         _camera.translate(game::Vector3::normalize(walk_direction) * (speed / 60.f));
+        _camera.update();
+    }
+
+    auto Player::restart() -> void
+    {
+        _camera.set_position(_start_position);
+        _camera.set_pitch(0.f);
+        _camera.set_yaw(-std::numbers::pi_v<float> / 2.f);
+
         _camera.update();
     }
 }
