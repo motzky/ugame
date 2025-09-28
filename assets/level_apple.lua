@@ -1,11 +1,13 @@
 local barrels = {}
 
+local initial_player_position = Vector3(0.0, 0.0, 0.0)
 local last_player_position = Vector3(0.0, 0.0, 0.0)
 
 function Level_init_level(player_position)
     Level_restart_level()
 
     last_player_position = player_position
+    initial_player_position = player_position
 end
 
 function Level_update_level(player_position)
@@ -25,6 +27,8 @@ function Level_restart_level()
         position = Vector3(5.0, -0.2, 0.0),
         visibility = true
     }
+
+    last_player_position = initial_player_position
 end
 
 function Level_is_complete()
@@ -41,6 +45,10 @@ end
 
 function Level_entity_position(index)
     return barrels[index].position
+end
+
+function Level_entity_visibility(index)
+    return barrels[index].visibility
 end
 
 function Level_set_entity_visibility(index, visibility)
