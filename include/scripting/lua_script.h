@@ -21,10 +21,12 @@ namespace game
 
         auto set_function(const std::string &name) const -> void;
 
-        auto set_argument(std::string_view value) const -> void;
         auto set_argument(std::int64_t value) const -> void;
+        auto set_argument(std::string_view value) const -> void;
+        auto set_argument(const char *value) const -> void;
         auto set_argument(float value) const -> void;
         auto set_argument(const Vector3 &value) const -> void;
+        auto set_argument(bool value) const -> void;
 
         auto get_result(bool &result) const -> void;
         auto get_result(std::int64_t &result) const -> void;

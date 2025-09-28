@@ -93,6 +93,11 @@ namespace game
         ::lua_pushlstring(_lua.get(), value.data(), value.size());
     }
 
+    auto LuaScript::set_argument(const char *value) const -> void
+    {
+        set_argument(std::string_view{value});
+    }
+
     auto LuaScript::set_argument(std::int64_t value) const -> void
     {
         ::lua_pushinteger(_lua.get(), value);
@@ -101,6 +106,11 @@ namespace game
     auto LuaScript::set_argument(float value) const -> void
     {
         ::lua_pushnumber(_lua.get(), value);
+    }
+
+    auto LuaScript::set_argument(bool value) const -> void
+    {
+        ::lua_pushboolean(_lua.get(), value);
     }
 
     auto LuaScript::set_argument(const Vector3 &value) const -> void
