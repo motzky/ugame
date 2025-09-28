@@ -67,4 +67,5 @@ build/
 assets/*
 !assets/*.vert
 !assets/*.frag
+!assets/*.lua
 assets_old/
