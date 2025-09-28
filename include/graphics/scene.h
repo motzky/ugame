@@ -30,7 +30,7 @@ namespace game
 
     struct Scene
     {
-        std::vector<const Entity *> entities;
+        std::vector<Entity *> entities;
         Color ambient;
         DirectionalLight directional;
         std::vector<PointLight> points;
