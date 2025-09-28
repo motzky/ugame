@@ -91,6 +91,12 @@ namespace game::levels
     auto LuaLevel::update(const Player &player) -> void
     {
         const auto runner = ScriptRunner{_script};
+
+        for (const auto &[index, entity] : std::views::enumerate(_entities))
+        {
+            runner.execute("set_barrel_visibility", index + 1, entity.is_visible());
+        }
+
         runner.execute("Level_update_level", player.position());
 
         for (const auto &[index, entity] : std::views::enumerate(_entities))

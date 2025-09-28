@@ -184,7 +184,7 @@ namespace game
 
             ::lua_pop(_lua.get(), 1);
 
-            throw Exception("failed to execute ({})", res);
+            throw Exception("failed to execute ({})\n{}", res, *this);
         }
     }
 
