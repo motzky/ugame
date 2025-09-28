@@ -11,9 +11,8 @@ function Level_init_level(player_position)
 end
 
 function Level_update_level(player_position)
-
     if barrels[2].visibility then
-        barrels[2].position = barrels[2].position + (last_player_position - player_position)        
+        barrels[2].position = barrels[2].position + (last_player_position - player_position)
     end
     last_player_position = player_position
 end
@@ -36,7 +35,7 @@ function Level_is_complete()
 end
 
 function Level_name()
-    return 'apple'
+    return 'kiwi'
 end
 
 function Level_entity_count()
