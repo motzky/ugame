@@ -3,23 +3,32 @@ local barrels = {}
 local last_player_position = Vector3(0.0, 0.0, 0.0)
 
 function Level_init_level(player_position)
-    barrels[1] = Vector3(0.0, -0.2, 0.0)
-    barrels[2] = Vector3(5.0, -0.2, 0.0)
+    Level_restart_level()
 
     last_player_position = player_position
 end
 
 function Level_update_level(player_position)
 
-    barrels[2] = barrels[2] + (player_position - last_player_position)
+    if barrels[2].visibility then
+        barrels[2].position = barrels[2].position + (player_position - last_player_position)        
+    end
     last_player_position = player_position
 end
 
 function Level_restart_level()
+    barrels[1] = {
+        position = Vector3(0.0, -0.2, 0.0),
+        visibility = true
+    }
+    barrels[2] = {
+        position = Vector3(5.0, -0.2, 0.0),
+        visibility = true
+    }
 end
 
 function Level_is_complete()
-    return distance(barrels[1], barrels[2]) < 1.0
+    return distance(barrels[1].position, barrels[2].position) < 1.0
 end
 
 function Level_name()
@@ -31,5 +40,9 @@ function barrel_count()
 end
 
 function barrel_position(index)
-    return barrels[index]
+    return barrels[index].position
+end
+
+function set_barrel_visibility(index, visibility)
+    barrels[index].visibility = visibility
 end
