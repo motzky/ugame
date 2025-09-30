@@ -18,7 +18,7 @@
 namespace game
 {
     BoxShape::BoxShape(const Vector3 &dimensions, PassKey<PhysicsSystem> pk)
-        : Shape(pk),
+        : Shape(ShapeType::BOX, pk),
           _dimensions(dimensions),
           _shape(to_jolt(dimensions))
 

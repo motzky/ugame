@@ -5,7 +5,6 @@
 #include "camera.h"
 #include "graphics/color.h"
 #include "graphics/line_data.h"
-#include "math/aabb.h"
 
 namespace game
 {
@@ -14,7 +13,6 @@ namespace game
     public:
         auto draw(const Vector3 &start, const Vector3 &end, const Color &color) -> void;
         auto draw(const Camera &camera) -> void;
-        auto draw(const AABB &aabb) -> void;
         auto yield() -> std::vector<LineData>;
 
     private:

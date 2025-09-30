@@ -5,7 +5,13 @@
 
 namespace game
 {
-    Shape::Shape(PassKey<PhysicsSystem>)
+    Shape::Shape(ShapeType type, PassKey<PhysicsSystem>)
+        : _type(type)
     {
+    }
+
+    auto Shape::type() const -> ShapeType
+    {
+        return _type;
     }
 }

@@ -33,9 +33,10 @@
 #include "graphics/texture_sampler.h"
 #include "loaders/mesh_loader.h"
 #include "log.h"
-#include "math/aabb.h"
 #include "math/frustum_plane.h"
 #include "messaging/message_bus.h"
+#include "physics/box_shape.h"
+#include "physics/transformed_shape.h"
 #include "primitives/entity.h"
 #include "resources/resource_cache.h"
 #include "resources/resource_loader.h"
@@ -46,23 +47,30 @@
 
 namespace
 {
-    auto intersects_frustum(const game::AABB &aabb, const std::array<game::FrustumPlane, 6u> &planes) -> bool
+    auto intersects_frustum(const game::TransformedShape &bounding_box, const std::array<game::FrustumPlane, 6u> &planes) -> bool
     {
+        game::expect(bounding_box.shape()->type() == game::ShapeType::BOX, "Not a bounding BOX");
+
+        const auto *box_shape = dynamic_cast<const game::BoxShape *>(bounding_box.shape());
+        const auto position = bounding_box.transform().position;
+
+        const auto min = position - box_shape->dimensions();
+        const auto max = position + box_shape->dimensions();
+
         for (const auto &plane : planes)
         {
-
-            auto pos_vert = aabb.min;
+            auto pos_vert = min;
             if (plane.normal.x >= 0)
             {
-                pos_vert.x = aabb.max.x;
+                pos_vert.x = max.x;
             }
             if (plane.normal.y >= 0)
             {
-                pos_vert.y = aabb.max.y;
+                pos_vert.y = max.y;
             }
             if (plane.normal.z >= 0)
             {
-                pos_vert.z = aabb.max.z;
+                pos_vert.z = max.z;
             }
 
             if (game::Vector3::dot(plane.normal, pos_vert) + plane.distance < 0.f)
@@ -239,7 +247,7 @@ namespace game
             {
                 entity->set_visibility(intersects_frustum(entity->bounding_box(), _player.camera().frustum_planes()));
 
-                debug_wireframe_renderer.draw(entity->bounding_box());
+                entity->bounding_box().draw(physics.debug_renderer());
             }
 
             if (show_physics_debug)

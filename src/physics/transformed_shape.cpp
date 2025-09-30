@@ -49,8 +49,8 @@ namespace game
         ::JPH::CollisionDispatch::sCollideShapeVsShape(
             _shape->native_handle(),
             shape._shape->native_handle(),
-            ::JPH::RVec3::sOne(),
-            ::JPH::RVec3::sOne(),
+            ::JPH::RVec3::sOne() * .9f,
+            ::JPH::RVec3::sOne() * .9f,
             to_jolt(_transform),
             to_jolt(shape._transform),
             ::JPH::SubShapeIDCreator{},
@@ -69,5 +69,25 @@ namespace game
             ::JPH::RVec3::sOne(),
             ::JPH::Color{255, 0, 255},
             false, true);
+    }
+
+    auto TransformedShape::set_position([[maybe_unused]] const Vector3 &position) -> void
+    {
+        expect(false, "Not implemented");
+    }
+
+    auto TransformedShape::translate(const Vector3 &translation) -> void
+    {
+        _transform.position += translation;
+    }
+
+    auto TransformedShape::shape() const -> const Shape *
+    {
+        return _shape;
+    }
+
+    auto TransformedShape::transform() const -> const Transform &
+    {
+        return _transform;
     }
 }

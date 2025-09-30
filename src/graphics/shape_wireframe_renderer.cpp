@@ -5,7 +5,6 @@
 #include "camera.h"
 #include "graphics/color.h"
 #include "graphics/line_data.h"
-#include "math/aabb.h"
 #include "math/vector3.h"
 
 namespace game
@@ -38,24 +37,6 @@ namespace game
         draw(corners[1], corners[5], connect_colour);
         draw(corners[2], corners[6], connect_colour);
         draw(corners[3], corners[7], connect_colour);
-    }
-
-    auto ShapeWireframeRenderer::draw(const AABB &aabb) -> void
-    {
-        auto color_aabb = Color{0.f, 1.f, 0.f};
-
-        draw(aabb.max, {aabb.min.x, aabb.max.y, aabb.max.z}, color_aabb);
-        draw({aabb.min.x, aabb.max.y, aabb.max.z}, {aabb.min.x, aabb.max.y, aabb.min.z}, color_aabb);
-        draw({aabb.min.x, aabb.max.y, aabb.min.z}, {aabb.max.x, aabb.max.y, aabb.min.z}, color_aabb);
-        draw({aabb.max.x, aabb.max.y, aabb.min.z}, aabb.max, color_aabb);
-        draw(aabb.max, {aabb.max.x, aabb.min.y, aabb.max.z}, color_aabb);
-        draw({aabb.min.x, aabb.max.y, aabb.max.z}, {aabb.min.x, aabb.min.y, aabb.max.z}, color_aabb);
-        draw({aabb.max.x, aabb.max.y, aabb.min.z}, {aabb.max.x, aabb.min.y, aabb.min.z}, color_aabb);
-        draw({aabb.min.x, aabb.max.y, aabb.min.z}, aabb.min, color_aabb);
-        draw(aabb.min, {aabb.min.x, aabb.min.y, aabb.max.z}, color_aabb);
-        draw({aabb.min.x, aabb.min.y, aabb.max.z}, {aabb.max.x, aabb.min.y, aabb.max.z}, color_aabb);
-        draw({aabb.max.x, aabb.min.y, aabb.max.z}, {aabb.max.x, aabb.min.y, aabb.min.z}, color_aabb);
-        draw({aabb.max.x, aabb.min.y, aabb.min.z}, aabb.min, color_aabb);
     }
 
     auto ShapeWireframeRenderer::yield() -> std::vector<LineData>

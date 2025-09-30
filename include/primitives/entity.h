@@ -7,10 +7,12 @@
 #include "graphics/mesh.h"
 #include "graphics/texture.h"
 #include "graphics/texture_sampler.h"
-#include "math/aabb.h"
 #include "math/quaternion.h"
 #include "math/transform.h"
 #include "math/vector3.h"
+#include "physics/physics_sytem.h"
+#include "physics/shape.h"
+#include "physics/transformed_shape.h"
 
 namespace game
 {
@@ -21,13 +23,15 @@ namespace game
                const Material *material,
                const Vector3 &position,
                const Vector3 &scale,
-               std::span<const Texture *const> textures);
+               std::span<const Texture *const> textures,
+               TransformedShape bounding_box);
         Entity(const Mesh *mesh,
                const Material *material,
                const Vector3 &position,
                const Vector3 &scale,
                const Transform &local_transform,
-               std::span<const Texture *const> textures);
+               std::span<const Texture *const> textures,
+               TransformedShape bounding_box);
 
         auto mesh() const -> const Mesh *;
         auto material() const -> const Material *;
@@ -37,7 +41,7 @@ namespace game
         auto position() const -> Vector3;
         auto is_visible() const -> bool;
         auto set_visibility(bool visible) -> void;
-        auto bounding_box() const -> AABB;
+        auto bounding_box() const -> const TransformedShape &;
 
         auto set_position(const Vector3 &position) -> void;
         auto set_rotation(const Quaternion &rotation) -> void;
@@ -50,7 +54,7 @@ namespace game
         Transform _local_transform;
         std::vector<const Texture *> _textures;
         bool _visible;
-        AABB _aabb;
+        TransformedShape _bounding_box;
     };
 
 }

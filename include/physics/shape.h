@@ -9,14 +9,26 @@
 
 namespace game
 {
+    enum class ShapeType
+    {
+        BOX,
+        CYLINDER,
+        SPHERE
+    };
+
     class PhysicsSystem;
 
     class Shape
     {
     public:
-        Shape(PassKey<PhysicsSystem>);
+        Shape(ShapeType type, PassKey<PhysicsSystem>);
         virtual ~Shape() = default;
 
         virtual auto native_handle() const -> const ::JPH::Shape * = 0;
+
+        auto type() const -> ShapeType;
+
+    private:
+        ShapeType _type;
     };
 }

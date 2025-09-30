@@ -15,7 +15,7 @@
 namespace game
 {
     CylinderShape::CylinderShape(float half_height, float radius, PassKey<PhysicsSystem> pk)
-        : Shape(pk),
+        : Shape(ShapeType::CYLINDER, pk),
           _half_height(half_height),
           _radius(radius),
           _shape_settings{_half_height, _radius},

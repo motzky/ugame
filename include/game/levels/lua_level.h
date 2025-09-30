@@ -44,6 +44,8 @@ namespace game::levels
         auto entities() const -> std::span<const Entity>;
 
     private:
+        PhysicsSystem &_ps;
+
         LuaScript _script;
 
         std::vector<Entity> _entities;
@@ -53,7 +55,6 @@ namespace game::levels
         messaging::MessageBus &_bus;
         DefaultCache &_resource_cache;
         std::unordered_map<const Entity *, BarrelInfo> _barrel_info;
-        PhysicsSystem &_ps;
         std::vector<const Shape *> _shapes;
     };
 }

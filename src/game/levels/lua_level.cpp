@@ -24,6 +24,25 @@
 
 using namespace std::literals;
 
+namespace
+{
+    auto calculate_bounding_box(const game::Mesh *mesh, const game::Transform &transform) -> std::tuple<game::Vector3, game::Vector3>
+    {
+        const auto minmax_x = std::ranges::minmax(mesh->mesh_data().vertices, std::less<>{}, [](const auto &v)
+                                                  { return v.position.x; });
+        const auto minmax_y = std::ranges::minmax(mesh->mesh_data().vertices, std::less<>{}, [](const auto &v)
+                                                  { return v.position.y; });
+        const auto minmax_z = std::ranges::minmax(mesh->mesh_data().vertices, std::less<>{}, [](const auto &v)
+                                                  { return v.position.z; });
+
+        const auto transformed_min = game::Matrix4{transform} * game::Vector4{minmax_x.min.position.x, minmax_y.min.position.y, minmax_z.min.position.z, 1.0};
+        const auto transformed_max = game::Matrix4{transform} * game::Vector4{minmax_x.max.position.x, minmax_y.max.position.y, minmax_z.max.position.z, 1.0};
+        auto result = std::make_tuple(static_cast<game::Vector3>(transformed_min), static_cast<game::Vector3>(transformed_max));
+
+        return result;
+    }
+}
+
 namespace game::levels
 {
     LuaLevel::LuaLevel(
@@ -34,7 +53,8 @@ namespace game::levels
         const Player &player,
         messaging::MessageBus &bus,
         PhysicsSystem &ps)
-        : _script(loader.load(script_name).as_string()),
+        : _ps{ps},
+          _script(loader.load(script_name).as_string()),
           _entities{},
           _floor{
               resource_cache.get<Mesh>("floor"),
@@ -43,13 +63,13 @@ namespace game::levels
               {100.f, 1.f, 100.f},
               std::vector<const Texture *>{
                   resource_cache.get<Texture>("floor_albedo"),
-                  resource_cache.get<Texture>("floor_albedo")}},
+                  resource_cache.get<Texture>("floor_albedo")},
+              {ps.create_shape<BoxShape>(Vector3{100.f, 1.f, 100.f}), {{0.f, -2.f, 0}, {1.f}, {}}}},
           _skybox{reader, {"skybox_right", "skybox_left", "skybox_top", "skybox_bottom", "skybox_front", "skybox_back"}},
           _skybox_sampler{},
           _bus(bus),
           _resource_cache(resource_cache),
           _barrel_info{},
-          _ps{ps},
           _shapes{}
     {
         const auto runner = ScriptRunner{_script};
@@ -65,21 +85,24 @@ namespace game::levels
         for (std::int64_t i = 0; i < barrel_count; ++i)
         {
             const auto info = runner.execute<Vector3, Vector3, float>("Level_entity_info", i + 1);
-            const auto &ent = _entities.emplace_back(Entity{_resource_cache.get<Mesh>("barrel"),
-                                                            _resource_cache.get<Material>("barrel_material"),
-                                                            std::get<0>(info),
-                                                            {0.4f},
-                                                            {{0.f}, {1.f}, {0.707107f, 0.f, 0.f, 0.707107f}},
-                                                            barrel_textures});
-
-            const auto aabb = ent.bounding_box();
-            const auto half_extents = (aabb.max - aabb.min) / 2.f;
+            const auto *mesh = _resource_cache.get<Mesh>("barrel");
+            const auto &[min, max] = calculate_bounding_box(mesh, {std::get<0>(info),
+                                                                   {0.4f}});
+            const auto half_extents = (max - min) / 2.f;
             auto *shape = _ps.create_shape<BoxShape>(
                 Vector3{
                     std::fabs(half_extents.x),
                     std::fabs(half_extents.y),
                     std::fabs(half_extents.z),
                 });
+            _entities.emplace_back(Entity{mesh,
+                                          _resource_cache.get<Material>("barrel_material"),
+                                          std::get<0>(info),
+                                          {0.4f},
+                                          {{0.f}, {1.f}, {0.707107f, 0.f, 0.f, 0.707107f}},
+                                          barrel_textures,
+                                          TransformedShape{shape, {std::get<0>(info), {0.4f}, {0.707107f, 0.f, 0.f, 0.707107f}}}});
+
             _shapes.push_back(shape);
         }
 
@@ -139,7 +162,7 @@ namespace game::levels
                 // [](const auto &shape, const auto &entitiy)
                 // { return TransformedShape{shape, entitiy.transform()}; },
                 [](const auto &shape, const auto &entitiy)
-                { return TransformedShape{shape, {entitiy.position(), {1.f}, {}}}; },
+                { return TransformedShape{shape, {entitiy.position(), {1.f}, {0.707107f, 0.f, 0.f, 0.707107f}}}; },
                 _shapes,
                 _entities) |
             std::ranges::to<std::vector>();

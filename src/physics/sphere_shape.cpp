@@ -17,7 +17,7 @@
 namespace game
 {
     SphereShape::SphereShape(float radius, PassKey<PhysicsSystem> pk)
-        : Shape(pk),
+        : Shape(ShapeType::SPHERE, pk),
           _radius(radius),
           _shape_settings(::JPH::SphereShapeSettings{radius}),
           _shape(radius)
