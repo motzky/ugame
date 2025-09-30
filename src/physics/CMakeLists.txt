@@ -8,4 +8,5 @@ target_sources(gamelib PUBLIC
     rigid_body.cpp
     shape.cpp
     sphere_shape.cpp
+    transformed_shape.cpp
 )
