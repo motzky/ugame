@@ -102,20 +102,6 @@ namespace
                 { return e == game::PhysicsLayer::MOVING; });
         }
     };
-
-    class SimpleCollideShapeCollector : public ::JPH::CollideShapeCollector
-    {
-        virtual auto AddHit([[maybe_unused]] const ::JPH::CollideShapeCollector::ResultType &inResult) -> void override
-        {
-            game::log::debug("collision AddHit");
-        }
-
-        virtual auto OnBody(const ::JPH::Body &) -> void override
-        {
-            game::log::debug("collision OnBody");
-        }
-    };
-
 }
 
 namespace game
@@ -204,7 +190,7 @@ namespace game
         _impl->character_controller->debug_draw(&_impl->debug_renderer, {});
     }
 
-    auto PhysicsSystem::debug_renderer() const -> const DebugRenderer &
+    auto PhysicsSystem::debug_renderer() const -> DebugRenderer &
     {
         return _impl->debug_renderer;
     }
@@ -212,24 +198,5 @@ namespace game
     auto PhysicsSystem::character_controller() const -> CharacterController &
     {
         return *_impl->character_controller;
-    }
-
-    auto PhysicsSystem::query_collisions(const Shape *shape, const Transform &transform) -> std::vector<const Shape *>
-    {
-        const auto &narrow_phase = _impl->physics_system.GetNarrowPhaseQuery();
-
-        const auto center_of_mass = to_jolt(transform);
-        const auto collide_shape_settings = ::JPH::CollideShapeSettings{};
-        auto collector = SimpleCollideShapeCollector{};
-
-        narrow_phase.CollideShape(
-            shape->native_handle(),
-            ::JPH::Vec3::sOne(),
-            center_of_mass,
-            collide_shape_settings,
-            center_of_mass.GetTranslation(),
-            collector);
-
-        return {};
     }
 }

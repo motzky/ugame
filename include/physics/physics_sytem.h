@@ -31,7 +31,7 @@ namespace game
 
         auto update() -> void;
         auto optimize() const -> void;
-        auto debug_renderer() const -> const DebugRenderer &;
+        auto debug_renderer() const -> DebugRenderer &;
 
         template <IsShape T, class... Args>
         auto create_shape(Args &&...args) -> T *
@@ -44,8 +44,6 @@ namespace game
                                const Vector3 &position, RigidBodyType type) const -> RigidBody;
 
         auto character_controller() const -> CharacterController &;
-
-        auto query_collisions(const Shape *shape, const Transform &transform) -> std::vector<const Shape *>;
 
     private:
         struct Implementation;
