@@ -244,7 +244,14 @@ namespace game
 
             if (show_physics_debug)
             {
-                level->scene().debug_lines = game::DebugLines{debug_wireframe_renderer.yield()};
+                auto lines = debug_wireframe_renderer.yield();
+                for (const auto line : physics.debug_renderer().lines())
+                {
+                    lines.push_back(line);
+                }
+                level->scene().debug_lines = game::DebugLines{lines};
+
+                physics.debug_renderer().clear();
             }
             else
             {

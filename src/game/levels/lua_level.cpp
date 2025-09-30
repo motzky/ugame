@@ -1,8 +1,10 @@
 #include "game/levels/lua_level.h"
 
+#include <algorithm>
 #include <ranges>
 #include <span>
 #include <string_view>
+#include <tuple>
 #include <vector>
 
 #include "game/player.h"
@@ -14,10 +16,13 @@
 #include "messaging/message_bus.h"
 #include "physics/box_shape.h"
 #include "physics/physics_sytem.h"
+#include "physics/transformed_shape.h"
 #include "resources/resource_cache.h"
 #include "resources/resource_loader.h"
 #include "scripting/script_runner.h"
 #include "tlv/tlv_reader.h"
+
+using namespace std::literals;
 
 namespace game::levels
 {
@@ -78,7 +83,7 @@ namespace game::levels
                     std::fabs(half_extents.z),
                 });
             _shapes.push_back(shape);
-                }
+        }
 
         _scene = Scene{
             .entities = _entities |
@@ -117,6 +122,22 @@ namespace game::levels
 
         runner.execute("Level_update_level", player.position());
 
+        const auto transformed_shapes =
+            std::views::zip_transform(
+                [](const auto &shape, const auto &entitiy)
+                { return TransformedShape{shape, entitiy.transform()}; },
+                _shapes,
+                _entities) |
+            std::ranges::to<std::vector>();
+
+        const auto max = std::ranges::size(transformed_shapes);
+        auto combos = std::views::iota(0zu, max) |
+                      std::views::transform([max](auto x)
+                                            { return std::views::iota(x + 1, max) |
+                                                     std::views::transform([x](auto y)
+                                                                           { return std::make_pair(x, y); }); }) |
+                      std::views::join;
+
         for (const auto &[index, entity] : std::views::enumerate(_entities))
         {
             const auto &[position, color, tint_amount] = runner.execute<Vector3, Vector3, float>("Level_entity_info", index + 1);
@@ -124,13 +145,24 @@ namespace game::levels
 
             _barrel_info[std::addressof(entity)] = {.tint_color = {.r = color.x, .g = color.y, .b = color.z}, .tint_amount = tint_amount};
 
-            [[maybe_unused]] auto candidates = _ps.query_collisions(_shapes[index], entity.transform());
+            for (const auto &[i, j] : combos)
+            {
+                const auto &transform_shape1 = transformed_shapes[i];
+                const auto &transform_shape2 = transformed_shapes[j];
+
+                transform_shape1.intersects(transform_shape2);
+            }
         }
 
         if (runner.execute<bool>("Level_is_complete"))
         {
             const auto name = runner.execute<std::string>("Level_name");
             _bus.post_level_complete(name);
+        }
+
+        for (const auto &e : transformed_shapes)
+        {
+            e.draw(_ps.debug_renderer());
         }
     }
 
