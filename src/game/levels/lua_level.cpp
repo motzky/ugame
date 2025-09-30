@@ -73,9 +73,7 @@ namespace game::levels
                                                             barrel_textures});
 
             const auto aabb = ent.bounding_box();
-            const auto dif = aabb.max - aabb.min;
-            const auto dif_2 = dif / 2.f;
-            const auto half_extents = dif_2; // + aabb.min;
+            const auto half_extents = (aabb.max - aabb.min) / 2.f;
             auto *shape = _ps.create_shape<BoxShape>(
                 Vector3{
                     std::fabs(half_extents.x),
@@ -122,10 +120,26 @@ namespace game::levels
 
         runner.execute("Level_update_level", player.position());
 
+        auto orig_positions = _entities |
+                              std::views::transform([](const auto &e)
+                                                    { return std::make_tuple(false, e.position()); }) |
+                              std::ranges::to<std::vector>();
+
+        for (const auto &[index, entity] : std::views::enumerate(_entities))
+        {
+            const auto &[position, color, tint_amount] = runner.execute<Vector3, Vector3, float>("Level_entity_info", index + 1);
+            entity.set_position(position);
+
+            _barrel_info[std::addressof(entity)] = {.tint_color = {.r = color.x, .g = color.y, .b = color.z}, .tint_amount = tint_amount};
+        }
+
         const auto transformed_shapes =
             std::views::zip_transform(
+                // FIXME: _shapes were constructed from entity's AABB, so alread contain the scale and rotation of it's transform
+                // [](const auto &shape, const auto &entitiy)
+                // { return TransformedShape{shape, entitiy.transform()}; },
                 [](const auto &shape, const auto &entitiy)
-                { return TransformedShape{shape, entitiy.transform()}; },
+                { return TransformedShape{shape, {entitiy.position(), {1.f}, {}}}; },
                 _shapes,
                 _entities) |
             std::ranges::to<std::vector>();
@@ -138,19 +152,24 @@ namespace game::levels
                                                                            { return std::make_pair(x, y); }); }) |
                       std::views::join;
 
-        for (const auto &[index, entity] : std::views::enumerate(_entities))
+        for (const auto &[i, j] : combos)
         {
-            const auto &[position, color, tint_amount] = runner.execute<Vector3, Vector3, float>("Level_entity_info", index + 1);
-            entity.set_position(position);
+            const auto &transform_shape1 = transformed_shapes[i];
+            const auto &transform_shape2 = transformed_shapes[j];
 
-            _barrel_info[std::addressof(entity)] = {.tint_color = {.r = color.x, .g = color.y, .b = color.z}, .tint_amount = tint_amount};
-
-            for (const auto &[i, j] : combos)
+            if (transform_shape1.intersects(transform_shape2))
             {
-                const auto &transform_shape1 = transformed_shapes[i];
-                const auto &transform_shape2 = transformed_shapes[j];
+                std::get<0>(orig_positions[i]) = true;
+                std::get<0>(orig_positions[j]) = true;
+            }
+        }
 
-                transform_shape1.intersects(transform_shape2);
+        for (const auto &[index, orig] : std::views::enumerate(orig_positions))
+        {
+            if (const auto &[revert, orig_position] = orig; revert)
+            {
+                _entities[index].set_position(orig_position);
+                runner.execute("Level_set_entity_position", index + 1, orig_position);
             }
         }
 

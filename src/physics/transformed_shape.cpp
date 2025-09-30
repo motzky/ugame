@@ -14,17 +14,20 @@
 
 namespace
 {
-    class SimpleCollideShapeCollector : public ::JPH::CollideShapeCollector
+    struct SimpleCollideShapeCollector : public ::JPH::CollideShapeCollector
     {
+        SimpleCollideShapeCollector(bool &hit) : hit(hit) {}
+
         virtual auto AddHit([[maybe_unused]] const ::JPH::CollideShapeCollector::ResultType &inResult) -> void override
         {
-            game::log::debug("collision AddHit");
+            hit = true;
         }
 
         virtual auto OnBody(const ::JPH::Body &) -> void override
         {
             game::log::debug("collision OnBody");
         }
+        bool &hit;
     };
 
 }
@@ -39,7 +42,8 @@ namespace game
 
     auto TransformedShape::intersects(const TransformedShape &shape) const -> bool
     {
-        auto collector = SimpleCollideShapeCollector{};
+        auto hit = false;
+        auto collector = SimpleCollideShapeCollector{hit};
         const auto settings = ::JPH::CollideShapeSettings{};
 
         ::JPH::CollisionDispatch::sCollideShapeVsShape(
@@ -54,7 +58,7 @@ namespace game
             settings,
             collector);
 
-        return false;
+        return hit;
     }
 
     auto TransformedShape::draw(DebugRenderer &debug_renderer) const -> void
@@ -62,8 +66,7 @@ namespace game
         _shape->native_handle()->Draw(
             std::addressof(debug_renderer),
             to_jolt(_transform),
-            ::JPH::RVec3{2.f, 2.f, 2.f},
-
+            ::JPH::RVec3::sOne(),
             ::JPH::Color{255, 0, 255},
             false, true);
     }
