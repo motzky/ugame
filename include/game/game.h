@@ -2,6 +2,7 @@
 
 #include <cstddef>
 #include <memory>
+#include <string>
 #include <string_view>
 #include <vector>
 
@@ -26,8 +27,9 @@ namespace game
 
     private:
         bool _running;
-        std::vector<std::unique_ptr<levels::LuaLevel>> _levels;
+        std::vector<std::string> _level_names;
 
+        std::unique_ptr<levels::LuaLevel> _level;
         std::size_t _level_num;
         messaging::MessageBus _message_bus;
         Window _window;

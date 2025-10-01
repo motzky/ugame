@@ -51,9 +51,8 @@ namespace game::levels
         DefaultCache &resource_cache,
         const TlvReader &reader,
         const Player &player,
-        messaging::MessageBus &bus,
-        PhysicsSystem &ps)
-        : _ps{ps},
+        messaging::MessageBus &bus)
+        : _ps{},
           _script(loader.load(script_name).as_string()),
           _entities{},
           _floor{
@@ -64,7 +63,7 @@ namespace game::levels
               std::vector<const Texture *>{
                   resource_cache.get<Texture>("floor_albedo"),
                   resource_cache.get<Texture>("floor_albedo")},
-              {ps.create_shape<BoxShape>(Vector3{100.f, 1.f, 100.f}), {{0.f, -2.f, 0}, {1.f}, {}}},
+              {_ps.create_shape<BoxShape>(Vector3{100.f, 1.f, 100.f}), {{0.f, -2.f, 0}, {1.f}, {}}},
               0u,
               0u},
           _skybox{reader, {"skybox_right", "skybox_left", "skybox_top", "skybox_bottom", "skybox_front", "skybox_back"}},
@@ -248,4 +247,8 @@ namespace game::levels
         return _entities;
     }
 
+    auto LuaLevel::physics() const -> const PhysicsSystem &
+    {
+        return _ps;
+    }
 }

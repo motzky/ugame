@@ -35,16 +35,17 @@ namespace game::levels
             DefaultCache &resource_cache,
             const TlvReader &reader,
             const Player &player,
-            messaging::MessageBus &bus,
-            PhysicsSystem &ps);
+            messaging::MessageBus &bus);
 
         virtual auto update(const Player &player) -> void override;
         virtual auto restart() -> void override;
 
         auto entities() const -> std::span<const Entity>;
 
+        auto physics() const -> const PhysicsSystem &;
+
     private:
-        PhysicsSystem &_ps;
+        PhysicsSystem _ps;
 
         LuaScript _script;
 

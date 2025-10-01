@@ -98,7 +98,12 @@ namespace game
 
     Game::Game(std::uint32_t width, std::uint32_t height)
         : _running(true),
-          _levels{},
+          _level_names{
+              "level_apple.lua",
+              "level_kiwi.lua",
+              "level_mango.lua",
+          },
+          _level{},
           _level_num{0ul},
           _message_bus{},
           _window{width, height},
@@ -163,22 +168,6 @@ namespace game
                 .data{static_cast<std::byte>(0xff), static_cast<std::byte>(0xff), static_cast<std::byte>(0xff)}},
             sampler);
 
-        std::string_view levels[] = {
-            "level_mango.lua",
-            "level_apple.lua",
-            "level_kiwi.lua",
-        };
-
-        auto physics = PhysicsSystem{};
-
-        for (const auto level : levels)
-        {
-            _levels.push_back(std::make_unique<levels::LuaLevel>(resource_loader, level, resource_cache, reader, _player, _message_bus, physics));
-        }
-
-        _levels[_level_num]->restart();
-        _player.restart();
-
         auto gamma = 2.2f;
 
         auto show_debug = false;
@@ -188,9 +177,21 @@ namespace game
 
         auto debug_wireframe_renderer = game::ShapeWireframeRenderer{};
 
+        auto curernt_level = _level_num;
+        _level = std::make_unique<levels::LuaLevel>(resource_loader, _level_names[_level_num], resource_cache, reader, _player, _message_bus);
+        _level->restart();
+        _player.restart();
+
         while (_running)
         {
-            auto *level = _levels[_level_num].get();
+            if (curernt_level != _level_num)
+            {
+                _player.restart();
+                _level.reset();
+                _level = std::make_unique<levels::LuaLevel>(resource_loader, _level_names[_level_num], resource_cache, reader, _player, _message_bus);
+                curernt_level = _level_num;
+            }
+            auto *level = _level.get();
 
 #pragma region EventHandling
             auto event = _window.pump_event();
@@ -247,19 +248,19 @@ namespace game
             {
                 entity->set_visibility(intersects_frustum(entity->bounding_box(), _player.camera().frustum_planes()));
 
-                entity->bounding_box().draw(physics.debug_renderer());
+                entity->bounding_box().draw(level->physics().debug_renderer());
             }
 
             if (show_physics_debug)
             {
                 auto lines = debug_wireframe_renderer.yield();
-                for (const auto line : physics.debug_renderer().lines())
+                for (const auto line : level->physics().debug_renderer().lines())
                 {
                     lines.push_back(line);
                 }
                 level->scene().debug_lines = game::DebugLines{lines};
 
-                physics.debug_renderer().clear();
+                level->physics().debug_renderer().clear();
             }
             else
             {
@@ -279,17 +280,11 @@ namespace game
     {
         game::log::info("level complete: {}", level_name);
         _level_num++;
-        if (_level_num >= _levels.size())
+        if (_level_num >= _level_names.size())
         {
             log::info("YOU WIN !");
             // _running = false;
             _level_num = 0;
-        }
-
-        if (_running)
-        {
-            _levels[_level_num]->restart();
-            _player.restart();
         }
     }
 }
