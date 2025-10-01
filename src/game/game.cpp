@@ -99,6 +99,7 @@ namespace game
     Game::Game(std::uint32_t width, std::uint32_t height)
         : _running(true),
           _level_names{
+              "level_pear.lua",
               "level_banana.lua",
               "level_apple.lua",
               "level_kiwi.lua",
