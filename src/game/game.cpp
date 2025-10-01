@@ -178,17 +178,15 @@ namespace game
         auto debug_wireframe_renderer = game::ShapeWireframeRenderer{};
 
         auto curernt_level = _level_num;
-        _level = std::make_unique<levels::LuaLevel>(resource_loader, _level_names[_level_num], resource_cache, reader, _player, _message_bus);
-        _level->restart();
-        _player.restart();
 
         while (_running)
         {
-            if (curernt_level != _level_num)
+            if (_level == nullptr || curernt_level != _level_num)
             {
                 _player.restart();
                 _level.reset();
                 _level = std::make_unique<levels::LuaLevel>(resource_loader, _level_names[_level_num], resource_cache, reader, _player, _message_bus);
+                _level->restart();
                 curernt_level = _level_num;
             }
             auto *level = _level.get();
