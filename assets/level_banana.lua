@@ -68,3 +68,7 @@ end
 function Level_set_entity_visibility(index, visibility)
     barrels[index].visibility = visibility
 end
+
+function Level_set_entity_position(index, position)
+    barrels[index].position = position
+end
