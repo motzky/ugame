@@ -64,7 +64,9 @@ namespace game::levels
               std::vector<const Texture *>{
                   resource_cache.get<Texture>("floor_albedo"),
                   resource_cache.get<Texture>("floor_albedo")},
-              {ps.create_shape<BoxShape>(Vector3{100.f, 1.f, 100.f}), {{0.f, -2.f, 0}, {1.f}, {}}}},
+              {ps.create_shape<BoxShape>(Vector3{100.f, 1.f, 100.f}), {{0.f, -2.f, 0}, {1.f}, {}}},
+              0u,
+              0u},
           _skybox{reader, {"skybox_right", "skybox_left", "skybox_top", "skybox_bottom", "skybox_front", "skybox_back"}},
           _skybox_sampler{},
           _bus(bus),
@@ -84,7 +86,7 @@ namespace game::levels
         const auto barrel_count = runner.execute<std::int64_t>("Level_entity_count");
         for (std::int64_t i = 0; i < barrel_count; ++i)
         {
-            const auto info = runner.execute<Vector3, Vector3, float>("Level_entity_info", i + 1);
+            const auto info = runner.execute<Vector3, Vector3, float, std::int64_t, std::int64_t>("Level_entity_info", i + 1);
             const auto *mesh = _resource_cache.get<Mesh>("barrel");
             const auto &[min, max] = calculate_bounding_box(mesh, {std::get<0>(info),
                                                                    {0.4f}});
@@ -101,7 +103,9 @@ namespace game::levels
                                           {0.4f},
                                           {{0.f}, {1.f}, {0.707107f, 0.f, 0.f, 0.707107f}},
                                           barrel_textures,
-                                          TransformedShape{shape, {std::get<0>(info), {0.4f}, {0.707107f, 0.f, 0.f, 0.707107f}}}});
+                                          TransformedShape{shape, {std::get<0>(info), {0.4f}, {0.707107f, 0.f, 0.f, 0.707107f}}},
+                                          static_cast<std::uint32_t>(std::get<3>(info)),
+                                          static_cast<std::uint32_t>(std::get<4>(info))});
 
             _shapes.push_back(shape);
         }
@@ -150,7 +154,8 @@ namespace game::levels
 
         for (const auto &[index, entity] : std::views::enumerate(_entities))
         {
-            const auto &[position, color, tint_amount] = runner.execute<Vector3, Vector3, float>("Level_entity_info", index + 1);
+            const auto &[position, color, tint_amount, collsion_layer, collision_mask] =
+                runner.execute<Vector3, Vector3, float, std::int64_t, std::int64_t>("Level_entity_info", index + 1);
             entity.set_position(position);
 
             _barrel_info[std::addressof(entity)] = {.tint_color = {.r = color.x, .g = color.y, .b = color.z}, .tint_amount = tint_amount};
@@ -158,9 +163,6 @@ namespace game::levels
 
         const auto transformed_shapes =
             std::views::zip_transform(
-                // FIXME: _shapes were constructed from entity's AABB, so alread contain the scale and rotation of it's transform
-                // [](const auto &shape, const auto &entitiy)
-                // { return TransformedShape{shape, entitiy.transform()}; },
                 [](const auto &shape, const auto &entitiy)
                 { return TransformedShape{shape, {entitiy.position(), {1.f}, {0.707107f, 0.f, 0.f, 0.707107f}}}; },
                 _shapes,
@@ -177,13 +179,19 @@ namespace game::levels
 
         for (const auto &[i, j] : combos)
         {
-            const auto &transform_shape1 = transformed_shapes[i];
-            const auto &transform_shape2 = transformed_shapes[j];
+            const auto ent1 = _entities[i];
+            const auto ent2 = _entities[j];
 
-            if (transform_shape1.intersects(transform_shape2))
+            if ((ent1.collision_mask() & ent2.collision_layer()) && (ent2.collision_mask() & ent1.collision_layer()))
             {
-                std::get<0>(orig_positions[i]) = true;
-                std::get<0>(orig_positions[j]) = true;
+                const auto &transform_shape1 = transformed_shapes[i];
+                const auto &transform_shape2 = transformed_shapes[j];
+
+                if (transform_shape1.intersects(transform_shape2))
+                {
+                    std::get<0>(orig_positions[i]) = true;
+                    std::get<0>(orig_positions[j]) = true;
+                }
             }
         }
 
@@ -216,7 +224,7 @@ namespace game::levels
         // read the reset entity values from LUA
         for (const auto &[index, entity] : std::views::enumerate(_entities))
         {
-            const auto &[position, color, tint_amount] = runner.execute<Vector3, Vector3, float>("Level_entity_info", index + 1);
+            const auto &[position, color, tint_amount, collision_layer, collision_mask] = runner.execute<Vector3, Vector3, float, std::int64_t, std::int64_t>("Level_entity_info", index + 1);
             entity.set_position(position);
 
             _barrel_info[std::addressof(entity)] = {.tint_color = {.r = color.x, .g = color.y, .b = color.z}, .tint_amount = tint_amount};
