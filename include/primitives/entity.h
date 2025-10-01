@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstdint>
 #include <tuple>
 #include <vector>
 
@@ -24,14 +25,18 @@ namespace game
                const Vector3 &position,
                const Vector3 &scale,
                std::span<const Texture *const> textures,
-               TransformedShape bounding_box);
+               TransformedShape bounding_box,
+               std::uint32_t collision_layer,
+               std::uint32_t collision_mask);
         Entity(const Mesh *mesh,
                const Material *material,
                const Vector3 &position,
                const Vector3 &scale,
                const Transform &local_transform,
                std::span<const Texture *const> textures,
-               TransformedShape bounding_box);
+               TransformedShape bounding_box,
+               std::uint32_t collision_layer,
+               std::uint32_t collision_mask);
 
         auto mesh() const -> const Mesh *;
         auto material() const -> const Material *;
@@ -47,6 +52,9 @@ namespace game
         auto set_rotation(const Quaternion &rotation) -> void;
         auto translate(const Vector3 &translation) -> void;
 
+        auto collision_layer() const -> std::uint32_t;
+        auto collision_mask() const -> std::uint32_t;
+
     private:
         const Mesh *_mesh;
         const Material *_material;
@@ -55,6 +63,8 @@ namespace game
         std::vector<const Texture *> _textures;
         bool _visible;
         TransformedShape _bounding_box;
+        std::uint32_t _collision_layer;
+        std::uint32_t _collision_mask;
     };
 
 }

@@ -19,14 +19,18 @@ namespace game
                    const Vector3 &position,
                    const Vector3 &scale,
                    std::span<const Texture *const> textures,
-                   TransformedShape bounding_box)
+                   TransformedShape bounding_box,
+                   std::uint32_t collision_layer,
+                   std::uint32_t collision_mask)
         : _mesh(mesh),
           _material(material),
           _transform(position, scale),
           _local_transform(),
           _textures(std::ranges::cbegin(textures), std::ranges::cend(textures)),
           _visible(true),
-          _bounding_box{bounding_box}
+          _bounding_box{bounding_box},
+          _collision_layer(collision_layer),
+          _collision_mask(collision_mask)
     {
     }
 
@@ -36,14 +40,18 @@ namespace game
                    const Vector3 &scale,
                    const Transform &local_transform,
                    std::span<const Texture *const> textures,
-                   TransformedShape bounding_box)
+                   TransformedShape bounding_box,
+                   std::uint32_t collision_layer,
+                   std::uint32_t collision_mask)
         : _mesh(mesh),
           _material(material),
           _transform(position, scale),
           _local_transform(local_transform),
           _textures(std::ranges::cbegin(textures), std::ranges::cend(textures)),
           _visible(true),
-          _bounding_box{bounding_box}
+          _bounding_box{bounding_box},
+          _collision_layer(collision_layer),
+          _collision_mask(collision_mask)
     {
         _transform.rotation = _local_transform.rotation;
     }
@@ -100,4 +108,15 @@ namespace game
         _transform.position += _local_transform.position + translation;
         _bounding_box.translate(translation);
     }
+
+    auto Entity::collision_layer() const -> std::uint32_t
+    {
+        return _collision_layer;
+    }
+
+    auto Entity::collision_mask() const -> std::uint32_t
+    {
+        return _collision_mask;
+    }
+
 }
