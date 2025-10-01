@@ -353,7 +353,7 @@ namespace game
 
     auto Window::set_title(const std::string &title) const -> void
     {
-        ::SetWindowTextA(_window, title.c_str());
+        ::SetWindowTextA(_windowHandle, title.c_str());
     }
 
     auto Window::show_cursor(bool /*show*/) const -> void
