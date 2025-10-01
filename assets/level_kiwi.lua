@@ -21,7 +21,7 @@ function Level_restart_level()
     barrels[1] = {
         position = Vector3(0.0, -0.2, 0.0),
         visibility = true,
-        color = Vector3(1.0, 0.0, 0.0),
+        color = Vector3(0.0, 1.0, 0.0),
         tint = 1.0,
         collision_layer = 1,
         collision_mask = 0,
@@ -29,7 +29,7 @@ function Level_restart_level()
     barrels[2] = {
         position = Vector3(5.0, -0.2, 0.0),
         visibility = true,
-        color = Vector3(1.0, 0.0, 0.0),
+        color = Vector3(0.0, 1.0, 0.0),
         tint = 0.5,
         collision_layer = 2,
         collision_mask = 2,
