@@ -100,11 +100,11 @@ namespace game
     {
         ensure(::lua_gettop(state) >= 2, "not enough arguments on stack;\n{}", state);
 
-        const auto vec1 = pop_vector3(state);
-        ensure(::lua_gettop(state) != 0, "no reuslt to get\n{}", state);
         ensure(::lua_isnumber(state, -1) == 1, "result not a float\n{}", state);
         const auto scalar = static_cast<float>(::lua_tonumber(state, -1));
         ::lua_pop(state, 1);
+
+        const auto vec1 = pop_vector3(state);
 
         push_vector3(state, vec1 * scalar);
 

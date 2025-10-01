@@ -68,11 +68,44 @@ function mutate_v(v1, f)
 end)"};
 
         const auto runner = game::ScriptRunner{script};
-        const auto res = runner.execute<game::Vector3>("mutate_v", 10.f, game::Vector3{1.0f, 2.0f, 3.0f});
+        const auto res = runner.execute<game::Vector3>("mutate_v", game::Vector3{1.0f, 2.0f, 3.0f}, 10.f);
 
         ASSERT_NEAR(res.x, 10.f, 0.001f);
         ASSERT_NEAR(res.y, 20.f, 0.001f);
         ASSERT_NEAR(res.z, 30.f, 0.001f);)
+}
+
+TEST(lua_interop, function_call_local_vector3_mul)
+{
+    TEST_IMPL(
+        auto script = game::LuaScript{R"(
+function mutate_v(f)
+        local v1 = Vector3(1.0, 2.0, 3.0)
+        return v1 * f
+end)"};
+
+        const auto runner = game::ScriptRunner{script};
+        const auto res = runner.execute<game::Vector3>("mutate_v", 10.f);
+
+        ASSERT_NEAR(res.x, 10.f, 0.001f);
+        ASSERT_NEAR(res.y, 20.f, 0.001f);
+        ASSERT_NEAR(res.z, 30.f, 0.001f);)
+}
+
+TEST(lua_interop, function_call_vector3_sub_then_mul)
+{
+    TEST_IMPL(
+        auto script = game::LuaScript{R"(
+function mutate_v(v1, v2, f)
+        return (v1 - v2) * f
+end)"};
+
+        const auto runner = game::ScriptRunner{script};
+        const auto res = runner.execute<game::Vector3>("mutate_v", game::Vector3{10.0f, 20.0f, 30.0f}, game::Vector3{1.0f, 2.0f, 3.0f}, 10.f);
+
+        ASSERT_NEAR(res.x, 90.f, 0.001f);
+        ASSERT_NEAR(res.y, 180.f, 0.001f);
+        ASSERT_NEAR(res.z, 270.f, 0.001f);)
 }
 
 TEST(lua_interop, function_call_vector3_unm)
