@@ -351,7 +351,7 @@ namespace game
         return _height;
     }
 
-    auto Windows::set_title(const std::string &title) const -> void
+    auto Window::set_title(const std::string &title) const -> void
     {
         ::SetWindowTextA(_window, title.c_str());
     }
