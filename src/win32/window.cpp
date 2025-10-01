@@ -351,6 +351,11 @@ namespace game
         return _height;
     }
 
+    auto Windows::set_title(const std::string &title) const -> void
+    {
+        ::SetWindowTextA(_window, title.c_str());
+    }
+
     auto Window::show_cursor(bool /*show*/) const -> void
     {
         log::warn("show_cursor() not supported on Windows yet!");

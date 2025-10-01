@@ -314,6 +314,11 @@ namespace game
         return _height;
     }
 
+    auto Window::set_title(const std::string &title) const -> void
+    {
+        ::glfwSetWindowTitle(_windowHandle, title.c_str());
+    }
+
     auto Window::show_cursor(bool show) const -> void
     {
         ::glfwSetInputMode(_windowHandle, GLFW_CURSOR, show ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_HIDDEN);

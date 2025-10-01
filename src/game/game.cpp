@@ -189,6 +189,8 @@ namespace game
                 _level = std::make_unique<levels::LuaLevel>(resource_loader, _level_names[_level_num], resource_cache, reader, _player, _message_bus);
                 _level->restart();
                 curernt_level = _level_num;
+
+                _window.set_title(_level_names[_level_num]);
             }
             auto *level = _level.get();
 

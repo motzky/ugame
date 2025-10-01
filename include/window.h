@@ -40,6 +40,8 @@ namespace game
         auto width() const -> std::uint32_t;
         auto height() const -> std::uint32_t;
 
+        auto set_title(const std::string &title) const -> void;
+
         auto show_cursor(bool show) const -> void;
 
     private:
