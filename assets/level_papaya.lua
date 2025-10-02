@@ -83,3 +83,18 @@ function Level_handle_entity_intersect(index_a, index_b)
         current_level_state = LOST
     end
 end
+
+function Level_get_ambient()
+    local d = distance(barrels[1].position, barrels[2].position)
+    local color = 1.0
+
+    color = 1.0 / d / d
+
+    print(d, color)
+
+    return Vector3(color, 1.0, 1.0)
+end
+
+function Level_get_direction_light()
+    return Vector3(0.0, 0.0, 0.0), Vector3(0.0, 0.0, 0.0)
+end
