@@ -1,0 +1,11 @@
+#pragma once
+
+namespace game::version
+{
+    // clang-format off
+    static constexpr auto major = @nathan_stream_VERSION_MAJOR@;
+    static constexpr auto minor = @nathan_stream_VERSION_MINOR@;
+    static constexpr auto patch = @nathan_stream_VERSION_PATCH@;
+    // clang-format on
+
+}

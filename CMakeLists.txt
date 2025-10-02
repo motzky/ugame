@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.30)
 
 project(
     nathan_stream
-    VERSION 0.1
+    VERSION 0.1.0
     DESCRIPTION "A simple C++ project following Nathan's stream"
     LANGUAGES C CXX
 )
