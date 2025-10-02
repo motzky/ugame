@@ -16,7 +16,7 @@
 #include "graphics/texture_sampler.h"
 #include "loaders/mesh_loader.h"
 #include "primitives/entity.h"
-#include "resources/resource_loader.h"
+#include "tlv/tlv_reader.h"
 #include "utils/ensure.h"
 
 namespace
@@ -46,40 +46,40 @@ namespace
 #pragma warning(pop)
 #endif
 
-    auto create_skybox_material(game::ResourceLoader &resource_loader) -> game::Material
+    auto create_skybox_material(const game::TlvReader &reader) -> game::Material
     {
-        const auto vert_file = resource_loader.load("cube.vert");
-        const auto vert_data = vert_file.as_string();
+        const auto vert_file = game::TlvReader::get_text_file(reader, "cube.vert");
+        const auto vert_data = vert_file.data;
         const auto vertex_shader = game::Shader{vert_data, game::ShaderType::VERTEX};
 
-        const auto frag_file = resource_loader.load("cube.frag");
-        const auto frag_data = frag_file.as_string();
+        const auto frag_file = game::TlvReader::get_text_file(reader, "cube.frag");
+        const auto frag_data = frag_file.data;
         const auto fragment_shader = game::Shader{frag_data, game::ShaderType::FRAGMENT};
         return game::Material{vertex_shader, fragment_shader};
     }
 
-    auto create_post_process_material(game::ResourceLoader &resource_loader) -> game::Material
+    auto create_post_process_material(const game::TlvReader &reader) -> game::Material
     {
-        const auto vert_file = resource_loader.load("post_process.vert");
-        const auto vert_data = vert_file.as_string();
+        const auto vert_file = game::TlvReader::get_text_file(reader, "post_process.vert");
+        const auto vert_data = vert_file.data;
 
         const auto vertex_shader = game::Shader{vert_data, game::ShaderType::VERTEX};
 
-        const auto frag_file = resource_loader.load("post_process.frag");
-        const auto frag_data = frag_file.as_string();
+        const auto frag_file = game::TlvReader::get_text_file(reader, "post_process.frag");
+        const auto frag_data = frag_file.data;
 
         const auto fragment_shader = game::Shader{frag_data, game::ShaderType::FRAGMENT};
         return game::Material{vertex_shader, fragment_shader};
     }
 
-    auto create_line_material(game::ResourceLoader &resource_loader) -> game::Material
+    auto create_line_material(const game::TlvReader &reader) -> game::Material
     {
-        const auto vert_file = resource_loader.load("line.vert");
-        const auto vert_data = vert_file.as_string();
+        const auto vert_file = game::TlvReader::get_text_file(reader, "line.vert");
+        const auto vert_data = vert_file.data;
         const auto vertex_shader = game::Shader{vert_data, game::ShaderType::VERTEX};
 
-        const auto frag_file = resource_loader.load("line.frag");
-        const auto frag_data = frag_file.as_string();
+        const auto frag_file = game::TlvReader::get_text_file(reader, "line.frag");
+        const auto frag_data = frag_file.data;
         const auto fragment_shader = game::Shader{frag_data, game::ShaderType::FRAGMENT};
         return game::Material{vertex_shader, fragment_shader};
     }
@@ -88,15 +88,15 @@ namespace
 
 namespace game
 {
-    Renderer::Renderer(ResourceLoader &resource_loader, MeshLoader &mesh_loader, std::uint32_t width, std::uint32_t height)
+    Renderer::Renderer(const TlvReader &reader, MeshLoader &mesh_loader, std::uint32_t width, std::uint32_t height)
         : _camera_buffer(sizeof(Matrix4) * 2u + sizeof(Vector3)),
           _light_buffer(10240u),
           _skybox_cube(mesh_loader.cube()),
-          _skybox_material(create_skybox_material(resource_loader)),
-          _debug_line_material(create_line_material(resource_loader)),
+          _skybox_material(create_skybox_material(reader)),
+          _debug_line_material(create_line_material(reader)),
           _fb{width, height},
           _post_process_sprite{mesh_loader.sprite()},
-          _post_process_material{create_post_process_material(resource_loader)}
+          _post_process_material{create_post_process_material(reader)}
     {
     }
 

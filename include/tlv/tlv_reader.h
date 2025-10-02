@@ -45,6 +45,8 @@ namespace game
             return {{self._buffer.data() + self._buffer.size(), self._buffer.data() + self._buffer.size()}};
         }
 
+        static auto get_text_file(const TlvReader &reader, std::string_view name) -> TextFile;
+
     private:
         std::span<const std::byte> _buffer;
     };

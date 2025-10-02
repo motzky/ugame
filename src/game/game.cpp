@@ -115,20 +115,19 @@ namespace game
         _message_bus.subscribe(messaging::MessageType::LEVEL_COMPLETE, this);
     }
 
-    Game::~Game()
-    {
-    }
+    Game::~Game() = default;
 
     auto Game::run(std::string_view resource_root) -> void
     {
         auto resource_loader = game::ResourceLoader{resource_root};
-        auto mesh_loader = game::MeshLoader{resource_loader};
+        const auto tlv_file = resource_loader.load("resources");
+
+        auto mesh_loader = game::MeshLoader{};
         auto resource_cache = game::DefaultCache{};
 
         const auto *sampler = resource_cache.insert<game::TextureSampler>("default");
 
         game::log::info("loading resources...");
-        const auto tlv_file = resource_loader.load("resources");
 
         const auto reader = game::TlvReader{tlv_file.as_bytes()};
 
@@ -138,20 +137,17 @@ namespace game
 
         game::log::info("Creating materials...");
 
-        const auto vertex_shader_file = resource_loader.load("simple.vert");
-        const auto fragment_shader_file = resource_loader.load("barrel.frag");
+        const auto vertex_shader_file = TlvReader::get_text_file(reader, "simple.vert");
+        const auto fragment_shader_file = TlvReader::get_text_file(reader, "barrel.frag");
 
-        const auto vertex_shader = game::Shader{vertex_shader_file.as_string(), game::ShaderType::VERTEX};
-        const auto fragment_shader = game::Shader{fragment_shader_file.as_string(), game::ShaderType::FRAGMENT};
+        const auto vertex_shader = game::Shader{vertex_shader_file.data, game::ShaderType::VERTEX};
+        const auto fragment_shader = game::Shader{fragment_shader_file.data, game::ShaderType::FRAGMENT};
         resource_cache.insert<Material>("barrel_material", vertex_shader, fragment_shader);
 
-        auto renderer = game::Renderer{resource_loader, mesh_loader, _window.width(), _window.height()};
-
-        const auto checker_vertex_shader_file = resource_loader.load("simple.vert");
-        const auto checker_fragment_shader_file = resource_loader.load("checker.frag");
-
-        const auto checker_vertex_shader = game::Shader{checker_vertex_shader_file.as_string(), game::ShaderType::VERTEX};
-        const auto checker_fragment_shader = game::Shader{checker_fragment_shader_file.as_string(), game::ShaderType::FRAGMENT};
+        const auto checker_vertex_shader_file = TlvReader::get_text_file(reader, "simple.vert");
+        const auto checker_fragment_shader_file = TlvReader::get_text_file(reader, "checker.frag");
+        const auto checker_vertex_shader = game::Shader{checker_vertex_shader_file.data, game::ShaderType::VERTEX};
+        const auto checker_fragment_shader = game::Shader{checker_fragment_shader_file.data, game::ShaderType::FRAGMENT};
         resource_cache.insert<Material>("floor_material", checker_vertex_shader, checker_fragment_shader);
 
         game::log::info("Creating GL textures...");
@@ -171,6 +167,8 @@ namespace game
                 .data{static_cast<std::byte>(0xff), static_cast<std::byte>(0xff), static_cast<std::byte>(0xff)}},
             sampler);
 
+        auto renderer = game::Renderer{reader, mesh_loader, _window.width(), _window.height()};
+
         auto gamma = 2.2f;
 
         auto show_debug = false;
@@ -188,7 +186,7 @@ namespace game
             {
                 _player.restart();
                 _level.reset();
-                _level = std::make_unique<levels::LuaLevel>(resource_loader, _level_names[_level_num], resource_cache, reader, _player, _message_bus);
+                _level = std::make_unique<levels::LuaLevel>(_level_names[_level_num], resource_cache, reader, _player, _message_bus);
                 _level->restart();
                 curernt_level = _level_num;
 

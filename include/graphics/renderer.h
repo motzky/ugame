@@ -8,15 +8,15 @@
 #include "graphics/mesh.h"
 #include "graphics/texture_sampler.h"
 #include "loaders/mesh_loader.h"
-#include "resources/resource_loader.h"
 #include "scene.h"
+#include "tlv/tlv_reader.h"
 
 namespace game
 {
     class Renderer
     {
     public:
-        Renderer(ResourceLoader &resource_loader, MeshLoader &mesh_loader, std::uint32_t width, std::uint32_t height);
+        Renderer(const TlvReader &reader, MeshLoader &mesh_loader, std::uint32_t width, std::uint32_t height);
         auto render(const Camera &camera, const Scene &scene, float gamma) const -> void;
 
     private:

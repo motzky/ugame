@@ -15,8 +15,6 @@ namespace game
     class MeshLoader
     {
     public:
-        MeshLoader(ResourceLoader &resource_loader);
-
         auto sprite() -> MeshData;
         auto cube() -> MeshData;
 
@@ -28,6 +26,5 @@ namespace game
         };
 
         StringUnorderedMap<LoadedMeshData> _loaded_meshes;
-        ResourceLoader &_resource_loader;
     };
 }

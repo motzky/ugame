@@ -27,11 +27,6 @@ namespace
 
 namespace game
 {
-    MeshLoader::MeshLoader(ResourceLoader &resource_loader)
-        : _resource_loader(resource_loader)
-    {
-    }
-
     auto MeshLoader::sprite() -> MeshData
     {
         const auto loaded = _loaded_meshes.find("sprite");

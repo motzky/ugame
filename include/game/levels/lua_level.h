@@ -39,7 +39,6 @@ namespace game::levels
         };
 
         LuaLevel(
-            const game::ResourceLoader &loader,
             std::string_view script_name,
             DefaultCache &resource_cache,
             const TlvReader &reader,

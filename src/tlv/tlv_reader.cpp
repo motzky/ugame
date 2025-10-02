@@ -54,4 +54,17 @@ namespace game
     {
         return (other._buffer.size() == _buffer.size()) && (other._buffer.data() == _buffer.data());
     }
+
+    auto TlvReader::get_text_file(const TlvReader &reader, std::string_view name) -> TextFile
+    {
+        const auto file = std::ranges::find_if(
+            reader,
+            [name](const auto &e)
+            { return e.is_text_file(name); });
+
+        ensure(file != std::ranges::end(reader), "could not find text file {}", name);
+
+        return (*file).text_file_value();
+    }
+
 }
