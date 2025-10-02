@@ -73,6 +73,7 @@ namespace
 
 auto write_texture(const std::string &path, const std::string &asset_name, const std::string &ext, const std::string &file_name, game::TlvWriter &writer) -> void;
 auto write_mesh(const std::string &path, const std::string &asset_name, const std::string &ext, const std::string &file_name, game::TlvWriter &writer) -> void;
+auto write_text_file(const std::string &path, const std::string &file_name, game::TlvWriter &writer) -> void;
 
 auto main(int argc, char **argv) -> int
 {
@@ -83,7 +84,8 @@ auto main(int argc, char **argv) -> int
         game::ensure(argc == 3, "usage: ./{} <asset_dir> <out_path>", argv[0]);
 
         const auto image_extensions = std::set<std::string>{".png", ".jpg"};
-        const auto mesh_extensions = std::set<std::string>{".fbx", ".ojb"};
+        const auto mesh_extensions = std::set<std::string>{".fbx", ".obj"};
+        const auto text_file_extensions = std::set<std::string>{".vert", ".frag", ".lua"};
 
         auto writer = game::TlvWriter{};
 
@@ -104,6 +106,11 @@ auto main(int argc, char **argv) -> int
             if (mesh_extensions.contains(ext))
             {
                 write_mesh(path, asset_name, ext, file_name, writer);
+                continue;
+            }
+            if (text_file_extensions.contains(ext))
+            {
+                write_text_file(path, file_name, writer);
                 continue;
             }
         }
@@ -205,4 +212,14 @@ auto write_mesh(const std::string &path, const std::string &asset_name, const st
         const auto vertex_data = vertices(verts, normals, tangents, texture_coords);
         writer.write(mesh->mName.C_Str(), {vertex_data, indices});
     }
+}
+
+auto write_text_file(const std::string &path, const std::string &file_name, game::TlvWriter &writer) -> void
+{
+    const auto file = game::File{path};
+    const auto content = file.as_string();
+
+    game::log::info("packing text file: {}", file_name);
+
+    writer.write(file_name, content);
 }
