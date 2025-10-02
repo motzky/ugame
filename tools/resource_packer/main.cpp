@@ -4,7 +4,6 @@
 #include <fstream>
 #include <iostream>
 #include <memory>
-#include <print>
 #include <ranges>
 #include <set>
 #include <string>
@@ -79,7 +78,7 @@ auto main(int argc, char **argv) -> int
 {
     try
     {
-        std::println("resource packer!");
+        game::log::info("resource packer!");
 
         game::ensure(argc == 3, "usage: ./{} <asset_dir> <out_path>", argv[0]);
 
@@ -114,11 +113,11 @@ auto main(int argc, char **argv) -> int
     }
     catch (const game::Exception &err)
     {
-        std::println(std::cerr, "{}", err);
+        game::log::info("{}", err);
     }
     catch (...)
     {
-        std::println(std::cerr, "unknown exception");
+        game::log::info("unknown exception");
     }
 
     return 0;
@@ -141,7 +140,7 @@ auto write_texture(const std::string &path, const std::string &asset_name, const
         ::stbi_image_free};
 
     game::ensure(raw_data, "failed to load image data");
-    std::println("packing: {} {} {} {} {}", asset_name, ext, w, h, num_channels);
+    game::log::info("packing: {} {} {} {} {}", asset_name, ext, w, h, num_channels);
 
     auto num_bytes = static_cast<std::uint32_t>(w * h * num_channels);
     auto v = std::vector<std::byte>{num_bytes};
@@ -201,7 +200,7 @@ auto write_mesh(const std::string &path, const std::string &asset_name, const st
                 indices.push_back(face.mIndices[j]);
             }
         }
-        std::println("packing: {} from {} {} - {} verts, {} indices", mesh->mName.C_Str(), file_name, ext, verts.size(), indices.size());
+        game::log::info("packing: {} from {} {} - {} verts, {} indices", mesh->mName.C_Str(), file_name, ext, verts.size(), indices.size());
 
         const auto vertex_data = vertices(verts, normals, tangents, texture_coords);
         writer.write(mesh->mName.C_Str(), {vertex_data, indices});
