@@ -1,3 +1,7 @@
+PLAYING = 0
+COMPLETE = 1
+LOST = 2
+
 local barrels = {}
 
 local initial_player_position = Vector3(0.0, 0.0, 0.0)
@@ -61,9 +65,13 @@ function Level_restart_level()
     last_player_position = initial_player_position
 end
 
-function Level_is_complete()
-    return distance(barrels[1].position, barrels[2].position) < 1.0 and
-        distance(barrels[3].position, barrels[4].position) < 1.0
+function Level_state()
+    if distance(barrels[1].position, barrels[2].position) < 1.0 and
+        distance(barrels[3].position, barrels[4].position) < 1.0 then
+        return COMPLETE
+    else
+        return PLAYING
+    end
 end
 
 function Level_name()
@@ -89,4 +97,8 @@ end
 
 function Level_set_entity_position(index, position)
     barrels[index].position = position
+end
+
+function Level_handle_entity_intersect(index_a, index_b)
+
 end
