@@ -31,6 +31,7 @@ namespace game
         auto write(const VertexData &value) -> void;
         auto write(std::span<const VertexData> value) -> void;
         auto write(std::string_view name, const MeshData &value) -> void;
+        auto write(std::string_view name, std::string_view value) -> void;
 
     private:
         std::vector<std::byte> _buffer;

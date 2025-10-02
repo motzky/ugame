@@ -163,26 +163,26 @@ namespace game
 
         auto reader = TlvReader(_value);
         auto reader_cursor = std::ranges::begin(reader);
-        ensure(reader_cursor != std::ranges::end(reader), "texture TLV too small");
+        ensure(reader_cursor != std::ranges::end(reader), "mesh TLV too small");
         ensure((*reader_cursor).type() == TlvType::STRING, "first member not a string");
 
         const auto name = (*reader_cursor).string_value();
         ++reader_cursor;
-        ensure(reader_cursor != std::ranges::end(reader), "texture TLV too small");
+        ensure(reader_cursor != std::ranges::end(reader), "mesh TLV too small");
 
         ensure((*reader_cursor).type() == TlvType::VERTEX_DATA_ARRAY, "second member not vertex data array");
         const auto vertex_data = std::span<const VertexData>{
             reinterpret_cast<const VertexData *>((*reader_cursor)._value.data()),
             static_cast<std::uint32_t>((*reader_cursor)._value.size() / sizeof(VertexData))};
         ++reader_cursor;
-        ensure(reader_cursor != std::ranges::end(reader), "texture TLV too small");
+        ensure(reader_cursor != std::ranges::end(reader), "mesh TLV too small");
 
         ensure((*reader_cursor).type() == TlvType::UINT32_ARRAY, "third member not uint32 data array");
         const auto index_data = std::span<const std::uint32_t>{
             reinterpret_cast<const std::uint32_t *>((*reader_cursor)._value.data()),
             static_cast<std::uint32_t>((*reader_cursor)._value.size()) / sizeof(std::uint32_t)};
         ++reader_cursor;
-        ensure(reader_cursor == std::ranges::end(reader), "texture TLV too large");
+        ensure(reader_cursor == std::ranges::end(reader), "mesh TLV too large");
 
         // log::debug("loaded mesh {} - {} verts, {} indices", name, vertex_data.size(), index_data.size());
         return {vertex_data, index_data};
@@ -202,6 +202,43 @@ namespace game
 
         const auto mesh_name = (*reader_cursor).string_value();
         return mesh_name == name;
+    }
+
+    auto TlvEntry::text_file_value() const -> TextFile
+    {
+        ensure(_type == TlvType::TEXT_FILE, "incorrect type");
+
+        auto reader = TlvReader(_value);
+        auto reader_cursor = std::ranges::begin(reader);
+        ensure(reader_cursor != std::ranges::end(reader), "text_file TLV too small");
+        ensure((*reader_cursor).type() == TlvType::STRING, "first member not a string");
+
+        const auto name = (*reader_cursor).string_value();
+        ++reader_cursor;
+        ensure(reader_cursor != std::ranges::end(reader), "text_file TLV too small");
+
+        ensure((*reader_cursor).type() == TlvType::STRING, "second member not a string");
+        const auto content = (*reader_cursor).string_value();
+        ++reader_cursor;
+        ensure(reader_cursor == std::ranges::end(reader), "text_file TLV too large");
+
+        return {name, content};
+    }
+
+    auto TlvEntry::is_text_file(std::string_view name) const -> bool
+    {
+        if (_type != TlvType::TEXT_FILE)
+        {
+            return false;
+        }
+
+        auto reader = TlvReader(_value);
+        auto reader_cursor = std::ranges::begin(reader);
+        ensure(reader_cursor != std::ranges::end(reader), "text file TLV too small");
+        ensure((*reader_cursor).type() == TlvType::STRING, "first member not a string");
+
+        const auto text_file_name = (*reader_cursor).string_value();
+        return text_file_name == name;
     }
 
     auto TlvEntry::size() const -> std::uint32_t
@@ -244,6 +281,8 @@ namespace game
         case MESH_DATA:
             str = "MESH_DATA"sv;
             break;
+        case TEXT_FILE:
+            str = "TEXT_FILE"sv;
         }
         return std::format("{}", str);
     }

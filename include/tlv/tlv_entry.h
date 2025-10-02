@@ -13,6 +13,12 @@
 
 namespace game
 {
+    struct TextFile
+    {
+        std::string name;
+        std::string data;
+    };
+
     enum class TlvType : std::uint32_t
     {
         UINT32,
@@ -25,7 +31,8 @@ namespace game
         VERTEX_DATA_ARRAY,
 
         TEXTURE_DESCRIPTION,
-        MESH_DATA
+        MESH_DATA,
+        TEXT_FILE,
     };
 
     class TlvEntry
@@ -48,6 +55,8 @@ namespace game
         auto vertex_data_array_value() const -> std::vector<VertexData>;
         auto mesh_value() const -> MeshData;
         auto is_mesh(std::string_view name) const -> bool;
+        auto text_file_value() const -> TextFile;
+        auto is_text_file(std::string_view name) const -> bool;
 
         auto size() const -> std::uint32_t;
 
