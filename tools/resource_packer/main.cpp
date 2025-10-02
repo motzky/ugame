@@ -79,13 +79,15 @@ auto main(int argc, char **argv) -> int
 {
     try
     {
-        game::log::info("resource packer!");
+        game::log::info("resource packer");
 
         game::ensure(argc == 3, "usage: ./{} <asset_dir> <out_path>", argv[0]);
 
         const auto image_extensions = std::set<std::string>{".png", ".jpg"};
         const auto mesh_extensions = std::set<std::string>{".fbx", ".obj"};
         const auto text_file_extensions = std::set<std::string>{".vert", ".frag", ".lua"};
+
+        game::log::info("packing {} into {}", std::string{argv[1]}, std::string{argv[2]});
 
         auto writer = game::TlvWriter{};
 
@@ -117,6 +119,8 @@ auto main(int argc, char **argv) -> int
         const auto resource_data = writer.yield();
         game::File out{argv[2], game::CreationMode::CREATE};
         out.write(resource_data);
+
+        game::log::info("done.");
     }
     catch (const game::Exception &err)
     {
