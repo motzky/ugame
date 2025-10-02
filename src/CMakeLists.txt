@@ -110,3 +110,6 @@ target_link_libraries(
     PRIVATE Backtrace::Backtrace stdc++exp
 )
 endif()
+
+
+install(TARGETS nathan_stream DESTINATION bin COMPONENT application)

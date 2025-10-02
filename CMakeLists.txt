@@ -116,3 +116,11 @@ add_subdirectory(tools)
 enable_testing()
 include(CTest)
 add_subdirectory(tests)
+
+set(CPACK_PACKAGE_NAME "game")
+set(CPACK_PACKAGE_VERSION ${PROJECT_VERSION})
+set(CPACK_GENERATOR "ZIP")
+set(CPACK_ARCHIVE_COMPONENT_INSTALL ON)
+set(CPACK_COMPONENTS_ALL application)
+include(CPack)
+
