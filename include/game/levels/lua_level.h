@@ -11,6 +11,7 @@
 #include "graphics/cube_map.h"
 #include "graphics/texture_sampler.h"
 #include "messaging/message_bus.h"
+#include "messaging/subscriber.h"
 #include "physics/physics_sytem.h"
 #include "physics/shape.h"
 #include "primitives/entity.h"
@@ -20,7 +21,15 @@
 
 namespace game::levels
 {
-    class LuaLevel : public Level
+
+    enum class LevelState
+    {
+        PLAYING,
+        COMPLETE,
+        LOST
+    };
+
+    class LuaLevel : public Level, public messaging::Subscriber
     {
     public:
         struct BarrelInfo
@@ -36,13 +45,17 @@ namespace game::levels
             const TlvReader &reader,
             const Player &player,
             messaging::MessageBus &bus);
+        virtual ~LuaLevel();
 
-        virtual auto update(const Player &player) -> void override;
-        virtual auto restart() -> void override;
+        auto update(const Player &player) -> void override;
+        auto restart() -> void override;
 
         auto entities() const -> std::span<const Entity>;
 
         auto physics() const -> const PhysicsSystem &;
+
+        auto handle_entity_intersect(const Entity *a, const Entity *b) -> void override;
+        auto handle_restart_level() -> void override;
 
     private:
         PhysicsSystem _ps;

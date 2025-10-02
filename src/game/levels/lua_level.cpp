@@ -21,6 +21,7 @@
 #include "resources/resource_loader.h"
 #include "scripting/script_runner.h"
 #include "tlv/tlv_reader.h"
+#include "utils/ensure.h"
 
 using namespace std::literals;
 
@@ -73,6 +74,9 @@ namespace game::levels
           _barrel_info{},
           _shapes{}
     {
+        _bus.subscribe(messaging::MessageType::ENTITY_INTERSECT, this);
+        _bus.subscribe(messaging::MessageType::RESTART_LEVEL, this);
+
         const auto runner = ScriptRunner{_script};
         runner.execute("Level_init_level", player.position());
 
@@ -135,6 +139,8 @@ namespace game::levels
         _scene.entities.push_back(&_floor);
     }
 
+    LuaLevel::~LuaLevel() = default;
+
     auto LuaLevel::update(const Player &player) -> void
     {
         const auto runner = ScriptRunner{_script};
@@ -190,23 +196,34 @@ namespace game::levels
                 {
                     std::get<0>(orig_positions[i]) = true;
                     std::get<0>(orig_positions[j]) = true;
+                    _bus.post_entity_intersect(std::addressof(_entities[i]), std::addressof(_entities[j]));
                 }
             }
         }
 
-        for (const auto &[index, orig] : std::views::enumerate(orig_positions))
+        const auto level_state = static_cast<LevelState>(runner.execute<std::int64_t>("Level_state"));
+        switch (level_state)
         {
-            if (const auto &[revert, orig_position] = orig; revert)
-            {
-                _entities[index].set_position(orig_position);
-                runner.execute("Level_set_entity_position", index + 1, orig_position);
-            }
-        }
-
-        if (runner.execute<bool>("Level_is_complete"))
+            using enum LevelState;
+        case COMPLETE:
         {
             const auto name = runner.execute<std::string>("Level_name");
             _bus.post_level_complete(name);
+        }
+        break;
+        case LOST:
+            _bus.post_restart_level();
+            break;
+        default:
+            for (const auto &[index, orig] : std::views::enumerate(orig_positions))
+            {
+                if (const auto &[revert, orig_position] = orig; revert)
+                {
+                    _entities[index].set_position(orig_position);
+                    runner.execute("Level_set_entity_position", index + 1, orig_position);
+                }
+            }
+            break;
         }
 
         for (const auto &e : transformed_shapes)
@@ -226,6 +243,7 @@ namespace game::levels
             const auto &[position, color, tint_amount, collision_layer, collision_mask] = runner.execute<Vector3, Vector3, float, std::int64_t, std::int64_t>("Level_entity_info", index + 1);
             entity.set_position(position);
 
+            // Mabybe not needed, unless we introduce tint animations
             _barrel_info[std::addressof(entity)] = {.tint_color = {.r = color.x, .g = color.y, .b = color.z}, .tint_amount = tint_amount};
 
             const auto visibility = runner.execute<bool>("Level_entity_visibility", index + 1);
@@ -250,5 +268,23 @@ namespace game::levels
     auto LuaLevel::physics() const -> const PhysicsSystem &
     {
         return _ps;
+    }
+
+    auto LuaLevel::handle_entity_intersect(const Entity *a, const Entity *b) -> void
+    {
+        const auto *begin = _entities.data();
+        const auto index_a = static_cast<std::int64_t>(a - begin);
+        const auto index_b = static_cast<std::int64_t>(b - begin);
+
+        expect(index_a >= 0 && index_a < static_cast<std::int64_t>(_entities.size()), "index_a {} out of range", index_a);
+        expect(index_b >= 0 && index_b < static_cast<std::int64_t>(_entities.size()), "index_a {} out of range", index_b);
+
+        const auto runner = ScriptRunner{_script};
+        runner.execute("Level_handle_entity_intersect", index_a + 1, index_b + 1);
+    }
+
+    auto LuaLevel::handle_restart_level() -> void
+    {
+        restart();
     }
 }

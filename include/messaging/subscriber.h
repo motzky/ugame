@@ -7,8 +7,14 @@
 #include "events/mouse_event.h"
 #include "log.h"
 
+namespace game
+{
+    class Entity;
+}
+
 namespace game::messaging
 {
+
     class Subscriber
     {
     public:
@@ -27,6 +33,14 @@ namespace game::messaging
             log::error("unhandled message");
         };
         virtual auto handle_level_complete(const std::string_view &) -> void
+        {
+            log::error("unhandled message");
+        };
+        virtual auto handle_entity_intersect(const game::Entity *, const game::Entity *) -> void
+        {
+            log::error("unhandled message");
+        };
+        virtual auto handle_restart_level() -> void
         {
             log::error("unhandled message");
         };

@@ -7,6 +7,7 @@
 #include "events/mouse_button_event.h"
 #include "events/mouse_event.h"
 #include "messaging/subscriber.h"
+#include "primitives/entity.h"
 #include "utils/ensure.h"
 
 namespace
@@ -53,5 +54,17 @@ namespace game::messaging
     {
         post_message(MessageType::LEVEL_COMPLETE, _subscribers, [](auto *sub, const auto &level_name)
                      { sub->handle_level_complete(level_name); }, level_name);
+    }
+
+    auto MessageBus::post_entity_intersect(const Entity *a, const Entity *b) -> void
+    {
+        post_message(MessageType::ENTITY_INTERSECT, _subscribers, [](auto *sub, const auto *a, const auto *b)
+                     { sub->handle_entity_intersect(a, b); }, a, b);
+    }
+
+    auto MessageBus::post_restart_level() -> void
+    {
+        post_message(MessageType::RESTART_LEVEL, _subscribers, [](auto *sub)
+                     { sub->handle_restart_level(); });
     }
 }

@@ -18,6 +18,7 @@ namespace game
     {
         bus.subscribe(messaging::MessageType::KEY_PRESS, this);
         bus.subscribe(messaging::MessageType::MOUSE_MOVE, this);
+        bus.subscribe(messaging::MessageType::RESTART_LEVEL, this);
     }
 
     auto Player::handle_key_press(const KeyEvent &event) -> void
@@ -30,6 +31,10 @@ namespace game
         static constexpr auto sensitivity = float{0.005f};
         _camera.adjust_pitch(event.delta_y() * sensitivity);
         _camera.adjust_yaw(-event.delta_x() * sensitivity);
+    }
+    auto Player::handle_restart_level() -> void
+    {
+        restart();
     }
 
     auto Player::camera() const -> const Camera &

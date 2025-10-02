@@ -19,6 +19,7 @@ namespace game
 
         auto handle_key_press(const KeyEvent &event) -> void override;
         auto handle_mouse_move(const MouseEvent &event) -> void override;
+        auto handle_restart_level() -> void override;
 
         auto camera() const -> const Camera &;
         auto position() const -> Vector3;
