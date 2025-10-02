@@ -19,6 +19,8 @@ namespace game
     public:
         LuaScript(std::string_view source);
 
+        auto has_function(const std::string &name) const -> bool;
+
         auto set_function(const std::string &name) const -> void;
 
         auto set_argument(std::int64_t value) const -> void;

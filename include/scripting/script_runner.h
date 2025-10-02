@@ -34,6 +34,11 @@ namespace game
         ScriptRunner(ScriptRunner &&) = delete;
         ScriptRunner &operator=(ScriptRunner &&) = delete;
 
+        auto has_function(const std::string &function_name) const -> bool
+        {
+            return _script.has_function(function_name);
+        }
+
         template <class... R, class... Args>
         auto execute(const std::string &function_name, Args &&...args) const
         {

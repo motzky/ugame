@@ -50,6 +50,37 @@ end)"};
     ASSERT_THROW(script.set_function("hell"), game::Exception);
 }
 
+TEST(lua_script, has_function_when_function_exists)
+{
+    auto script = game::LuaScript{R"(
+function Hello()
+        print("hello world")
+end)"};
+
+    ASSERT_TRUE(script.has_function("Hello"));
+}
+
+TEST(lua_script, has_function_when_function_not_exists)
+{
+    auto script = game::LuaScript{R"(
+function Hello()
+        print("hello world")
+end)"};
+
+    ASSERT_FALSE(script.has_function("Hello2"));
+}
+
+TEST(lua_script, has_function_when_name_is_not_function)
+{
+    auto script = game::LuaScript{R"(
+Hello = 1
+function Hello_World()
+        print("hello world")
+end)"};
+
+    ASSERT_FALSE(script.has_function("Hello"));
+}
+
 TEST(lua_script, bad_function_call)
 {
     auto script = game::LuaScript{R"(
