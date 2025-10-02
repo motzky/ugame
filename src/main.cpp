@@ -1,5 +1,6 @@
 #include <iostream>
 #include <print>
+#include <string>
 
 #include "config.h"
 #include "game/game.h"
@@ -15,9 +16,8 @@ auto main(int argc, char **argv) -> int
 
         try
         {
-            game::ensure(argc >= 2, "{} <root_path>", argv[0]);
-
-            g.run(argv[1]);
+            const auto root = argc == 2 ? std::string{argv[1]} : ".";
+            g.run(root);
         }
         catch (const game::Exception &err)
         {
