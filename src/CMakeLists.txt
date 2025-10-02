@@ -112,4 +112,15 @@ target_link_libraries(
 endif()
 
 
+add_custom_command(
+    OUTPUT ${PROJECT_BINARY_DIR}/resources
+    COMMAND resource_packer ${PROJECT_SOURCE_DIR}/assets ${PROJECT_BINARY_DIR}/resources
+    COMMENT "Building resources"
+)
+add_custom_target(resources DEPENDS ${PROJECT_BINARY_DIR}/resources COMMENT "Building resources")
+add_dependencies(resources resource_packer)
+
+add_dependencies(nathan_stream resources)
+
 install(TARGETS nathan_stream DESTINATION bin COMPONENT application)
+install(FILES ${PROJECT_BINARY_DIR}/resources DESTINATION bin COMPONENT application)
