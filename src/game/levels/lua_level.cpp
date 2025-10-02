@@ -113,13 +113,20 @@ namespace game::levels
             _shapes.push_back(shape);
         }
 
+        const auto ambient_vec = runner.execute<Vector3>("Level_get_ambient");
+        const auto [direction_light_dir, direction_light_color] = runner.execute<Vector3, Vector3>("Level_get_direction_light");
+
         _scene = Scene{
             .entities = _entities |
                         std::views::transform([](auto &e)
                                               { return std::addressof(e); }) |
                         std::ranges::to<std::vector>(),
-            .ambient = {.r = .2f, .g = .2f, .b = .2f},
-            .directional = {.direction = {-1.f, -1.f, -1.f}, .color = {.r = .3f, .g = .3f, .b = .3f}},
+            .ambient = {.r = ambient_vec.x, .g = ambient_vec.y, .b = ambient_vec.z},
+            .directional = {.direction = direction_light_dir,
+                            .color = {
+                                .r = direction_light_color.x,
+                                .g = direction_light_color.y,
+                                .b = direction_light_color.z}},
             .points = {{.position = {5.f, 3.f, 0.f}, .color = {.r = 1.f, .g = 0.f, .b = 0.f}, //
                         .const_attenuation = 1.f,
                         .linear_attenuation = .07f,
@@ -215,6 +222,8 @@ namespace game::levels
             _bus.post_restart_level();
             break;
         default:
+        {
+
             for (const auto &[index, orig] : std::views::enumerate(orig_positions))
             {
                 if (const auto &[revert, orig_position] = orig; revert)
@@ -223,7 +232,16 @@ namespace game::levels
                     runner.execute("Level_set_entity_position", index + 1, orig_position);
                 }
             }
-            break;
+            const auto ambient_vec = runner.execute<Vector3>("Level_get_ambient");
+            const auto [direction_light_dir, direction_light_color] = runner.execute<Vector3, Vector3>("Level_get_direction_light");
+            _scene.ambient = {.r = ambient_vec.x, .g = ambient_vec.y, .b = ambient_vec.z};
+            _scene.directional = {.direction = direction_light_dir,
+                                  .color = {
+                                      .r = direction_light_color.x,
+                                      .g = direction_light_color.y,
+                                      .b = direction_light_color.z}};
+        }
+        break;
         }
 
         for (const auto &e : transformed_shapes)
