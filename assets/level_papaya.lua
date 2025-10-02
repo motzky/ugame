@@ -90,8 +90,6 @@ function Level_get_ambient()
 
     color = 1.0 / d / d
 
-    print(d, color)
-
     return Vector3(color, 1.0, 1.0)
 end
 
