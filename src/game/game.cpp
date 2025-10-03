@@ -42,6 +42,7 @@
 #include "resources/resource_loader.h"
 #include "tlv/tlv_entry.h"
 #include "tlv/tlv_reader.h"
+#include "utils/decompress.h"
 #include "utils/exception.h"
 #include "window.h"
 
@@ -119,17 +120,22 @@ namespace game
 
     auto Game::run(std::string_view resource_root) -> void
     {
-        auto resource_loader = game::ResourceLoader{resource_root};
-        const auto tlv_file = resource_loader.load("resources");
-
         auto mesh_loader = game::MeshLoader{};
         auto resource_cache = game::DefaultCache{};
 
         const auto *sampler = resource_cache.insert<game::TextureSampler>("default");
 
         game::log::info("loading resources...");
+        auto resource_loader = game::ResourceLoader{resource_root};
 
-        const auto reader = game::TlvReader{tlv_file.as_bytes()};
+        game::log::info("decompressing...");
+        const auto tlv_file = [&resource_loader]
+        {
+            const auto compressed_tlv_file = resource_loader.load("resources");
+            return game::decompress(compressed_tlv_file.as_bytes());
+        }();
+
+        const auto reader = game::TlvReader{tlv_file};
 
         game::log::info("Loading meshes...");
         resource_cache.insert<Mesh>("barrel", reader, "Cylinder.014");
