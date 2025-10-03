@@ -20,11 +20,16 @@ namespace game
 
         auto decompressed_buffer = std::vector<std::byte>(decompressed_buffer_size);
 
-        [[maybe_unused]] const auto decompressed_result = ::ZSTD_decompress(
+        const auto decompressed_result = ::ZSTD_decompress(
             decompressed_buffer.data(),
             decompressed_buffer.size(),
             data.data(),
-            decompressed_buffer_size);
+            data.size_bytes());
+
+        if (::ZSTD_isError(decompressed_result) != 0)
+        {
+            throw Exception("failed to decompress data: {}", ::ZSTD_getErrorName(decompressed_result));
+        }
 
         return decompressed_buffer;
     }

@@ -27,6 +27,8 @@ namespace game
             throw Exception("failed to compress data: {}", ::ZSTD_getErrorName(compressed_result));
         }
 
+        compressed_buffer.resize(compressed_result);
+
         return compressed_buffer;
     }
 }
