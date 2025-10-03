@@ -26,6 +26,7 @@
 #include "math/vector3.h"
 #include "tlv/tlv_writer.h"
 #include "utils/auto_release.h"
+#include "utils/compress.h"
 #include "utils/ensure.h"
 #include "utils/exception.h"
 
@@ -117,8 +118,15 @@ auto main(int argc, char **argv) -> int
             }
         }
         const auto resource_data = writer.yield();
+
+        game::log::info("compressing....");
+
+        const auto compressed = game::compress(resource_data);
+
+        game::log::info("writing resource {} -> {} bytes", resource_data.size(), compressed.size());
+
         game::File out{argv[2], game::CreationMode::CREATE};
-        out.write(resource_data);
+        out.write(compressed);
 
         game::log::info("done.");
         return 0;
