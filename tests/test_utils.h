@@ -5,6 +5,7 @@
 #include <gtest/gtest.h>
 
 #include "utils/exception.h"
+#include "utils/formatter.h"
 
 #define TEST_IMPL(imple)             \
     try                              \

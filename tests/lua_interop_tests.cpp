@@ -5,7 +5,7 @@
 #include "scripting/script_runner.h"
 #include "utils/exception.h"
 
-#include "utils.h"
+#include "test_utils.h"
 
 TEST(lua_interop, vector3_ctor_simple)
 {
