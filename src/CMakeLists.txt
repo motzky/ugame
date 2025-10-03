@@ -42,6 +42,7 @@ add_subdirectory(physics)
 add_subdirectory(resources)
 add_subdirectory(scripting)
 add_subdirectory(tlv)
+add_subdirectory(utils)
 
 add_executable(
     nathan_stream
@@ -83,6 +84,8 @@ target_compile_options(gamelib PUBLIC /W4 /WX /Debug /Od)
 target_compile_definitions(gamelib PRIVATE -DWIN32 -D_WIN32 -DNOMINMAX)
 target_compile_options(nathan_stream PUBLIC  /W4 /WX /Debug /Od)
 target_compile_definitions(nathan_stream PRIVATE -DWIN32 -D_WIN32)
+
+target_include_directories(gamelib PRIVATE ${zstd_SOURCE_DIR}/lib)
 else()
 target_compile_options(gamelib PUBLIC -Wall -Wextra -Wpedantic -Werror -pedantic-errors)
 target_compile_options(nathan_stream PUBLIC -Wall -Wextra -Wpedantic -Werror -pedantic-errors)
@@ -92,6 +95,7 @@ if(WIN32)
 target_link_libraries(
     gamelib
     PUBLIC imguilib Jolt opengl32 lua
+    PRIVATE libzstd_static
 )
 target_link_libraries(
     nathan_stream
@@ -102,7 +106,7 @@ elseif(UNIX)
 target_link_libraries(
     gamelib
     PUBLIC imguilib Jolt lua
-    PRIVATE GL glfw Backtrace::Backtrace stdc++exp
+    PRIVATE GL glfw Backtrace::Backtrace stdc++exp libzstd_static
 )
 target_link_libraries(
     nathan_stream
@@ -118,7 +122,7 @@ add_custom_command(
     COMMENT "Building resources"
 )
 add_custom_target(resources DEPENDS ${PROJECT_BINARY_DIR}/resources COMMENT "Building resources")
-add_dependencies(resources resource_packer)
+add_dependencies(resources resource_packer gamelib)
 
 add_dependencies(nathan_stream resources)
 

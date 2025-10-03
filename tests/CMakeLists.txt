@@ -6,6 +6,7 @@ mark_as_advanced(BUILD_GMOCK BUILD_GTEST gtest_hide_internal_symbols)
 
 add_executable(unit_tests
     camera_tests.cpp
+    compress_tests.cpp
     ensure_tests.cpp
     frustum_tests.cpp
     lua_script_tests.cpp
@@ -25,6 +26,8 @@ add_executable(unit_tests
 
 target_link_libraries(unit_tests gmock_main gamelib)
 gtest_discover_tests(unit_tests DISCOVERY_MODE PRE_TEST)
+
+add_dependencies(unit_tests gamelib)
 
 add_custom_command(
     TARGET unit_tests

@@ -45,6 +45,18 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(imguizmo)
 
+set(ZSTD_BUILD_STATIC ON)
+set(ZSTD_BUILD_SHARED OFF)
+
+FetchContent_Declare(
+    zstd
+    URL "https://github.com/facebook/zstd/releases/download/v1.5.7/zstd-1.5.7.tar.gz"
+    DOWNLOAD_EXTRACT_TIMESTAMP TRUE
+    SOURCE_SUBDIR build/cmake
+)
+
+FetchContent_MakeAvailable(zstd)
+
 if (MSVC)
     set(USE_STATIC_MSVC_RUNTIME_LIBRARY ON CACHE BOOL "" FORCE)
 	if (USE_STATIC_MSVC_RUNTIME_LIBRARY)
@@ -80,7 +92,7 @@ set(ASSIMP_NO_EXPORT ON CACHE BOOL "" FORCE)
 FetchContent_Declare(
     assimp
     GIT_REPOSITORY https://github.com/assimp/assimp.git
-    GIT_TAG v5.4.3
+    GIT_TAG v6.0.2
 )
 
 FetchContent_MakeAvailable(assimp)
