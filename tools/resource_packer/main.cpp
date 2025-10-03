@@ -121,6 +121,7 @@ auto main(int argc, char **argv) -> int
         out.write(resource_data);
 
         game::log::info("done.");
+        return 0;
     }
     catch (const game::Exception &err)
     {
@@ -131,7 +132,7 @@ auto main(int argc, char **argv) -> int
         game::log::info("unknown exception");
     }
 
-    return 0;
+    return 1;
 }
 
 auto write_texture(const std::string &path, const std::string &asset_name, const std::string &ext, const std::string &file_name, game::TlvWriter &writer) -> void

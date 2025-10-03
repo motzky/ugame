@@ -60,6 +60,8 @@ namespace game
         AutoRelease<int, -1> _handle;
         AutoRelease<void *, nullptr> _map_view;
         std::size_t _filesize;
+        CreationMode _mode;
+        bool _mapped;
 
         auto resize_and_remap(std::size_t new_size) -> void;
 #endif

@@ -26,8 +26,20 @@ namespace game
     File::File(const std::filesystem::path &path, CreationMode mode)
         : _handle{-1, ::close},
           _map_view{nullptr, [this](void *view)
-                    { ::munmap(view, this->_filesize); }},
-          _filesize{0ul}
+                    {
+                        if (!_mapped)
+                        {
+                            return;
+                        }
+                        auto r = ::munmap(view, this->_filesize);
+                        if (r != 0)
+                        {
+                            auto e = errno;
+                            log::error("{}", e);
+                            ensure(false, "failed to unmap view");
+                        }
+                    }},
+          _filesize{0ul}, _mode(mode), _mapped(false)
     {
         if (mode == CreationMode::OPEN)
         {
@@ -58,13 +70,15 @@ namespace game
 
         ensure(_filesize > 0, "file has zero length");
 
-        _map_view.reset(::mmap64(NULL, _filesize, mode == CreationMode::OPEN ? PROT_READ : PROT_READ | PROT_WRITE, MAP_SHARED, _handle, 0ul));
+        _map_view.reset(::mmap64(NULL, _filesize, _mode == CreationMode::OPEN ? PROT_READ : PROT_READ | PROT_WRITE, MAP_SHARED, _handle, 0ul));
         if (_map_view.get() == MAP_FAILED)
         {
             auto e = errno;
             log::error("{}", e);
         }
         ensure(_map_view.get() != MAP_FAILED, "failed to map file");
+
+        _mapped = true;
 
         // int linuxHint = 0;
         // switch (_hint)
@@ -116,20 +130,35 @@ namespace game
             return;
         }
 
-        ::munmap(_map_view, _filesize);
+        auto res = ::munmap(_map_view, _filesize);
+        if (res != 0)
+        {
+            auto e = errno;
+            log::error("{}", e);
+            ensure(res == 0, "failed to unmap view");
+        }
 
-        auto res = ::ftruncate64(_handle, new_size);
-        ensure(res == 0, "failed to extend file size");
+        _mapped = false;
+
+        res = ::ftruncate64(_handle, new_size);
+        if (res != 0)
+        {
+            auto e = errno;
+            log::error("{}", e);
+            ensure(res == 0, "failed to extend file size");
+        }
 
         get_file_size();
 
-        _map_view.reset(::mmap64(NULL, _filesize, PROT_READ | PROT_WRITE, MAP_SHARED, _handle, 0ul));
+        _map_view.reset(::mmap64(NULL, _filesize, _mode == CreationMode::OPEN ? PROT_READ : PROT_READ | PROT_WRITE, MAP_SHARED, _handle, 0ul));
         if (_map_view.get() == MAP_FAILED)
         {
             auto e = errno;
             log::error("{}", e);
         }
         ensure(_map_view.get() != MAP_FAILED, "failed to map file");
+
+        _mapped = true;
     }
 
 }
