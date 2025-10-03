@@ -25,10 +25,24 @@ namespace game
           _map_view{nullptr, ::UnmapViewOfFile},
           _filesize{}
     {
-        _handle.reset(::CreateFileA(path.string().c_str(), GENERIC_READ | GENERIC_WRITE, 0, nullptr, mode == CreationMode::OPEN ? OPEN_EXISTING : OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr));
+        _handle.reset(
+            ::CreateFileA(
+                path.string().c_str(),
+                GENERIC_READ | GENERIC_WRITE,
+                0,
+                nullptr,
+                mode == CreationMode::OPEN ? OPEN_EXISTING : CREATE_NEW,
+                FILE_ATTRIBUTE_NORMAL,
+                nullptr));
         ensure(_handle, "failed to open file");
 
-        _mapping.reset(::CreateFileMappingA(_handle, nullptr, PAGE_READWRITE, 0, 0, nullptr));
+        auto size = ::DWORD{};
+        if (mode == CreationMode::OPEN)
+        {
+            size = static_cast<::DWORD>(::GetFileSize(_handle, nullptr));
+        }
+
+        _mapping.reset(::CreateFileMappingA(_handle, nullptr, PAGE_READWRITE, 0, size, nullptr));
         ensure(_mapping, "failed to map file");
 
         _map_view.reset(::MapViewOfFile(_mapping, FILE_MAP_ALL_ACCESS, 0, 0, 0));
