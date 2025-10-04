@@ -1,5 +1,8 @@
 #include <gtest/gtest.h>
 
+#include <string>
+#include <vector>
+
 #include "scheduler/scheduler.h"
 #include "scheduler/task.h"
 #include "scheduler/wait.h"
@@ -32,13 +35,14 @@ TEST(scheduler, simple)
     )
 }
 
-TEST(scheduler, simple_await)
+TEST(scheduler, simple_await_tick)
 {
-    TEST_IMPL(
-        auto sched = game::Scheduler{};
+    // TEST_IMPL(
+    auto log = std::vector<std::string>{};
+    auto sched = game::Scheduler{};
 
-        sched.add([](game::Scheduler &scheduler) -> game::Task
-                  { 
+    sched.add([](game::Scheduler &scheduler, std::vector<std::string> &log) -> game::Task
+              { 
                     auto x = 0;
                     for(;;)
                     {
@@ -46,12 +50,74 @@ TEST(scheduler, simple_await)
                         {
                             break;
                         }
-                        game::log::debug("co_await");
+                        log.push_back("co_await");
                         co_await game::Wait{scheduler, x+1u};
                         ++x;
-                    } }(sched));
+                    } }(sched, log));
 
-        sched.run();
+    sched.run();
 
-    )
+    const auto expected = std::vector<std::string>{
+        "co_await",
+        "co_await",
+        "co_await",
+        "co_await",
+        "co_await",
+    };
+
+    ASSERT_EQ(log, expected);
+    // )
+}
+TEST(scheduler, simple_await_ticks_two_tasks)
+{
+    // TEST_IMPL(
+    auto log = std::vector<std::string>{};
+    auto sched = game::Scheduler{};
+
+    sched.add([](game::Scheduler &scheduler, std::vector<std::string> &log) -> game::Task
+              { 
+                    auto x = 0;
+                    for(;;)
+                    {
+                        if(x == 5)
+                        {
+                            break;
+                        }
+                        log.push_back("co_await 1");
+                        co_await game::Wait{scheduler, 1u};
+                        ++x;
+                    } }(sched, log));
+
+    sched.add([](game::Scheduler &scheduler, std::vector<std::string> &log) -> game::Task
+              { 
+                    auto x = 0;
+                    for(;;)
+                    {
+                        if(x == 5)
+                        {
+                            break;
+                        }
+                        log.push_back("co_await 2");
+                        co_await game::Wait{scheduler, 2u};
+                        ++x;
+                    } }(sched, log));
+
+    sched.run();
+
+    const auto expected = std::vector<std::string>{
+        "co_await 2",
+        "co_await 1",
+        "co_await 1",
+        "co_await 2",
+        "co_await 1",
+        "co_await 1",
+        "co_await 2",
+        "co_await 1",
+        "co_await 2",
+        "co_await 2",
+    };
+
+    ASSERT_EQ(log, expected);
+
+    // )
 }
