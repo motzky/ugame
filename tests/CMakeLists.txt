@@ -24,6 +24,10 @@ add_executable(unit_tests
     vector4_tests.cpp
 )
 
+if(MSVC)
+target_include_directories(unit_tests PRIVATE ${zstd_source_DIR}/lib)
+endif()
+
 target_link_libraries(unit_tests gmock_main gamelib)
 gtest_discover_tests(unit_tests DISCOVERY_MODE PRE_TEST)
 

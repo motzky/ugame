@@ -86,6 +86,7 @@ target_compile_options(nathan_stream PUBLIC  /W4 /WX /Debug /Od)
 target_compile_definitions(nathan_stream PRIVATE -DWIN32 -D_WIN32)
 
 target_include_directories(gamelib PRIVATE ${zstd_SOURCE_DIR}/lib)
+target_include_directories(nathan_stream PRIVATE ${zstd_SOURCE_DIR}/lib)
 else()
 target_compile_options(gamelib PUBLIC -Wall -Wextra -Wpedantic -Werror -pedantic-errors)
 target_compile_options(nathan_stream PUBLIC -Wall -Wextra -Wpedantic -Werror -pedantic-errors)
@@ -115,10 +116,9 @@ target_link_libraries(
 )
 endif()
 
-
 add_custom_command(
     OUTPUT ${PROJECT_BINARY_DIR}/resources
-    COMMAND resource_packer ${PROJECT_SOURCE_DIR}/assets ${PROJECT_BINARY_DIR}/resources
+    COMMAND $<TARGET_FILE:resource_packer> ${PROJECT_SOURCE_DIR}/assets ${PROJECT_BINARY_DIR}/resources
     COMMENT "Building resources"
 )
 add_custom_target(resources DEPENDS ${PROJECT_BINARY_DIR}/resources COMMENT "Building resources")

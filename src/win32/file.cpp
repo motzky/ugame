@@ -36,14 +36,14 @@ namespace game
                 nullptr));
         ensure(_handle, "failed to open file");
 
-        auto size = ::DWORD{};
+        auto size = ::DWORD{4096u};
         if (mode == CreationMode::OPEN)
         {
             size = static_cast<::DWORD>(::GetFileSize(_handle, nullptr));
         }
 
         _mapping.reset(::CreateFileMappingA(_handle, nullptr, PAGE_READWRITE, 0, size, nullptr));
-        ensure(_mapping, "failed to map file");
+        ensure(_mapping, "failed to map file {:x}", ::GetLastError());
 
         _map_view.reset(::MapViewOfFile(_mapping, FILE_MAP_ALL_ACCESS, 0, 0, 0));
         ensure(_map_view, "failed to get map view");
