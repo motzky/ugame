@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 
+#include <chrono>
 #include <string>
 #include <vector>
 
@@ -9,6 +10,8 @@
 
 #include "log.h"
 #include "test_utils.h"
+
+using namespace std::chrono_literals;
 
 auto foo() -> game::Task
 {
@@ -120,4 +123,20 @@ TEST(scheduler, simple_await_ticks_two_tasks)
     ASSERT_EQ(log, expected);
 
     // )
+}
+
+TEST(scheduler, simple_await_time)
+{
+    // TEST_IMPL(
+    auto log = std::vector<std::string>{};
+    auto sched = game::Scheduler{};
+
+    sched.add([](game::Scheduler &scheduler, std::vector<std::string> &log) -> game::Task
+              {
+                  log.push_back("startiong");
+                  co_await game::Wait{scheduler, 50ms}; }(sched, log));
+
+    sched.run();
+
+        // )
 }

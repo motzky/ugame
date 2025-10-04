@@ -13,7 +13,8 @@ namespace game
 {
     Scheduler::Scheduler()
         : _queue{},
-          _tick_count{}
+          _tick_count{},
+          _elapsed{}
     {
     }
     auto Scheduler::add(Task task) -> void
@@ -21,29 +22,49 @@ namespace game
         _queue.push_front({std::move(task), std::nullopt});
     }
 
-    auto Scheduler::reschedule(std::coroutine_handle<> handle, std::uint32_t wait_ticks) -> void
+    auto Scheduler::reschedule(std::coroutine_handle<> handle, std::size_t wait_ticks) -> void
     {
         auto task = std::ranges::find_if(_queue, [handle](const auto &e)
                                          { return e.task.has_handle(handle); });
         expect(task != std::ranges::end(_queue), "could not find task");
 
-        task->tick_target = wait_ticks + _tick_count;
+        task->target = wait_ticks + _tick_count;
+    }
+
+    auto Scheduler::reschedule(std::coroutine_handle<> handle, std::chrono::nanoseconds wait_time) -> void
+    {
+        auto task = std::ranges::find_if(_queue, [handle](const auto &e)
+                                         { return e.task.has_handle(handle); });
+        expect(task != std::ranges::end(_queue), "could not find task");
+
+        task->target = wait_time + _elapsed;
     }
 
     auto Scheduler::run() -> void
     {
         while (!_queue.empty())
         {
+            const auto start = std::chrono::steady_clock::now();
             for (auto &[task, tick_target] : _queue)
             {
                 expect(task.can_resume(), "bad task in queue");
 
                 if (tick_target)
                 {
-                    expect(*tick_target >= _tick_count, "invalid tick target");
-                    if (*tick_target == _tick_count)
+                    if (const auto *v = std::get_if<std::size_t>(&*tick_target); v)
                     {
-                        task.resume();
+                        expect(*v >= _tick_count, "invalid tick target");
+                        if (*v == _tick_count)
+                        {
+                            task.resume();
+                        }
+                    }
+                    else if (const auto *v = std::get_if<std::chrono::nanoseconds>(&*tick_target); v)
+                    {
+                        if (_elapsed >= *v)
+                        {
+                            task.resume();
+                        }
                     }
                 }
                 else
@@ -59,6 +80,7 @@ namespace game
                          std::ranges::end(_queue));
 
             ++_tick_count;
+            _elapsed += std::chrono::steady_clock::now() - start;
         }
     }
 

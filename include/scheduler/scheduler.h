@@ -1,9 +1,11 @@
 #pragma once
 
+#include <chrono>
 #include <coroutine>
 #include <cstdint>
 #include <deque>
 #include <optional>
+#include <variant>
 
 #include "scheduler/task.h"
 
@@ -14,7 +16,8 @@ namespace game
     public:
         Scheduler();
         auto add(Task task) -> void;
-        auto reschedule(std::coroutine_handle<> handle, std::uint32_t wait_tick) -> void;
+        auto reschedule(std::coroutine_handle<> handle, std::size_t wait_tick) -> void;
+        auto reschedule(std::coroutine_handle<> handle, std::chrono::nanoseconds wait_tick) -> void;
 
         auto run() -> void;
 
@@ -22,10 +25,11 @@ namespace game
         struct WaitTask
         {
             Task task;
-            std::optional<std::size_t> tick_target;
+            std::optional<std::variant<std::size_t, std::chrono::nanoseconds>> target;
         };
 
         std::deque<WaitTask> _queue;
         std::size_t _tick_count;
+        std::chrono::nanoseconds _elapsed;
     };
 }
