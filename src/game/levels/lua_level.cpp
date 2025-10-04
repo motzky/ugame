@@ -140,7 +140,6 @@ namespace game::levels
             _scene.ambient = {.r = ambient_vec.x, .g = ambient_vec.y, .b = ambient_vec.z};
         }
         if (runner.has_function("Level_get_direction_light"))
-
         {
             const auto [direction_light_dir, direction_light_color] = runner.execute<Vector3, Vector3>("Level_get_direction_light");
             _scene.directional = {.direction = direction_light_dir,

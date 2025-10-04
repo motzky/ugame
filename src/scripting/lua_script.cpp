@@ -85,6 +85,7 @@ namespace game
     auto LuaScript::has_function(const std::string &name) const -> bool
     {
         const auto ret_type = ::lua_getglobal(_lua.get(), name.c_str());
+        ::lua_pop(_lua.get(), -1);
         return ret_type == LUA_TFUNCTION;
     }
 
