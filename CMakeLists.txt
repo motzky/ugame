@@ -7,6 +7,8 @@ project(
     LANGUAGES C CXX
 )
 
+set(CMAKE_CONFIGURATION_TYPES Debug;Release)
+
 include(FetchContent)
 
 if(MSVC)
@@ -122,13 +124,28 @@ endif()
 add_library(lua STATIC ${lua_SOURCE_DIR}/onelua.c)
 target_compile_definitions(lua PRIVATE MAKE_LIB)
 
-if(CMAKE_BUILD_TYPE MATCHES Debug)
 set(LOG_TO_FILE true)
 set(LOG_ENABLE_DEBUG true)
-else()
-set(LOG_TO_FILE false)
-set(LOG_ENABLE_DEBUG false)
-endif()
+
+## TODO ##
+# foreach(CONFIG_TYPE ${CMAKE_CONFIGURATION_TYPES})
+#     string(TOUPPER ${CONFIG_TYPE} CONFIG_TYPE_UPPER)
+
+#     set(IS_DEBUG FALSE)
+#     if(CONFIG_TYPE_UPPER STREQUAL "DEBUG")
+#         set(IS_DEBUG TRUE)
+#     endif()
+
+#     set(CONFIG_FILE_INPUT  "${CMAKE_CURRENT_SOURCE_DIR}/build_config.h.in")
+#     set(CONFIG_FILE_OUTPUT "${GENERATED_SOURCE_DIR}/build_config_${CONFIG_TYPE}.h")
+
+#     configure_file(${CONFIG_FILE_INPUT} ${CONFIG_FILE_OUTPUT} @ONLY)
+# endforeach()
+
+# # Add include directory so the generated headers can be found
+# target_include_directories(MyTarget PRIVATE "${GENERATED_SOURCE_DIR}")
+
+# # Use generator expression to include correct header for each config
 
 
 add_subdirectory(src)
