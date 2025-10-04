@@ -34,8 +34,6 @@ namespace game
     {
         while (!_queue.empty())
         {
-            log::debug("schedule tick: {}", _tick_count);
-
             for (auto &[task, tick_target] : _queue)
             {
                 expect(task.can_resume(), "bad task in queue");
@@ -45,7 +43,6 @@ namespace game
                     expect(*tick_target >= _tick_count, "invalid tick target");
                     if (*tick_target == _tick_count)
                     {
-                        // log::debug("resuming task for tick_target: {}", tick_target);
                         task.resume();
                     }
                 }
