@@ -78,7 +78,7 @@ target_include_directories(gamelib PUBLIC ${stb_lib_SOURCE_DIR} ${imgui_SOURCE_D
 target_compile_features(gamelib PUBLIC cxx_std_23)
 target_compile_features(nathan_stream PUBLIC cxx_std_23)
 
-if(WIN32)
+if(MSVC)
 target_include_directories(gamelib PUBLIC third_party)
 target_compile_options(gamelib PUBLIC /W4 /WX /Debug /Od)
 target_compile_definitions(gamelib PRIVATE -DWIN32 -D_WIN32 -DNOMINMAX)
