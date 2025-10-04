@@ -47,7 +47,7 @@ TEST(scheduler, simple_await)
                             break;
                         }
                         game::log::debug("co_await");
-                        co_await game::Wait{scheduler, 3u};
+                        co_await game::Wait{scheduler, x+1u};
                         ++x;
                     } }(sched));
 
