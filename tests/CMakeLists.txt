@@ -25,7 +25,7 @@ add_executable(unit_tests
 )
 
 if(MSVC)
-target_include_directories(unit_tests PRIVATE ${zstd_source_DIR}/lib)
+target_include_directories(unit_tests PRIVATE ${zstd_SOURCE_DIR}/lib)
 endif()
 
 target_link_libraries(unit_tests gmock_main gamelib)
