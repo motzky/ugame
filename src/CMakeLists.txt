@@ -41,6 +41,7 @@ add_subdirectory(messaging)
 add_subdirectory(physics)
 add_subdirectory(resources)
 add_subdirectory(scripting)
+add_subdirectory(scheduler)
 add_subdirectory(tlv)
 add_subdirectory(utils)
 

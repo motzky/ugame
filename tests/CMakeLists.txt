@@ -16,6 +16,7 @@ add_executable(unit_tests
     message_bus_tests.cpp
     quaternion_tests.cpp
     resource_cache_tests.cpp
+    scheduler_tests.cpp
     script_runner_tests.cpp
     tlv_entry_tests.cpp
     tlv_reader_tests.cpp
