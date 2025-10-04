@@ -243,6 +243,8 @@ namespace game
             ::glfwShowWindow(_windowHandle);
         }
 
+        log::debug("registering input callbacks...");
+
         ::glfwSetKeyCallback(_windowHandle, key_callback);
         if (::glfwRawMouseMotionSupported())
         {
@@ -262,6 +264,8 @@ namespace game
         // ::glfwSetScrollCallback(_windowHandle, scroll_callback);
 
         ::glfwMakeContextCurrent(_windowHandle);
+
+        log::debug("resolving OpenGL functions...");
 
         ::resolve_global_gl_functions();
         ::setup_debug();

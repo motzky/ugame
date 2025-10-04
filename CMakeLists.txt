@@ -122,6 +122,15 @@ endif()
 add_library(lua STATIC ${lua_SOURCE_DIR}/onelua.c)
 target_compile_definitions(lua PRIVATE MAKE_LIB)
 
+if(CMAKE_BUILD_TYPE MATCHES Debug)
+set(LOG_TO_FILE true)
+set(LOG_ENABLE_DEBUG true)
+else()
+set(LOG_TO_FILE false)
+set(LOG_ENABLE_DEBUG false)
+endif()
+
+
 add_subdirectory(src)
 add_subdirectory(tools)
 

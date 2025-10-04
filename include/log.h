@@ -2,13 +2,31 @@
 
 #include <filesystem>
 #include <format>
+#include <fstream>
 #include <print>
 #include <source_location>
+#include <string>
 
+#include "config.h"
+#include "utils/exception.h"
 #include "utils/formatter.h"
 
 namespace game::log
 {
+    namespace impl
+    {
+        inline static auto log_file = []
+        {
+            auto f = std::ofstream{"log", std::ios::app};
+            if (!f)
+            {
+                throw Exception("could not open log file");
+            }
+
+            return f;
+        }();
+    }
+
     enum class Level
     {
         DEBUG,
@@ -30,6 +48,11 @@ namespace game::log
             auto level = "?";
             if constexpr (L == Level::DEBUG)
             {
+                if constexpr (!config::log_enable_debug)
+                {
+                    return;
+                }
+
                 level = "DEBUG";
             }
             else if constexpr (L == Level::INFO)
@@ -50,7 +73,14 @@ namespace game::log
             }
 
             const auto path = std::filesystem::path{loc.file_name()};
-            std::println("[{}] ({}:{}) - {}", level, path.filename().string(), loc.line(), std::format(msg, std::forward<Args>(args)...));
+            const auto log_line = std::format(
+                "[{}] ({}:{}) - {}", level, path.filename().string(), loc.line(), std::format(msg, std::forward<Args>(args)...));
+            std::println("{}", log_line);
+
+            if constexpr (config::log_to_file)
+            {
+                impl::log_file << log_line << std::endl;
+            }
         }
     };
 

@@ -9,3 +9,11 @@ namespace game::version
     // clang-format on
 
 }
+
+namespace game::config
+{
+    // clang-format off
+    static constexpr auto log_to_file = ${LOG_TO_FILE};
+    static constexpr auto log_enable_debug = ${LOG_ENABLE_DEBUG};
+    // clang-format on
+}
