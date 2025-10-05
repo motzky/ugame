@@ -1,5 +1,6 @@
 #pragma once
 
+#include "graphics/debug_ui.h"
 #include "graphics/renderer.h"
 #include "graphics/shape_wireframe_renderer.h"
 #include "loaders/mesh_loader.h"
@@ -25,6 +26,7 @@ namespace game::routines
         auto create_task() -> Task;
 
         virtual auto handle_key_press(const KeyEvent &) -> void override;
+        virtual auto handle_mouse_move(const MouseEvent &) -> void override;
         virtual auto handle_quit() -> void override;
 
     private:
@@ -34,6 +36,7 @@ namespace game::routines
         Scheduler &_scheduler;
         Renderer _renderer;
         ShapeWireframeRenderer _debug_wireframe_renderer;
+        // DebugUi _debug_ui;
         bool _show_physics_debug;
         bool _show_debug;
         bool _running;

@@ -59,7 +59,6 @@ namespace game::routines
                         else if constexpr (std::same_as<T, game::MouseButtonEvent>)
                         {
                             _bus.post_mouse_button(arg);
-                            // debug_ui.add_mouse_event(arg);
                         }
                     },
                     *event);

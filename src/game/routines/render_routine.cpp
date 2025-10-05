@@ -3,6 +3,7 @@
 #include <coroutine>
 
 #include "game/routines/level_routine.h"
+#include "graphics/debug_ui.h"
 #include "graphics/renderer.h"
 #include "graphics/shape_wireframe_renderer.h"
 #include "loaders/mesh_loader.h"
@@ -36,13 +37,14 @@ namespace game::routines
           _running(true)
     {
         _bus.subscribe(messaging::MessageType::KEY_PRESS, this);
+        _bus.subscribe(messaging::MessageType::MOUSE_MOVE, this);
         _bus.subscribe(messaging::MessageType::QUIT, this);
     }
 
     auto RenderRoutine::create_task() -> Task
     {
         auto gamma = 2.2f;
-        // const auto debug_ui = game::DebugUi(window.native_handle(), level.scene(), player.camera(), gamma);
+        // const auto debug_ui = game::DebugUi(_window.native_handle(), _level_routine.level().scene(), _player.camera(), gamma);
 
         while (_running)
         {
@@ -67,7 +69,7 @@ namespace game::routines
             _renderer.render(_level_routine.player().camera(), _level_routine.level()->scene(), gamma);
             if (_show_debug)
             {
-                // debug_ui.render();
+                // _debug_ui.render();
             }
 
             _window.swap();
@@ -94,6 +96,11 @@ namespace game::routines
     auto RenderRoutine::handle_quit() -> void
     {
         _running = false;
+    }
+
+    auto RenderRoutine::handle_mouse_move([[maybe_unused]] const MouseEvent &event) -> void
+    {
+        // _debug_ui.add_mouse_event(event);
     }
 
 }
