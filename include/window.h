@@ -32,8 +32,8 @@ namespace game
         Window(Window &&) noexcept = default;
         Window &operator=(Window &&) = default;
 
-        auto pump_event() -> std::optional<Event>;
-        auto swap() -> void;
+        auto pump_event() const -> std::optional<Event>;
+        auto swap() const -> void;
 
         auto native_handle() const -> HandleType;
         auto width() const -> std::uint32_t;

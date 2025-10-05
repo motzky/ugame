@@ -309,7 +309,7 @@ namespace game
         ::glEnable(GL_DEPTH_TEST);
     }
 
-    auto Window::pump_event() -> std::optional<Event>
+    auto Window::pump_event() const -> std::optional<Event>
     {
         auto message = ::MSG{};
         while (::PeekMessageA(&message, nullptr, 0, 0, PM_REMOVE) != 0)
@@ -328,7 +328,7 @@ namespace game
         return {};
     }
 
-    auto Window::swap() -> void
+    auto Window::swap() const -> void
     {
         ::SwapBuffers(_dc);
     }

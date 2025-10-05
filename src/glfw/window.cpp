@@ -276,7 +276,8 @@ namespace game
         auto renderer_str = ::glGetString(GL_RENDERER);
         game::log::info("Current render device: {}", reinterpret_cast<const char *>(renderer_str));
     }
-    auto Window::pump_event() -> std::optional<Event>
+
+    auto Window::pump_event() const -> std::optional<Event>
     {
         ::glfwPollEvents();
 
@@ -295,7 +296,7 @@ namespace game
         return {};
     }
 
-    auto Window::swap() -> void
+    auto Window::swap() const -> void
     {
         ::glfwSwapBuffers(_windowHandle);
     }
