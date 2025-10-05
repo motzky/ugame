@@ -4,3 +4,4 @@ target_sources(gamelib PUBLIC
 )
 
 add_subdirectory(levels)
+add_subdirectory(routines)
