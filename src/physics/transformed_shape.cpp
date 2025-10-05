@@ -67,7 +67,7 @@ namespace game
             std::addressof(debug_renderer),
             to_jolt(_transform),
             ::JPH::RVec3::sOne(),
-            ::JPH::Color{255, 0, 255},
+            ::JPH::Color{255, 255, 255},
             false, true);
     }
 
