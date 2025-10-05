@@ -1,89 +1,39 @@
 #include "game/game.h"
 
 #include <array>
-#include <cmath>
-#include <memory>
-#include <numbers>
 #include <print>
-#include <random>
 #include <ranges>
+#include <string>
+#include <string_view>
 #include <utility>
-#include <variant>
 
-#ifndef WIN32
-#include <GLFW/glfw3.h>
-#endif
+// #ifndef WIN32
+// #include <GLFW/glfw3.h>
+// #endif
 
-#include "camera.h"
-#include "events/event.h"
-#include "events/key_event.h"
-#include "events/mouse_event.h"
-#include "events/stop_event.h"
-#include "game/levels/level.h"
-#include "game/levels/lua_level.h"
-#include "game/player.h"
+#include "game/routines/input_routine.h"
+#include "game/routines/level_routine.h"
+#include "game/routines/render_routine.h"
 #include "graphics/cube_map.h"
-#include "graphics/debug_ui.h"
 #include "graphics/material.h"
-#include "graphics/renderer.h"
-#include "graphics/scene.h"
 #include "graphics/shader.h"
-#include "graphics/shape_wireframe_renderer.h"
 #include "graphics/texture.h"
 #include "graphics/texture_sampler.h"
 #include "loaders/mesh_loader.h"
 #include "log.h"
-#include "math/frustum_plane.h"
 #include "messaging/message_bus.h"
-#include "physics/box_shape.h"
-#include "physics/transformed_shape.h"
-#include "primitives/entity.h"
 #include "resources/resource_cache.h"
 #include "resources/resource_loader.h"
+#include "scheduler/scheduler.h"
 #include "tlv/tlv_entry.h"
 #include "tlv/tlv_reader.h"
 #include "utils/decompress.h"
-#include "utils/exception.h"
 #include "window.h"
 
 using namespace std::string_view_literals;
 
 namespace
 {
-    auto intersects_frustum(const game::TransformedShape &bounding_box, const std::array<game::FrustumPlane, 6u> &planes) -> bool
-    {
-        game::expect(bounding_box.shape()->type() == game::ShapeType::BOX, "Not a bounding BOX");
-
-        const auto *box_shape = dynamic_cast<const game::BoxShape *>(bounding_box.shape());
-        const auto position = bounding_box.transform().position;
-
-        const auto min = position - box_shape->dimensions();
-        const auto max = position + box_shape->dimensions();
-
-        for (const auto &plane : planes)
-        {
-            auto pos_vert = min;
-            if (plane.normal.x >= 0)
-            {
-                pos_vert.x = max.x;
-            }
-            if (plane.normal.y >= 0)
-            {
-                pos_vert.y = max.y;
-            }
-            if (plane.normal.z >= 0)
-            {
-                pos_vert.z = max.z;
-            }
-
-            if (game::Vector3::dot(plane.normal, pos_vert) + plane.distance < 0.f)
-            {
-                return false;
-            }
-        }
-        return true;
-    }
-
     auto get_uint_arg(const std::vector<std::string_view> &args, std::string_view arg_name, std::uint32_t defval = 0u) -> std::uint32_t
     {
         const auto arg = std::ranges::find(args, arg_name);
@@ -104,39 +54,15 @@ namespace
 
 namespace game
 {
-    auto create_camera(const Window &window) -> Camera
-    {
-        return {{0.f, 2.f, 20.f},
-                {0.f, 0.f, 0.f},
-                {0.f, 1.f, 0.f},
-                std::numbers::pi_v<float> / 4.f,
-                static_cast<float>(window.width()),
-                static_cast<float>(window.height()),
-                0.1f,
-                500.f};
-    }
-
     Game::Game(const std::vector<std::string_view> &args)
         : _running(true),
-          _level_names{
-              "level_papaya.lua",
-              "level_pear.lua",
-              "level_banana.lua",
-              "level_apple.lua",
-              "level_kiwi.lua",
-              "level_mango.lua",
-          },
-          _level{},
-          _level_num{0ul},
           _message_bus{},
           _window{
               get_uint_arg(args, "-width"sv, 1920u),
               get_uint_arg(args, "-height"sv, 1080u),
               get_uint_arg(args, "-x"sv),
-              get_uint_arg(args, "-y"sv)},
-          _player{_message_bus, create_camera(_window)}
+              get_uint_arg(args, "-y"sv)}
     {
-        _message_bus.subscribe(messaging::MessageType::LEVEL_COMPLETE, this);
     }
 
     Game::~Game() = default;
@@ -196,125 +122,20 @@ namespace game
                 .data{static_cast<std::byte>(0xff), static_cast<std::byte>(0xff), static_cast<std::byte>(0xff)}},
             sampler);
 
-        auto renderer = game::Renderer{reader, mesh_loader, _window.width(), _window.height()};
+        game::log::info("Setting up scheduler...");
+        auto scheduler = Scheduler{};
 
-        auto gamma = 2.2f;
+        auto input_routine = routines::InputRoutine{_window, _message_bus, scheduler};
+        scheduler.add(input_routine.create_task());
 
-        auto show_debug = false;
-        // const auto debug_ui = game::DebugUi(window.native_handle(), level.scene(), player.camera(), gamma);
+        auto level_routine = routines::LevelRoutine{_window, _message_bus, scheduler, resource_cache, reader};
+        scheduler.add(level_routine.create_task());
 
-        auto show_physics_debug = false;
+        auto render_routine = routines::RenderRoutine{level_routine, _window, _message_bus, scheduler, reader, mesh_loader};
+        scheduler.add(render_routine.create_task());
 
-        auto debug_wireframe_renderer = game::ShapeWireframeRenderer{};
-
-        auto curernt_level = _level_num;
-
-        while (_running)
-        {
-            if (_level == nullptr || curernt_level != _level_num)
-            {
-                _player.restart();
-                _level.reset();
-                _level = std::make_unique<levels::LuaLevel>(_level_names[_level_num], resource_cache, reader, _player, _message_bus);
-                _level->restart();
-                curernt_level = _level_num;
-
-                _window.set_title(_level_names[_level_num]);
-            }
-            auto *level = _level.get();
-
-#pragma region EventHandling
-            auto event = _window.pump_event();
-            while (event && _running)
-            {
-                std::visit(
-                    [&](auto &&arg)
-                    {
-                        using T = std::decay_t<decltype(arg)>;
-                        if constexpr (std::same_as<T, game::StopEvent>)
-                        {
-                            _running = false;
-                        }
-                        else if constexpr (std::same_as<T, game::KeyEvent>)
-                        {
-                            // game::log::debug("{}", arg);
-
-                            _message_bus.post_key_press(arg);
-
-                            if (arg.key() == game::Key::F1 && arg.state() == game::KeyState::UP)
-                            {
-                                show_debug = !show_debug;
-                                _window.show_cursor(show_debug);
-                                _player.set_flying(show_debug);
-                                level->set_show_debug(show_debug);
-                            }
-                            else if (arg.key() == game::Key::F2 && arg.state() == game::KeyState::UP)
-                            {
-                                show_physics_debug = !show_physics_debug;
-                            }
-                        }
-                        else if constexpr (std::same_as<T, game::MouseEvent>)
-                        {
-                            if (!show_debug)
-                            {
-                                _message_bus.post_mouse_move(arg);
-                            }
-                        }
-                        else if constexpr (std::same_as<T, game::MouseButtonEvent>)
-                        {
-                            _message_bus.post_mouse_button(arg);
-                            // debug_ui.add_mouse_event(arg);
-                        }
-                    },
-                    *event);
-                event = _window.pump_event();
-            }
-#pragma endregion
-
-            _player.update();
-            level->update(_player);
-
-            for (auto &entity : level->scene().entities)
-            {
-                entity->set_visibility(intersects_frustum(entity->bounding_box(), _player.camera().frustum_planes()));
-
-                entity->bounding_box().draw(level->physics().debug_renderer());
-            }
-
-            if (show_physics_debug)
-            {
-                auto lines = debug_wireframe_renderer.yield();
-                for (const auto line : level->physics().debug_renderer().lines())
-                {
-                    lines.push_back(line);
-                }
-                level->scene().debug_lines = game::DebugLines{lines};
-
-                level->physics().debug_renderer().clear();
-            }
-            else
-            {
-                level->scene().debug_lines.reset();
-            }
-
-            renderer.render(_player.camera(), level->scene(), gamma);
-            if (show_debug)
-            {
-                // debug_ui.render();
-            }
-            _window.swap();
-        }
+        game::log::info("Running scheduler...");
+        scheduler.run();
     }
 
-    auto Game::handle_level_complete(const std::string_view &level_name) -> void
-    {
-        game::log::info("level complete: {}", level_name);
-        _level_num++;
-        if (_level_num >= _level_names.size())
-        {
-            log::info("YOU WIN !");
-            // _running = false;
-            _level_num = 0;
-        }
-    }
 }

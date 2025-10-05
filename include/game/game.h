@@ -7,7 +7,6 @@
 #include <vector>
 
 #include "game/levels/lua_level.h"
-#include "game/player.h"
 #include "messaging/message_bus.h"
 #include "messaging/subscriber.h"
 #include "window.h"
@@ -23,16 +22,9 @@ namespace game
 
         auto run(std::string_view resource_root) -> void;
 
-        virtual auto handle_level_complete(const std::string_view &) -> void override;
-
     private:
         bool _running;
-        std::vector<std::string> _level_names;
-
-        std::unique_ptr<levels::LuaLevel> _level;
-        std::size_t _level_num;
         messaging::MessageBus _message_bus;
         Window _window;
-        Player _player;
     };
 }
