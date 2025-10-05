@@ -46,6 +46,8 @@
 #include "utils/exception.h"
 #include "window.h"
 
+using namespace std::string_view_literals;
+
 namespace
 {
     auto intersects_frustum(const game::TransformedShape &bounding_box, const std::array<game::FrustumPlane, 6u> &planes) -> bool
@@ -81,6 +83,23 @@ namespace
         }
         return true;
     }
+
+    auto get_uint_arg(const std::vector<std::string_view> &args, std::string_view arg_name, std::uint32_t defval = 0u) -> std::uint32_t
+    {
+        const auto arg = std::ranges::find(args, arg_name);
+        if (arg == std::ranges::cend(args))
+        {
+            return defval;
+        }
+
+        const auto index = static_cast<std::size_t>(std::ranges::distance(std::ranges::cbegin(args), arg));
+        if (index + 1u >= args.size())
+        {
+            return defval;
+        }
+
+        return std::stol(args[index + 1].data());
+    }
 }
 
 namespace game
@@ -97,7 +116,7 @@ namespace game
                 500.f};
     }
 
-    Game::Game(std::uint32_t width, std::uint32_t height)
+    Game::Game(const std::vector<std::string_view> &args)
         : _running(true),
           _level_names{
               "level_papaya.lua",
@@ -110,7 +129,11 @@ namespace game
           _level{},
           _level_num{0ul},
           _message_bus{},
-          _window{width, height},
+          _window{
+              get_uint_arg(args, "-width"sv, 1920u),
+              get_uint_arg(args, "-height"sv, 1080u),
+              get_uint_arg(args, "-x"sv),
+              get_uint_arg(args, "-y"sv)},
           _player{_message_bus, create_camera(_window)}
     {
         _message_bus.subscribe(messaging::MessageType::LEVEL_COMPLETE, this);

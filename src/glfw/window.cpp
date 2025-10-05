@@ -213,11 +213,6 @@ namespace
 
 namespace game
 {
-    Window::Window(std::uint32_t width, std::uint32_t height)
-        : Window(width, height, 0u, 0u)
-    {
-    }
-
     Window::Window(std::uint32_t width, std::uint32_t height, std::uint32_t x, std::uint32_t y)
         : _windowHandle{}, _width(width), _height(height)
     {

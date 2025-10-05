@@ -18,7 +18,7 @@ namespace game
     class Game : public messaging::Subscriber
     {
     public:
-        Game(std::uint32_t width, std::uint32_t height);
+        Game(const std::vector<std::string_view> &args);
         ~Game();
 
         auto run(std::string_view resource_root) -> void;
