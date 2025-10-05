@@ -1,25 +1,18 @@
 #pragma once
 
-#include <chrono>
 #include <coroutine>
-#include <cstdint>
-#include <variant>
 
 #include "scheduler/scheduler.h"
 
 namespace game
 {
-    struct Wait
+    template <class T>
+    class Wait
     {
-        Wait(Scheduler &scheduler, std::uint32_t ticks)
-            : wait_object{ticks},
-              scheduler(scheduler)
-        {
-        }
-
-        Wait(Scheduler &scheduler, std::chrono::nanoseconds wait_time)
-            : wait_object{wait_time},
-              scheduler(scheduler)
+    public:
+        Wait(Scheduler &scheduler, T wait_object)
+            : _wait_object{std::move(wait_object)},
+              _scheduler(scheduler)
         {
         }
 
@@ -30,21 +23,15 @@ namespace game
 
         auto await_suspend(std::coroutine_handle<> h) -> void
         {
-            if (const auto *v = std::get_if<std::size_t>(&wait_object); v)
-            {
-                scheduler.reschedule(h, *v);
-            }
-            else if (const auto *v = std::get_if<std::chrono::nanoseconds>(&wait_object); v)
-            {
-                scheduler.reschedule(h, *v);
-            }
+            _scheduler.reschedule(h, _wait_object);
         }
 
         auto await_resume()
         {
         }
 
-        std::variant<std::size_t, std::chrono::nanoseconds> wait_object;
-        Scheduler &scheduler;
+    private:
+        T _wait_object;
+        Scheduler &_scheduler;
     };
 }
