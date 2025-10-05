@@ -72,13 +72,11 @@ namespace game
 
                 if (!check_resume || check_resume())
                 {
+                    task.resume();
                     if (parent_counter)
                     {
                         --(*parent_counter);
                     }
-                    task.resume();
-
-                    // no code here !
                 }
             }
             std::erase_if(_queue,

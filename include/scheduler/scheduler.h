@@ -3,9 +3,9 @@
 #include <chrono>
 #include <coroutine>
 #include <cstdint>
+#include <deque>
 #include <functional>
 #include <memory>
-#include <vector>
 
 #include "scheduler/task.h"
 
@@ -32,7 +32,7 @@ namespace game
             std::uint32_t *parent_wait_count;
         };
 
-        std::vector<WaitTask> _queue;
+        std::deque<WaitTask> _queue;
         std::size_t _tick_count;
         std::chrono::nanoseconds _elapsed;
     };
