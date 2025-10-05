@@ -2,6 +2,7 @@
 
 #include <coroutine>
 #include <ranges>
+#include <stdexcept>
 
 namespace game
 {
@@ -42,6 +43,10 @@ namespace game
     auto Task::resume() -> void
     {
         _handle.resume();
+        if (_handle.promise().ex_ptr)
+        {
+            std::rethrow_exception(_handle.promise().ex_ptr);
+        }
     }
 
     auto Task::native_handle() const -> std::coroutine_handle<>

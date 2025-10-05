@@ -177,3 +177,19 @@ TEST(scheduler, simple_await_task)
 
     // )
 }
+
+TEST(scheduler, exception)
+{
+    // TEST_IMPL(
+    auto log = std::vector<std::string>{};
+    auto sched = game::Scheduler{};
+
+    sched.add([] -> game::Task
+              {
+                throw game::Exception("bad coro");
+                co_return; }());
+
+    ASSERT_THROW(sched.run(), game::Exception);
+
+    // )
+}

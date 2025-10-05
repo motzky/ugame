@@ -1,6 +1,7 @@
 #pragma once
 
 #include <coroutine>
+#include <stdexcept>
 
 namespace game
 {
@@ -28,7 +29,12 @@ namespace game
                 return Task{std::coroutine_handle<promise_type>::from_promise(*this)};
             }
 
-            auto unhandled_exception() {}
+            auto unhandled_exception()
+            {
+                ex_ptr = std::current_exception();
+            }
+
+            std::exception_ptr ex_ptr = nullptr;
         };
 
         Task(const Task &) = delete;
