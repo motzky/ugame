@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 
 #include <chrono>
+#include <print>
 #include <string>
 #include <vector>
 
@@ -13,8 +14,9 @@
 
 using namespace std::chrono_literals;
 
-auto foo() -> game::Task
+auto await_foo() -> game::Task
 {
+    std::println("foo");
     co_return;
 }
 
@@ -148,6 +150,30 @@ TEST(scheduler, simple_await_time)
 
     ASSERT_EQ(log, expected);
     ASSERT_GE(end - start, 50ms);
+
+    // )
+}
+
+TEST(scheduler, simple_await_task)
+{
+    // TEST_IMPL(
+    auto log = std::vector<std::string>{};
+    auto sched = game::Scheduler{};
+
+    sched.add([](game::Scheduler &scheduler, [[maybe_unused]] std::vector<std::string> &log) -> game::Task
+              {
+                  std::println("starting");
+                  co_await game::Wait{scheduler, await_foo()};
+                  std::println("done"); }(sched, log));
+
+    ::testing::internal::CaptureStdout();
+
+    sched.run();
+
+    const auto output = ::testing::internal::GetCapturedStdout();
+    const auto expected = std::string{"starting\nfoo\ndone\n"};
+
+    ASSERT_EQ(output, expected);
 
     // )
 }

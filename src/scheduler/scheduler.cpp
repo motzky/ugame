@@ -19,7 +19,12 @@ namespace game
     }
     auto Scheduler::add(Task task) -> void
     {
-        _queue.push_back({std::move(task), nullptr});
+        _queue.push_back({std::move(task), nullptr, nullptr});
+    }
+
+    auto Scheduler::add(Task task, std::uint32_t *wait_count) -> void
+    {
+        _queue.push_back({std::move(task), nullptr, wait_count});
     }
 
     auto Scheduler::reschedule(std::coroutine_handle<> handle, std::size_t wait_ticks) -> void
@@ -44,21 +49,38 @@ namespace game
         { return _elapsed >= future_time; };
     }
 
+    auto Scheduler::reschedule(std::coroutine_handle<> handle, std::unique_ptr<std::uint32_t> counter) -> void
+    {
+        auto task = std::ranges::find_if(_queue, [handle](const auto &e)
+                                         { return e.task.has_handle(handle); });
+        expect(task != std::ranges::end(_queue), "could not find task");
+
+        task->check_resume = [counter = std::move(counter)]()
+        {
+            return *counter == 0;
+        };
+    }
+
     auto Scheduler::run() -> void
     {
         while (!_queue.empty())
         {
             const auto start = std::chrono::steady_clock::now();
-            for (auto &[task, check_resume] : _queue)
+            for (auto &[task, check_resume, parent_counter] : _queue)
             {
                 expect(task.can_resume(), "bad task in queue");
 
                 if (!check_resume || check_resume())
                 {
+                    if (parent_counter)
+                    {
+                        --(*parent_counter);
+                    }
                     task.resume();
+
+                    // no code here !
                 }
             }
-
             std::erase_if(_queue,
                           [](const auto &e)
                           { return !e.task.can_resume(); });

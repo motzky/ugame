@@ -43,4 +43,9 @@ namespace game
     {
         _handle.resume();
     }
+
+    auto Task::native_handle() const -> std::coroutine_handle<>
+    {
+        return _handle;
+    }
 }

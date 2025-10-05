@@ -43,6 +43,8 @@ namespace game
 
         auto resume() -> void;
 
+        auto native_handle() const -> std::coroutine_handle<>;
+
     private:
         explicit Task(std::coroutine_handle<promise_type>);
 
