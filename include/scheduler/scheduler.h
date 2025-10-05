@@ -3,6 +3,7 @@
 #include <chrono>
 #include <coroutine>
 #include <cstdint>
+#include <functional>
 #include <optional>
 #include <variant>
 #include <vector>
@@ -25,7 +26,7 @@ namespace game
         struct WaitTask
         {
             Task task;
-            std::optional<std::variant<std::size_t, std::chrono::nanoseconds>> target;
+            std::function<bool()> check_resume;
         };
 
         std::vector<WaitTask> _queue;

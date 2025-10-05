@@ -19,7 +19,7 @@ namespace game
     }
     auto Scheduler::add(Task task) -> void
     {
-        _queue.push_back({std::move(task), std::nullopt});
+        _queue.push_back({std::move(task), nullptr});
     }
 
     auto Scheduler::reschedule(std::coroutine_handle<> handle, std::size_t wait_ticks) -> void
@@ -28,7 +28,9 @@ namespace game
                                          { return e.task.has_handle(handle); });
         expect(task != std::ranges::end(_queue), "could not find task");
 
-        task->target = wait_ticks + _tick_count;
+        const auto future_tick = wait_ticks + _tick_count;
+        task->check_resume = [future_tick, this]
+        { return _tick_count == future_tick; };
     }
 
     auto Scheduler::reschedule(std::coroutine_handle<> handle, std::chrono::nanoseconds wait_time) -> void
@@ -37,7 +39,9 @@ namespace game
                                          { return e.task.has_handle(handle); });
         expect(task != std::ranges::end(_queue), "could not find task");
 
-        task->target = wait_time + _elapsed;
+        const auto future_time = wait_time + _elapsed;
+        task->check_resume = [future_time, this]
+        { return _elapsed >= future_time; };
     }
 
     auto Scheduler::run() -> void
@@ -45,29 +49,11 @@ namespace game
         while (!_queue.empty())
         {
             const auto start = std::chrono::steady_clock::now();
-            for (auto &[task, tick_target] : _queue)
+            for (auto &[task, check_resume] : _queue)
             {
                 expect(task.can_resume(), "bad task in queue");
 
-                if (tick_target)
-                {
-                    if (const auto *v = std::get_if<std::size_t>(&*tick_target); v)
-                    {
-                        expect(*v >= _tick_count, "invalid tick target");
-                        if (*v == _tick_count)
-                        {
-                            task.resume();
-                        }
-                    }
-                    else if (const auto *v = std::get_if<std::chrono::nanoseconds>(&*tick_target); v)
-                    {
-                        if (_elapsed >= *v)
-                        {
-                            task.resume();
-                        }
-                    }
-                }
-                else
+                if (!check_resume || check_resume())
                 {
                     task.resume();
                 }
