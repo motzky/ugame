@@ -19,7 +19,7 @@ namespace game
     }
     auto Scheduler::add(Task task) -> void
     {
-        _queue.push_front({std::move(task), std::nullopt});
+        _queue.push_back({std::move(task), std::nullopt});
     }
 
     auto Scheduler::reschedule(std::coroutine_handle<> handle, std::size_t wait_ticks) -> void
@@ -73,11 +73,9 @@ namespace game
                 }
             }
 
-            _queue.erase(std::remove_if(std::begin(_queue),
-                                        std::end(_queue),
-                                        [](const auto &e)
-                                        { return !e.task.can_resume(); }),
-                         std::ranges::end(_queue));
+            std::erase_if(_queue,
+                          [](const auto &e)
+                          { return !e.task.can_resume(); });
 
             ++_tick_count;
             _elapsed += std::chrono::steady_clock::now() - start;

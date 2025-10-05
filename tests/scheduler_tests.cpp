@@ -108,14 +108,14 @@ TEST(scheduler, simple_await_ticks_two_tasks)
     sched.run();
 
     const auto expected = std::vector<std::string>{
-        "co_await 2",
-        "co_await 1",
         "co_await 1",
         "co_await 2",
         "co_await 1",
         "co_await 1",
         "co_await 2",
         "co_await 1",
+        "co_await 1",
+        "co_await 2",
         "co_await 2",
         "co_await 2",
     };
@@ -133,10 +133,21 @@ TEST(scheduler, simple_await_time)
 
     sched.add([](game::Scheduler &scheduler, std::vector<std::string> &log) -> game::Task
               {
-                  log.push_back("startiong");
-                  co_await game::Wait{scheduler, 50ms}; }(sched, log));
+                  log.push_back("starting");
+                  co_await game::Wait{scheduler, 50ms};
+                  log.push_back("done"); }(sched, log));
 
+    const auto start = std::chrono::steady_clock::now();
     sched.run();
+    const auto end = std::chrono::steady_clock::now();
 
-        // )
+    const auto expected = std::vector<std::string>{
+        "starting",
+        "done",
+    };
+
+    ASSERT_EQ(log, expected);
+    ASSERT_GE(end - start, 50ms);
+
+    // )
 }
