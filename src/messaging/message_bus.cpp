@@ -70,4 +70,10 @@ namespace game::messaging
         post_message(MessageType::RESTART_LEVEL, _subscribers, [](auto *sub)
                      { sub->handle_restart_level(); });
     }
+
+    auto MessageBus::post_quit() -> void
+    {
+        post_message(MessageType::QUIT, _subscribers, [](auto *sub)
+                     { sub->handle_quit(); });
+    }
 }

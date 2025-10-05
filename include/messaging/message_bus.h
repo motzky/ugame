@@ -25,6 +25,7 @@ namespace game::messaging
         LEVEL_COMPLETE,
         ENTITY_INTERSECT,
         RESTART_LEVEL,
+        QUIT
     };
 
     class MessageBus
@@ -38,6 +39,7 @@ namespace game::messaging
         auto post_level_complete(const std::string_view &level_name) -> void;
         auto post_entity_intersect(const game::Entity *a, const game::Entity *b) -> void;
         auto post_restart_level() -> void;
+        auto post_quit() -> void;
 
     private:
         std::unordered_map<MessageType, std::vector<Subscriber *>> _subscribers;

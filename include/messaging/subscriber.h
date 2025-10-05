@@ -44,6 +44,10 @@ namespace game::messaging
         {
             log::error("unhandled message");
         };
+        virtual auto handle_quit() -> void
+        {
+            log::error("unhandled message");
+        };
 
     private:
     };
