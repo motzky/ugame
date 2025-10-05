@@ -1,22 +1,28 @@
 #include <iostream>
 #include <print>
+#include <ranges>
+#include <span>
 #include <string>
+#include <string_view>
+#include <vector>
 
 #include "config.h"
 #include "game/game.h"
-#include "utils/ensure.h"
 #include "utils/exception.h"
 
 auto main(int argc, char **argv) -> int
 {
     game::log::info("starting game {}.{}.{}", game::version::major, game::version::minor, game::version::patch);
 
+    const auto args = std::vector<std::string_view>(argv + 1u, argv + argc);
+    game::log::info("args: {}", args);
+
     {
-        auto g = game::Game{1920u, 1080u};
+        auto g = game::Game{args};
 
         try
         {
-            const auto root = argc == 2 ? std::string{argv[1]} : ".";
+            const auto root = !args.empty() ? args.front() : ".";
             g.run(root);
         }
         catch (const game::Exception &err)
