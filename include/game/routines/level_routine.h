@@ -2,6 +2,8 @@
 
 #include <cstddef>
 #include <memory>
+#include <string>
+#include <vector>
 
 #include "game/levels/lua_level.h"
 #include "game/player.h"
@@ -11,6 +13,7 @@
 #include "resources/resource_cache.h"
 #include "scheduler/scheduler.h"
 #include "scheduler/task.h"
+#include "scripting/script_loader.h"
 #include "tlv/tlv_reader.h"
 #include "window.h"
 
@@ -38,6 +41,7 @@ namespace game::routines
         Scheduler &_scheduler;
         Player _player;
         std::size_t _level_num;
+        std::vector<ScriptLoader> _level_names;
         DefaultCache &_resource_cache;
         const TlvReader &_reader;
         std::unique_ptr<levels::LuaLevel> _level;

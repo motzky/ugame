@@ -18,6 +18,7 @@
 #include "physics/physics_sytem.h"
 #include "physics/transformed_shape.h"
 #include "resources/resource_cache.h"
+#include "scripting/script_loader.h"
 #include "scripting/script_runner.h"
 #include "tlv/tlv_reader.h"
 #include "utils/ensure.h"
@@ -46,13 +47,13 @@ namespace
 namespace game::levels
 {
     LuaLevel::LuaLevel(
-        std::string_view script_name,
+        const ScriptLoader &loader,
         DefaultCache &resource_cache,
         const TlvReader &reader,
         const Player &player,
         messaging::MessageBus &bus)
         : _ps{},
-          _script(TlvReader::get_text_file(reader, script_name).data),
+          _script{loader.load()},
           _entities{},
           _floor{
               resource_cache.get<Mesh>("floor"),

@@ -16,6 +16,7 @@
 #include "scheduler/scheduler.h"
 #include "scheduler/task.h"
 #include "scheduler/wait.h"
+#include "scripting/script_loader.h"
 #include "tlv/tlv_reader.h"
 
 using namespace std::string_view_literals;
@@ -68,14 +69,47 @@ namespace
                 500.f};
     }
 
-    const auto level_names = std::vector<std::string>{
-        "level_papaya.lua",
-        "level_pear.lua",
-        "level_banana.lua",
-        "level_apple.lua",
-        "level_kiwi.lua",
-        "level_mango.lua",
-    };
+    auto get_level_loaders(const game::TlvReader &reader) -> std::vector<game::ScriptLoader>
+    {
+        auto custom_level_loaders = std::vector<game::ScriptLoader>{};
+
+        if (std::filesystem::exists("levels"))
+        {
+            auto files = std::filesystem::directory_iterator{"levels"} | std::ranges::to<std::vector>();
+            std::ranges::sort(files, [](const auto &a, const auto &b)
+                              { return a.path() <= b.path(); });
+
+            custom_level_loaders =
+                files |
+                std::views::filter([](const auto &e)
+                                   { return e.path().extension() == ".lua"; }) |
+                std::views::transform([](const auto &e)
+                                      { return e.path().string(); }) |
+                std::views::transform([](const auto &s)
+                                      { return game::ScriptLoader{s}; }) |
+                std::ranges::to<std::vector>();
+        }
+
+        const auto builtin_level_names =
+            reader |
+            std::views::filter([](const auto &entry)
+                               {
+            if (entry.type() == game::TlvType::TEXT_FILE)
+            {
+                const auto text_file = entry.text_file_value();
+                return text_file.name.ends_with(".lua");
+            }
+            return false; }) |
+            std::views::transform([&reader](const auto &entry)
+                                  { return game::ScriptLoader{entry.text_file_value().name, reader}; }) |
+            std::ranges::to<std::vector>();
+
+        auto level_loaders = std::vector<game::ScriptLoader>{};
+        level_loaders.insert_range(std::ranges::end(level_loaders), custom_level_loaders);
+        level_loaders.insert_range(std::ranges::end(level_loaders), builtin_level_names);
+
+        return level_loaders;
+    }
 }
 
 namespace game::routines
@@ -86,14 +120,16 @@ namespace game::routines
           _scheduler{scheduler},
           _player{bus, create_camera(window)},
           _level_num{},
+          _level_names{get_level_loaders(reader)},
           _resource_cache{resource_cache},
           _reader{reader},
-          _level{std::make_unique<levels::LuaLevel>(level_names[_level_num], _resource_cache, _reader, _player, _bus)},
-          _show_physics_debug(false),
-          _show_debug(false),
-          _running(true),
+          _level{std::make_unique<levels::LuaLevel>(_level_names[_level_num], _resource_cache, _reader, _player, _bus)},
+          _show_physics_debug{false},
+          _show_debug{false},
+          _running{true},
           _auto_subscribe{bus, {messaging::MessageType::LEVEL_COMPLETE, messaging::MessageType::QUIT}, this}
     {
+        _window.set_title(_level_names[_level_num].name());
     }
 
     auto LevelRoutine::create_task() -> Task
@@ -105,11 +141,11 @@ namespace game::routines
             {
                 _player.restart();
                 _level.reset();
-                _level = std::make_unique<levels::LuaLevel>(level_names[_level_num], _resource_cache, _reader, _player, _bus);
+                _level = std::make_unique<levels::LuaLevel>(_level_names[_level_num], _resource_cache, _reader, _player, _bus);
                 _level->restart();
                 curernt_level = _level_num;
 
-                _window.set_title(level_names[_level_num]);
+                _window.set_title(_level_names[_level_num].name());
             }
             auto *level = _level.get();
 
@@ -143,7 +179,7 @@ namespace game::routines
     {
         game::log::info("level complete: {}", level_name);
         _level_num++;
-        if (_level_num >= level_names.size())
+        if (_level_num >= _level_names.size())
         {
             log::info("YOU WIN !");
             // _running = false;

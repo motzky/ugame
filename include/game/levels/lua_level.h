@@ -18,6 +18,7 @@
 #include "primitives/entity.h"
 #include "resources/resource_cache.h"
 #include "scripting/lua_script.h"
+#include "scripting/script_loader.h"
 #include "tlv/tlv_reader.h"
 
 namespace game::levels
@@ -40,7 +41,7 @@ namespace game::levels
         };
 
         LuaLevel(
-            std::string_view script_name,
+            const ScriptLoader &loader,
             DefaultCache &resource_cache,
             const TlvReader &reader,
             const Player &player,
