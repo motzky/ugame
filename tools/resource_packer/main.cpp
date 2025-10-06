@@ -92,7 +92,11 @@ auto main(int argc, char **argv) -> int
 
         auto writer = game::TlvWriter{};
 
-        for (const auto &entry : std::filesystem::directory_iterator{argv[1]})
+        auto files = std::filesystem::directory_iterator{argv[1]} | std::ranges::to<std::vector>();
+        std::ranges::sort(files, [](const auto &a, const auto &b)
+                          { return a.path() <= b.path(); });
+
+        for (const auto &entry : files)
         {
             const auto path = entry.path().string();
             const auto file_name = entry.path().filename().string();
