@@ -3,6 +3,7 @@
 #include <optional>
 
 #include "events/key_event.h"
+#include "messaging/auto_subscribe.h"
 #include "messaging/message_bus.h"
 #include "messaging/subscriber.h"
 
@@ -66,4 +67,25 @@ TEST(message_bus, unsubscribe_dies_when_not_subscribed)
     auto sub = TestSub{};
 
     EXPECT_DEATH(msg_bus.unsubscribe(game::messaging::MessageType::KEY_PRESS, &sub), "");
+}
+
+TEST(message_bus, auto_subscribe)
+{
+    auto msg_bus = game::messaging::MessageBus{};
+    auto sub = TestSub{};
+    const auto event = game::KeyEvent{game::Key::A, game::KeyState::DOWN};
+
+    {
+        auto auto_sub = game::messaging::AutoSubscribe{msg_bus, {game::messaging::MessageType::KEY_PRESS}, &sub};
+        msg_bus.post_key_press(event);
+
+        EXPECT_TRUE(!!sub.key_event);
+        ASSERT_EQ(*sub.key_event, event);
+    }
+
+    sub.key_event = std::nullopt;
+
+    msg_bus.post_key_press(event);
+
+    EXPECT_FALSE(!!sub.key_event);
 }
