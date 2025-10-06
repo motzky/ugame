@@ -20,11 +20,12 @@ auto main(int argc, char **argv) -> int
     // only msvc and GCC >=15 support automatic formatting of std::vector
     game::log::info("args: {}", args);
 #else
+    std::print("args: [");
     for (const auto &s : args)
     {
-        std::print("[{}} ", s);
+        std::print("\"{}\", ", s);
     }
-    std::println();
+    std::println("]");
 #endif
 
     {
