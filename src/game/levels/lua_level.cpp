@@ -152,7 +152,11 @@ namespace game::levels
         _scene.entities.push_back(&_floor);
     }
 
-    LuaLevel::~LuaLevel() = default;
+    LuaLevel::~LuaLevel()
+    {
+        _bus.unsubscribe(messaging::MessageType::ENTITY_INTERSECT, this);
+        _bus.unsubscribe(messaging::MessageType::RESTART_LEVEL, this);
+    }
 
     auto LuaLevel::update(const Player &player) -> void
     {

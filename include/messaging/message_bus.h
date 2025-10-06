@@ -32,6 +32,7 @@ namespace game::messaging
     {
     public:
         auto subscribe(MessageType type, Subscriber *subscriber) -> void;
+        auto unsubscribe(MessageType type, Subscriber *subscriber) -> void;
 
         MessageBus() = default;
         ~MessageBus() = default;

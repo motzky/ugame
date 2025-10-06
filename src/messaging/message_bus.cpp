@@ -28,11 +28,15 @@ namespace game::messaging
     auto MessageBus::subscribe(MessageType type, Subscriber *subscriber) -> void
     {
         auto &subscribers = _subscribers[type];
-        // expect(!std::ranges::contains(subscribers, subscriber), "subscriber already subscribed");
-        if (!std::ranges::contains(subscribers, subscriber))
-        {
-            subscribers.push_back(subscriber);
-        }
+        expect(!std::ranges::contains(subscribers, subscriber), "subscriber already subscribed");
+        subscribers.push_back(subscriber);
+    }
+
+    auto MessageBus::unsubscribe(MessageType type, Subscriber *subscriber) -> void
+    {
+        auto &subscribers = _subscribers[type];
+        expect(std::ranges::contains(subscribers, subscriber), "subscriber not subscribed");
+        std::erase(subscribers, subscriber);
     }
 
     auto MessageBus::post_key_press(const KeyEvent &event) -> void
