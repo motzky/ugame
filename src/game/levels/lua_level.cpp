@@ -74,6 +74,8 @@ namespace game::levels
           _shapes{},
           _auto_subscribe{_bus, {messaging::MessageType::ENTITY_INTERSECT, messaging::MessageType::RESTART_LEVEL}, this}
     {
+        log::info("loading level {}", loader.name());
+
         const auto runner = ScriptRunner{_script};
         runner.execute("Level_init_level", player.position());
 
