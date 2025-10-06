@@ -49,11 +49,11 @@ jobs:
         with:
           apt: libglfw3 libglfw3-dev
 
-      - name: Set GCC 14 as default on Ubuntu
+      - name: Set GCC 15 as default on Ubuntu
         if: matrix.os == 'ubuntu-latest'
         run: |
-          echo "CMAKE_C_COMPILER=gcc-14" >> $GITHUB_ENV
-          echo "CMAKE_CXX_COMPILER=g++-14" >> $GITHUB_ENV
+          echo "CMAKE_C_COMPILER=gcc-15" >> $GITHUB_ENV
+          echo "CMAKE_CXX_COMPILER=g++-15" >> $GITHUB_ENV
 
       - name: Set reusable strings
         # Turn repeated input strings (such as the build output directory) into step outputs. These step outputs can be used throughout the workflow file.
