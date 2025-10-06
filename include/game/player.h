@@ -7,6 +7,7 @@
 #include "events/key_event.h"
 #include "events/mouse_event.h"
 #include "math/vector3.h"
+#include "messaging/auto_subscribe.h"
 #include "messaging/message_bus.h"
 #include "messaging/subscriber.h"
 
@@ -36,5 +37,6 @@ namespace game
         std::unordered_map<game::Key, bool> _key_state;
         bool _flying;
         Vector3 _start_position;
+        messaging::AutoSubscribe _auto_subscribe;
     };
 }

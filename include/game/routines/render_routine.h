@@ -4,6 +4,7 @@
 #include "graphics/renderer.h"
 #include "graphics/shape_wireframe_renderer.h"
 #include "loaders/mesh_loader.h"
+#include "messaging/auto_subscribe.h"
 #include "messaging/message_bus.h"
 #include "messaging/subscriber.h"
 #include "scheduler/scheduler.h"
@@ -40,5 +41,6 @@ namespace game::routines
         bool _show_physics_debug;
         bool _show_debug;
         bool _running;
+        messaging::AutoSubscribe _auto_subscribe;
     };
 }

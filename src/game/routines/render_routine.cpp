@@ -34,11 +34,9 @@ namespace game::routines
           _debug_wireframe_renderer{},
           _show_physics_debug(false),
           _show_debug(false),
-          _running(true)
+          _running(true),
+          _auto_subscribe{bus, {messaging::MessageType::KEY_PRESS, messaging::MessageType::MOUSE_MOVE, messaging::MessageType::QUIT}, this}
     {
-        _bus.subscribe(messaging::MessageType::KEY_PRESS, this);
-        _bus.subscribe(messaging::MessageType::MOUSE_MOVE, this);
-        _bus.subscribe(messaging::MessageType::QUIT, this);
     }
 
     auto RenderRoutine::create_task() -> Task

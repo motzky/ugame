@@ -14,11 +14,9 @@ namespace game
         : _camera(std::move(camera)),
           _key_state{},
           _flying{false},
-          _start_position(camera.position())
+          _start_position{camera.position()},
+          _auto_subscribe{bus, {messaging::MessageType::KEY_PRESS, messaging::MessageType::MOUSE_MOVE, messaging::MessageType::RESTART_LEVEL}, this}
     {
-        bus.subscribe(messaging::MessageType::KEY_PRESS, this);
-        bus.subscribe(messaging::MessageType::MOUSE_MOVE, this);
-        bus.subscribe(messaging::MessageType::RESTART_LEVEL, this);
     }
 
     auto Player::handle_key_press(const KeyEvent &event) -> void

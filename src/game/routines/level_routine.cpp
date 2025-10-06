@@ -91,10 +91,9 @@ namespace game::routines
           _level{std::make_unique<levels::LuaLevel>(level_names[_level_num], _resource_cache, _reader, _player, _bus)},
           _show_physics_debug(false),
           _show_debug(false),
-          _running(true)
+          _running(true),
+          _auto_subscribe{bus, {messaging::MessageType::LEVEL_COMPLETE, messaging::MessageType::QUIT}, this}
     {
-        _bus.subscribe(messaging::MessageType::LEVEL_COMPLETE, this);
-        _bus.subscribe(messaging::MessageType::QUIT, this);
     }
 
     auto LevelRoutine::create_task() -> Task

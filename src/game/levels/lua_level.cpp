@@ -70,11 +70,9 @@ namespace game::levels
           _bus(bus),
           _resource_cache(resource_cache),
           _barrel_info{},
-          _shapes{}
+          _shapes{},
+          _auto_subscribe{_bus, {messaging::MessageType::ENTITY_INTERSECT, messaging::MessageType::RESTART_LEVEL}, this}
     {
-        _bus.subscribe(messaging::MessageType::ENTITY_INTERSECT, this);
-        _bus.subscribe(messaging::MessageType::RESTART_LEVEL, this);
-
         const auto runner = ScriptRunner{_script};
         runner.execute("Level_init_level", player.position());
 
@@ -150,12 +148,6 @@ namespace game::levels
         }
 
         _scene.entities.push_back(&_floor);
-    }
-
-    LuaLevel::~LuaLevel()
-    {
-        _bus.unsubscribe(messaging::MessageType::ENTITY_INTERSECT, this);
-        _bus.unsubscribe(messaging::MessageType::RESTART_LEVEL, this);
     }
 
     auto LuaLevel::update(const Player &player) -> void

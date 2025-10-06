@@ -10,6 +10,7 @@
 #include "graphics/color.h"
 #include "graphics/cube_map.h"
 #include "graphics/texture_sampler.h"
+#include "messaging/auto_subscribe.h"
 #include "messaging/message_bus.h"
 #include "messaging/subscriber.h"
 #include "physics/physics_sytem.h"
@@ -44,7 +45,7 @@ namespace game::levels
             const TlvReader &reader,
             const Player &player,
             messaging::MessageBus &bus);
-        virtual ~LuaLevel();
+        virtual ~LuaLevel() = default;
 
         auto update(const Player &player) -> void override;
         auto restart() -> void override;
@@ -69,5 +70,7 @@ namespace game::levels
         DefaultCache &_resource_cache;
         std::unordered_map<const Entity *, BarrelInfo> _barrel_info;
         std::vector<const Shape *> _shapes;
+
+        messaging::AutoSubscribe _auto_subscribe;
     };
 }
