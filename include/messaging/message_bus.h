@@ -33,6 +33,13 @@ namespace game::messaging
     public:
         auto subscribe(MessageType type, Subscriber *subscriber) -> void;
 
+        MessageBus() = default;
+        ~MessageBus() = default;
+        MessageBus(const MessageBus &) = delete;
+        auto operator=(const MessageBus &) -> MessageBus & = delete;
+        MessageBus(MessageBus &&) = default;
+        auto operator=(MessageBus &&) -> MessageBus & = default;
+
         auto post_key_press(const KeyEvent &event) -> void;
         auto post_mouse_move(const MouseEvent &event) -> void;
         auto post_mouse_button(const MouseButtonEvent &event) -> void;
