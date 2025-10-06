@@ -24,7 +24,7 @@ auto main(int argc, char **argv) -> int
     {
         std::print("[{}} ", s);
     }
-    std::printlin();
+    std::println();
 #endif
 
     {
