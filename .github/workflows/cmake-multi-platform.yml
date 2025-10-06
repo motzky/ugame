@@ -47,7 +47,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ConorMacBride/install-package@v1
         with:
-          apt: libglfw3 libglfw3-dev
+          apt: libglfw3 libglfw3-dev gcc-15
 
       - name: Set GCC 15 as default on Ubuntu
         if: matrix.os == 'ubuntu-latest'
