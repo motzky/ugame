@@ -42,6 +42,123 @@ namespace
 
         return result;
     }
+
+    auto albedo_texture_name(std::string_view mesh_name) -> std::string
+    {
+        if (mesh_name == "Collums" ||
+            mesh_name == "Concrete_wall_with_lines" ||
+            mesh_name == "Roof" ||
+            mesh_name == "Lower_roof")
+        {
+            return "Concrete042A_2K-JPG_Color";
+        }
+        if (mesh_name == "Window_frames" ||
+            mesh_name == "Skylight_frame" ||
+            mesh_name == "Skylight_frame.001" ||
+            mesh_name == "Wall_beams" ||
+            mesh_name == "Wall_beams.001" ||
+            mesh_name == "Wall_beams.002" ||
+            mesh_name == "Wall_beams.003" ||
+            mesh_name == "Wall_beams.004" ||
+            mesh_name == "Wall_beams.005" ||
+            mesh_name == "Door_rail" ||
+            mesh_name == "Sliding_door" ||
+            mesh_name == "Sliding_door.001" ||
+            mesh_name == "Sliding_door.002" ||
+            mesh_name == "Sliding_door.003" ||
+            mesh_name == "Sliding_door_frame" ||
+            mesh_name == "Lower_roof_framing" ||
+            mesh_name == "Roof_framing" ||
+            mesh_name == "Roof_beams" ||
+            mesh_name == "Roof_beams.001" ||
+            mesh_name == "Window_Frame" ||
+            mesh_name == "Window_frames" ||
+            mesh_name == "Tap" ||
+            mesh_name == "Lamps")
+        {
+            return "Iron_diffuse";
+        }
+
+        // if (mesh_name == "Main_floor")
+        // {
+        //     return "Floor diffuse";
+        //     // return "Floor lines map";
+        // }
+        // if (mesh_name == "Main_walls")
+        // {
+        //     return "Main walls diffuse";
+        // }
+        // if (mesh_name == "")
+        // {
+        //     return "Blue line map";
+        // }
+
+        return "white";
+    }
+
+    auto normal_map_texture_name(std::string_view mesh_name) -> std::string
+    {
+        if (mesh_name == "Main_floor" ||
+            mesh_name == "Main_walls" ||
+            mesh_name == "Concrete_wall_with_lines" ||
+            mesh_name == "Roof" ||
+            mesh_name == "Lower_roof" ||
+            mesh_name == "Collums")
+        {
+            return "Concrete042A_2K-JPG_NormalGL";
+        }
+        // if (mesh_name == "")
+        // {
+        //     return "Floor lines map";
+        // }
+        // if (mesh_name == "")
+        // {
+        //     return "Blue line map";
+        // }
+        if (mesh_name == "Window_frames" ||
+            mesh_name == "Skylight_frame" ||
+            mesh_name == "Skylight_frame.001" ||
+            mesh_name == "Wall_beams" ||
+            mesh_name == "Wall_beams.001" ||
+            mesh_name == "Wall_beams.002" ||
+            mesh_name == "Wall_beams.003" ||
+            mesh_name == "Wall_beams.004" ||
+            mesh_name == "Wall_beams.005" ||
+            mesh_name == "Door_rail" ||
+            mesh_name == "Sliding_door" ||
+            mesh_name == "Sliding_door.001" ||
+            mesh_name == "Sliding_door.002" ||
+            mesh_name == "Sliding_door.003" ||
+            mesh_name == "Sliding_door_frame" ||
+            mesh_name == "Lower_roof_framing" ||
+            mesh_name == "Roof_framing" ||
+            mesh_name == "Roof_beams" ||
+            mesh_name == "Roof_beams.001" ||
+            mesh_name == "Tap" ||
+            mesh_name == "Window_Frame" ||
+            mesh_name == "Window_frames" ||
+            mesh_name == "Lamps")
+        {
+            return "Metal025_2K-JPG_NormalGL";
+        }
+
+        return "barrel_normal";
+    }
+
+    auto material_name_from_mesh(std::string_view mesh_name) -> std::string
+    {
+        if (mesh_name == "Main_floor" ||
+            mesh_name == "Main_walls")
+        {
+            return "level_material";
+        }
+        if (albedo_texture_name(mesh_name) == "white")
+        {
+            return "checkerboard_material";
+        }
+
+        return "level_material";
+    }
 }
 
 namespace game::levels
@@ -55,17 +172,7 @@ namespace game::levels
         : _ps{},
           _script{loader.load()},
           _entities{},
-          _floor{
-              resource_cache.get<Mesh>("floor"),
-              resource_cache.get<Material>("floor_material"),
-              {0.f, -2.f, 0},
-              {100.f, 1.f, 100.f},
-              std::vector<const Texture *>{
-                  resource_cache.get<Texture>("floor_albedo"),
-                  resource_cache.get<Texture>("floor_albedo")},
-              {_ps.create_shape<BoxShape>(Vector3{100.f, 1.f, 100.f}), {{0.f, -2.f, 0}, {1.f}, {}}},
-              0u,
-              0u},
+          _level_entities{},
           _skybox{reader, {"skybox_right", "skybox_left", "skybox_top", "skybox_bottom", "skybox_front", "skybox_back"}},
           _skybox_sampler{},
           _bus(bus),
@@ -150,7 +257,63 @@ namespace game::levels
                                       .b = direction_light_color.z}};
         }
 
-        _scene.entities.push_back(&_floor);
+        const auto level_entity_names = std::vector{
+            "Main_floor"sv,
+            "Main_walls"sv,
+            "Concrete_wall_with_lines"sv,
+            "Collums"sv,
+            "Roof"sv,
+            "Window_frames"sv,
+            "Window_Frame"sv,
+            "Skylight_frame.001"sv,
+            "Skylight_frame"sv,
+            "Lightblock"sv,
+            // "Glass_panes"sv,
+            // "Skylight_glass_pane"sv,
+            "Wall_beams"sv,
+            "Wall_beams.001"sv,
+            "Wall_beams.002"sv,
+            "Wall_beams.003"sv,
+            "Wall_beams.004"sv,
+            "Wall_beams.005"sv,
+            "Sliding_door"sv,
+            "Door_rail"sv,
+            "Sliding_door.001"sv,
+            "Sliding_door.002"sv,
+            "Sliding_door_frame"sv,
+            "Sliding_door.003"sv,
+            "Lower_roof"sv,
+            "Roof_framing"sv,
+            "Lower_roof_framing"sv,
+            "Roof_beams.001"sv,
+            "Roof_beams"sv,
+            "Tap"sv,
+            "Lamps"sv,
+            "Light"sv,
+        };
+
+        _level_entities =
+            level_entity_names |
+            std::views::transform(
+                [&](const auto e)
+                { return Entity{resource_cache.get<Mesh>(e),
+                                resource_cache.get<Material>(material_name_from_mesh(e)),
+                                {0.f, -5.f, 0},
+                                {10.f},
+                                std::vector<const Texture *>{
+                                    resource_cache.get<Texture>(albedo_texture_name(e)),
+                                    resource_cache.get<Texture>(normal_map_texture_name(e))},
+                                {_ps.create_shape<BoxShape>(Vector3{10.f}), {{0.f, -2.f, 0}, {1.f}, {}}},
+                                0u,
+                                0u}; }) |
+            std::ranges::to<std::vector>();
+
+        for (auto &ent : _level_entities)
+        {
+            _scene.entities.push_back(&ent);
+        }
+
+        restart();
     }
 
     auto LuaLevel::update(const Player &player) -> void

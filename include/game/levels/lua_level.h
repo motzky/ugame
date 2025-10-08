@@ -64,7 +64,7 @@ namespace game::levels
         LuaScript _script;
 
         std::vector<Entity> _entities;
-        Entity _floor;
+        std::vector<Entity> _level_entities;
         CubeMap _skybox;
         TextureSampler _skybox_sampler;
         messaging::MessageBus &_bus;

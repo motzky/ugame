@@ -30,7 +30,7 @@
 #include "utils/decompress.h"
 #include "window.h"
 
-using namespace std::string_view_literals;
+using namespace std::literals;
 
 namespace
 {
@@ -50,6 +50,25 @@ namespace
 
         return std::stol(args[index + 1].data());
     }
+
+    auto load_sub_meshes_into_cache(game::DefaultCache &resource_cache, std::string_view obj_name, const game::TlvReader &reader) -> void
+    {
+
+        const auto data = std::ranges::find_if(reader, [obj_name](const auto &e)
+                                               { return e.is_object_data(obj_name); });
+        game::ensure(data != std::ranges::end(reader), "failed to load meshes of object '{}'", obj_name);
+
+        auto mesh_names = (*data).object_data_value();
+
+        game::log::info("loading {} meshes for object {}", mesh_names.size(), obj_name);
+
+        for (const auto &str : mesh_names)
+        {
+            game::log::debug("loading mesh {}", str);
+            resource_cache.insert<game::Mesh>(str, reader, str);
+        }
+    }
+
 }
 
 namespace game
@@ -90,6 +109,8 @@ namespace game
         resource_cache.insert<Mesh>("barrel", reader, "Cylinder.014");
         resource_cache.insert<Mesh>("floor", mesh_loader.cube());
 
+        load_sub_meshes_into_cache(resource_cache, "SHC factory hall renovated", reader);
+
         game::log::info("Creating materials...");
 
         const auto vertex_shader_file = TlvReader::get_text_file(reader, "simple.vert");
@@ -103,23 +124,47 @@ namespace game
         const auto checker_fragment_shader_file = TlvReader::get_text_file(reader, "checker.frag");
         const auto checker_vertex_shader = game::Shader{checker_vertex_shader_file.data, game::ShaderType::VERTEX};
         const auto checker_fragment_shader = game::Shader{checker_fragment_shader_file.data, game::ShaderType::FRAGMENT};
-        resource_cache.insert<Material>("floor_material", checker_vertex_shader, checker_fragment_shader);
+        resource_cache.insert<Material>("checkerboard_material", checker_vertex_shader, checker_fragment_shader);
+
+        resource_cache.insert<Material>("level_material", vertex_shader, fragment_shader);
+
+        const auto simple_fragment_shader_file = TlvReader::get_text_file(reader, "simple.frag");
+        const auto simple_fragment_shader = game::Shader{simple_fragment_shader_file.data, game::ShaderType::FRAGMENT};
+        resource_cache.insert<Material>("floor_material", vertex_shader, simple_fragment_shader);
 
         game::log::info("Creating GL textures...");
 
-        resource_cache.insert<game::Texture>("barrel_albedo", reader, "barrel_base_albedo", sampler);
-        resource_cache.insert<game::Texture>("barrel_specular", reader, "barrel_metallic", sampler);
-        resource_cache.insert<game::Texture>("barrel_normal", reader, "barrel_normal_ogl", sampler);
+        resource_cache.insert<Texture>("barrel_albedo", reader, "barrel_base_albedo", sampler);
+        resource_cache.insert<Texture>("barrel_specular", reader, "barrel_metallic", sampler);
+        resource_cache.insert<Texture>("barrel_normal", reader, "barrel_normal_ogl", sampler);
+
+        resource_cache.insert<Texture>("Concrete042A_2K-JPG_Color", reader, "Concrete042A_2K-JPG_Color", sampler);
+        resource_cache.insert<Texture>("Concrete042A_2K-JPG_NormalGL", reader, "Concrete042A_2K-JPG_NormalGL", sampler);
+        resource_cache.insert<Texture>("Metal025_2K-JPG_NormalGL", reader, "Metal025_2K-JPG_NormalGL", sampler);
+        resource_cache.insert<Texture>("Floor lines map", reader, "Floor lines map", sampler);
+        resource_cache.insert<Texture>("Blue line map", reader, "Blue line map", sampler);
+        resource_cache.insert<Texture>("Floor diffuse", reader, "Floor diffuse", sampler);
+        resource_cache.insert<Texture>("Main walls diffuse", reader, "Main walls diffuse", sampler);
+
+        resource_cache.insert<Texture>("Iron_diffuse",
+                                       TextureDescription{
+                                           .name = "Iron",
+                                           .format = TextureFormat::RGB,
+                                           .usage = TextureUsage::SRGB,
+                                           .width = 1u,
+                                           .height = 1u,
+                                           .data = {static_cast<std::byte>(0), static_cast<std::byte>(33), static_cast<std::byte>(105)}},
+                                       sampler);
 
         resource_cache.insert<Texture>(
-            "floor_albedo",
+            "white",
             game::TextureDescription{
                 .name = "white",
                 .format = game::TextureFormat::RGB,
                 .usage = game::TextureUsage::SRGB,
                 .width = 1u,
                 .height = 1u,
-                .data{static_cast<std::byte>(0xff), static_cast<std::byte>(0xff), static_cast<std::byte>(0xff)}},
+                .data = {static_cast<std::byte>(0xff), static_cast<std::byte>(0xff), static_cast<std::byte>(0xff)}},
             sampler);
 
         game::log::info("Setting up scheduler...");
