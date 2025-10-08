@@ -149,4 +149,20 @@ namespace game
         write_entry(_buffer, type, length, value_bytes);
     }
 
+    auto TlvWriter::write(std::string_view name, std::span<const std::string> sub_mesh_names) -> void
+    {
+        auto sub_writer = TlvWriter{};
+        sub_writer.write(name);
+        sub_writer.write(static_cast<std::uint32_t>(sub_mesh_names.size()));
+        for (const auto &str : sub_mesh_names)
+        {
+            sub_writer.write(str);
+        }
+
+        const auto type = TlvType::OBJECT_SUB_MESH_NAMES;
+        const auto value_bytes = sub_writer.yield();
+        const auto length = static_cast<std::uint32_t>(value_bytes.size());
+
+        write_entry(_buffer, type, length, value_bytes);
+    }
 }

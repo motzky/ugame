@@ -14,6 +14,8 @@
 #include "tlv/tlv_writer.h"
 #include "utils/exception.h"
 
+#include "test_utils.h"
+
 namespace
 {
     template <class... Args>
@@ -125,4 +127,28 @@ TEST(tlv_writer, write_texture_data)
     ASSERT_EQ(texture_data.width, tlv_tex.width);
     ASSERT_EQ(texture_data.height, tlv_tex.height);
     ASSERT_EQ(data, tlv_tex.data);
+}
+
+TEST(tlv_writer, write_object_sub_mesh_names)
+{
+    auto obj_name = std::string{"complex_obj"};
+    auto sub_meshes = std::vector<std::string>{"sub_mesh_A", "sub_mesh_B", "sub_mesh_C"};
+
+    auto writer = game::TlvWriter{};
+
+    TEST_IMPL(
+
+        writer.write(obj_name, sub_meshes);
+
+        const auto buffer = writer.yield();
+
+        auto reader = game::TlvReader{buffer};
+        auto entry = std::ranges::begin(reader);
+
+        const auto read_val = (*entry).object_data_value();
+
+        ASSERT_TRUE((*entry).is_object_data(obj_name));
+        ASSERT_EQ(read_val, sub_meshes);
+
+    )
 }

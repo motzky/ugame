@@ -32,6 +32,7 @@ namespace game
 
         TEXTURE_DESCRIPTION,
         MESH_DATA,
+        OBJECT_SUB_MESH_NAMES,
         TEXT_FILE,
     };
 
@@ -57,6 +58,8 @@ namespace game
         auto is_mesh(std::string_view name) const -> bool;
         auto text_file_value() const -> TextFile;
         auto is_text_file(std::string_view name) const -> bool;
+        auto is_object_data(std::string_view name) const -> bool;
+        auto object_data_value() const -> std::vector<std::string>;
 
         auto size() const -> std::uint32_t;
 
