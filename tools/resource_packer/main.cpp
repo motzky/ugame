@@ -195,6 +195,15 @@ auto write_mesh(const std::string &path, const std::string &asset_name, const st
 
     const auto loaded_meshes = std::span<::aiMesh *>{scene->mMeshes, scene->mMeshes + scene->mNumMeshes};
 
+    const auto mesh_names = loaded_meshes |
+                            std::views::transform([](const auto *m)
+                                                  { return std::string{m->mName.C_Str()}; }) |
+                            std::ranges::to<std::vector>();
+
+    game::log::info("packing: {} from {} {} - {} sub_meshes", asset_name, file_name, ext, mesh_names.size());
+
+    writer.write(asset_name, mesh_names);
+
     for (const auto *mesh : loaded_meshes)
     {
         const auto to_vector3 = [](const ::aiVector3D &v)
