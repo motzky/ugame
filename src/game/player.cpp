@@ -22,6 +22,11 @@ namespace game
     auto Player::handle_key_press(const KeyEvent &event) -> void
     {
         _key_state[event.key()] = event.state() == game::KeyState::DOWN;
+
+        if (event.key() == game::Key::F1 && event.state() == game::KeyState::UP)
+        {
+            _flying = !_flying;
+        }
     }
 
     auto Player::handle_mouse_move(const MouseEvent &event) -> void

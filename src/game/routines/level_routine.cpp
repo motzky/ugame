@@ -127,7 +127,7 @@ namespace game::routines
           _show_physics_debug{false},
           _show_debug{false},
           _running{true},
-          _auto_subscribe{bus, {messaging::MessageType::LEVEL_COMPLETE, messaging::MessageType::QUIT}, this}
+          _auto_subscribe{bus, {messaging::MessageType::KEY_PRESS, messaging::MessageType::LEVEL_COMPLETE, messaging::MessageType::QUIT}, this}
     {
         _window.set_title(_level_names[_level_num].name());
     }
@@ -192,7 +192,6 @@ namespace game::routines
         if (event.key() == game::Key::F1 && event.state() == game::KeyState::UP)
         {
             _show_debug = !_show_debug;
-            _player.set_flying(_show_debug);
             if (_level)
             {
                 _level->set_show_debug(_show_debug);
