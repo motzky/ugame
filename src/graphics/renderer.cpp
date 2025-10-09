@@ -147,8 +147,9 @@ namespace game
 
         ::glDepthMask(GL_TRUE);
 
-        for (const auto *entity : scene.entities | std::views::filter([](const auto *e)
-                                                                      { return e->is_visible(); }))
+        // for (const auto *entity : scene.entities | std::views::filter([](const auto *e)
+        //                                                               { return e->is_visible(); }))
+        for (const auto *entity : scene.entities)
         {
             const auto *mesh = entity->mesh();
             const auto *material = entity->material();
