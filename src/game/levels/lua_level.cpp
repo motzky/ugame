@@ -154,6 +154,7 @@ namespace
         }
         if (albedo_texture_name(mesh_name) == "white")
         {
+            game::log::debug("returning checkerboard for mesh {}", mesh_name);
             return "checkerboard_material";
         }
 
