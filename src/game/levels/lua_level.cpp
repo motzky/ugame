@@ -11,13 +11,16 @@
 #include "graphics/cube_map.h"
 #include "graphics/material.h"
 #include "graphics/mesh.h"
+#include "graphics/text_factory.h"
 #include "graphics/texture.h"
 #include "graphics/texture_sampler.h"
+#include "graphics/ui/label.h"
 #include "messaging/message_bus.h"
 #include "physics/box_shape.h"
 #include "physics/physics_sytem.h"
 #include "physics/transformed_shape.h"
 #include "resources/resource_cache.h"
+#include "resources/resource_loader.h"
 #include "scripting/script_loader.h"
 #include "scripting/script_runner.h"
 #include "tlv/tlv_reader.h"
@@ -167,6 +170,7 @@ namespace game::levels
     LuaLevel::LuaLevel(
         const ScriptLoader &loader,
         DefaultCache &resource_cache,
+        const ResourceLoader &resource_loader,
         const TlvReader &reader,
         const Player &player,
         messaging::MessageBus &bus)
@@ -220,6 +224,9 @@ namespace game::levels
             _shapes.push_back(shape);
         }
 
+        const auto text_factory = TextFactory{resource_loader};
+        static auto text_test = text_factory.create("Hello World!", &_skybox_sampler);
+
         _scene = Scene{
             .entities = _entities |
                         std::views::transform([](auto &e)
@@ -241,7 +248,8 @@ namespace game::levels
                         .quad_attenuation = 0.017f}},
             .debug_lines = {},
             .skybox = &_skybox,
-            .skybox_sampler = &_skybox_sampler};
+            .skybox_sampler = &_skybox_sampler,
+            .labels = {{0, 0, &text_test}}};
 
         if (runner.has_function("Level_get_ambient"))
         {

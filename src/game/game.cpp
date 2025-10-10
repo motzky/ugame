@@ -173,7 +173,7 @@ namespace game
         auto input_routine = routines::InputRoutine{_window, _message_bus, scheduler};
         scheduler.add(input_routine.create_task());
 
-        auto level_routine = routines::LevelRoutine{_window, _message_bus, scheduler, resource_cache, reader};
+        auto level_routine = routines::LevelRoutine{_window, _message_bus, scheduler, resource_cache, reader, resource_loader};
         scheduler.add(level_routine.create_task());
 
         auto render_routine = routines::RenderRoutine{level_routine, _window, _message_bus, scheduler, reader, mesh_loader};

@@ -114,7 +114,8 @@ namespace
 
 namespace game::routines
 {
-    LevelRoutine::LevelRoutine(const Window &window, messaging::MessageBus &bus, Scheduler &scheduler, DefaultCache &resource_cache, const TlvReader &reader)
+    LevelRoutine::LevelRoutine(const Window &window, messaging::MessageBus &bus, Scheduler &scheduler, DefaultCache &resource_cache, const TlvReader &reader,
+                               const ResourceLoader &resource_loader)
         : _window{window},
           _bus{bus},
           _scheduler{scheduler},
@@ -122,8 +123,9 @@ namespace game::routines
           _level_num{},
           _level_names{get_level_loaders(reader)},
           _resource_cache{resource_cache},
+          _resource_loader{resource_loader},
           _reader{reader},
-          _level{std::make_unique<levels::LuaLevel>(_level_names[_level_num], _resource_cache, _reader, _player, _bus)},
+          _level{std::make_unique<levels::LuaLevel>(_level_names[_level_num], _resource_cache, _resource_loader, _reader, _player, _bus)},
           _show_physics_debug{false},
           _show_debug{false},
           _running{true},
@@ -141,7 +143,7 @@ namespace game::routines
             {
                 _player.restart();
                 _level.reset();
-                _level = std::make_unique<levels::LuaLevel>(_level_names[_level_num], _resource_cache, _reader, _player, _bus);
+                _level = std::make_unique<levels::LuaLevel>(_level_names[_level_num], _resource_cache, _resource_loader, _reader, _player, _bus);
                 _level->restart();
                 curernt_level = _level_num;
 

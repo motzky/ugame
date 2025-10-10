@@ -7,6 +7,7 @@
 #include "graphics/cube_map.h"
 #include "graphics/line_data.h"
 #include "graphics/texture_sampler.h"
+#include "graphics/ui/label.h"
 #include "math/vector3.h"
 #include "primitives/debug_lines.h"
 #include "primitives/entity.h"
@@ -37,5 +38,6 @@ namespace game
         std::optional<DebugLines> debug_lines;
         const CubeMap *skybox;
         const TextureSampler *skybox_sampler;
+        std::vector<graphics::ui::Label> labels;
     };
 }

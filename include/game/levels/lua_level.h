@@ -17,6 +17,7 @@
 #include "physics/shape.h"
 #include "primitives/entity.h"
 #include "resources/resource_cache.h"
+#include "resources/resource_loader.h"
 #include "scripting/lua_script.h"
 #include "scripting/script_loader.h"
 #include "tlv/tlv_reader.h"
@@ -43,6 +44,7 @@ namespace game::levels
         LuaLevel(
             const ScriptLoader &loader,
             DefaultCache &resource_cache,
+            const ResourceLoader &resource_loader,
             const TlvReader &reader,
             const Player &player,
             messaging::MessageBus &bus);

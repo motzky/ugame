@@ -22,7 +22,7 @@ namespace game::routines
     class LevelRoutine : public messaging::Subscriber
     {
     public:
-        LevelRoutine(const Window &window, messaging::MessageBus &bus, Scheduler &scheduler, DefaultCache &resource_cache, const TlvReader &reader);
+        LevelRoutine(const Window &window, messaging::MessageBus &bus, Scheduler &scheduler, DefaultCache &resource_cache, const TlvReader &reader, const ResourceLoader &resource_loader);
         LevelRoutine(const LevelRoutine &) = delete;
         auto operator=(const LevelRoutine &) -> LevelRoutine & = delete;
         LevelRoutine(LevelRoutine &&) = default;
@@ -43,6 +43,7 @@ namespace game::routines
         std::size_t _level_num;
         std::vector<ScriptLoader> _level_names;
         DefaultCache &_resource_cache;
+        const ResourceLoader &_resource_loader;
         const TlvReader &_reader;
         std::unique_ptr<levels::LuaLevel> _level;
         bool _show_physics_debug;
