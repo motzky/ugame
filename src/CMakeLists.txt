@@ -64,7 +64,7 @@ if(WIN32)
 elseif(UNIX)
     target_sources(
         gamelib
-        PRIVATE glfw/window.cpp glfw/debug_ui.cpp posix/file.cpp
+        PRIVATE glfw/window.cpp glfw/debug_ui.cpp posix/file.cpp graphics/text_factory.cpp
     )
     target_sources(
         imguilib
