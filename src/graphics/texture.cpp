@@ -93,7 +93,9 @@ namespace game
     Texture::Texture(const TextureDescription &data, const TextureSampler *sampler)
         : _handle{0u, [](auto texture)
                   { ::glDeleteTextures(1u, &texture); }},
-          _sampler(sampler)
+          _sampler(sampler),
+          _width{data.width},
+          _height{data.height}
     {
         log::info("creating texture with: {}", data);
 
@@ -123,7 +125,9 @@ namespace game
     Texture::Texture(TextureUsage usage, std::uint32_t width, std::uint32_t height)
         : _handle{0u, [](auto texture)
                   { ::glDeleteTextures(1u, &texture); }},
-          _sampler(nullptr)
+          _sampler(nullptr),
+          _width{width},
+          _height{height}
     {
         ::glCreateTextures(GL_TEXTURE_2D, 1u, &_handle);
         switch (usage)
@@ -148,6 +152,15 @@ namespace game
     auto Texture::sampler() const -> const TextureSampler *
     {
         return _sampler;
+    }
+
+    auto Texture::width() const -> std::uint32_t
+    {
+        return _width;
+    }
+    auto Texture::height() const -> std::uint32_t
+    {
+        return _height;
     }
 
     auto to_string(TextureUsage obj) -> std::string

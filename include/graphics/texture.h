@@ -48,14 +48,17 @@ namespace game
         Texture(TextureUsage usage, std::uint32_t width, std::uint32_t height);
         Texture(const TextureDescription &data, const TextureSampler *sampler);
         Texture(const TlvReader &reader, std::string_view name, const TextureSampler *sampler);
-        // Texture(TextureUsage usage, std::span<const std::byte> data, std::uint32_t width, std::uint32_t height, const TextureSampler *sampler);
 
         auto native_handle() const -> ::GLuint;
         auto sampler() const -> const TextureSampler *;
+        auto width() const -> std::uint32_t;
+        auto height() const -> std::uint32_t;
 
     private:
         AutoRelease<GLuint> _handle;
         const TextureSampler *_sampler;
+        std::uint32_t _width;
+        std::uint32_t _height;
     };
 
     auto to_string(TextureUsage obj) -> std::string;
