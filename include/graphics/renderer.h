@@ -28,5 +28,6 @@ namespace game
         FrameBuffer _fb;
         Mesh _post_process_sprite;
         Material _post_process_material;
+        Material _label_material;
     };
 }

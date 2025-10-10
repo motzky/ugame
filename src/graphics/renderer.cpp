@@ -84,6 +84,17 @@ namespace
         return game::Material{vertex_shader, fragment_shader};
     }
 
+    auto create_label_material(const game::TlvReader &reader) -> game::Material
+    {
+        const auto vert_file = game::TlvReader::get_text_file(reader, "label.vert");
+        const auto vert_data = vert_file.data;
+        const auto vertex_shader = game::Shader{vert_data, game::ShaderType::VERTEX};
+
+        const auto frag_file = game::TlvReader::get_text_file(reader, "label.frag");
+        const auto frag_data = frag_file.data;
+        const auto fragment_shader = game::Shader{frag_data, game::ShaderType::FRAGMENT};
+        return game::Material{vertex_shader, fragment_shader};
+    }
 }
 
 namespace game
@@ -96,7 +107,8 @@ namespace game
           _debug_line_material(create_line_material(reader)),
           _fb{width, height},
           _post_process_sprite{mesh_loader.sprite()},
-          _post_process_material{create_post_process_material(reader)}
+          _post_process_material{create_post_process_material(reader)},
+          _label_material{create_label_material(reader)}
     {
     }
 
@@ -182,6 +194,32 @@ namespace game
 
         _post_process_sprite.bind();
         ::glDrawElements(GL_TRIANGLES, _post_process_sprite.index_count(), GL_UNSIGNED_INT, reinterpret_cast<void *>(_post_process_sprite.index_offset()));
+        _post_process_sprite.unbind();
+
+        static const auto orth_camera = Camera{1920.f, 1080.f, 1000.f};
+
+        _label_material.use();
+        _post_process_sprite.bind();
+
+        for (const auto &[x, y, texture] : scene.labels)
+        {
+            {
+                auto writer = BufferWriter{_camera_buffer};
+                writer.write(orth_camera.view());
+                writer.write(orth_camera.projection());
+                writer.write(orth_camera.position());
+            }
+            ::glBindBufferBase(GL_UNIFORM_BUFFER, 0, _camera_buffer.native_handle());
+
+            const auto model = Matrix4{
+                Vector3{static_cast<float>(x), static_cast<float>(y), 0.0f},
+                Vector3{static_cast<float>(texture->width()), static_cast<float>(texture->height()), 1.0f}};
+            _label_material.set_uniform("model", model);
+
+            _label_material.bind_texture(0, texture, scene.skybox_sampler);
+
+            ::glDrawElements(GL_TRIANGLES, _post_process_sprite.index_count(), GL_UNSIGNED_INT, reinterpret_cast<void *>(_post_process_sprite.index_offset()));
+        }
         _post_process_sprite.unbind();
     }
 }
