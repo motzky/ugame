@@ -76,6 +76,10 @@ target_include_directories(imguilib PUBLIC ${imgui_SOURCE_DIR})
 target_include_directories(nathan_stream PUBLIC ${stb_lib_SOURCE_DIR} ${imgui_SOURCE_DIR} ${imguizmo_SOURCE_DIR})
 target_include_directories(gamelib PUBLIC ${stb_lib_SOURCE_DIR} ${imgui_SOURCE_DIR} ${imguizmo_SOURCE_DIR} ${JoltPhysics_SOURCE_DIR} ${lua_SOURCE_DIR})
 
+if(${Freetype_FOUND})
+target_include_directories(gamelib PUBLIC ${FREETYPE_INCLUDE_DIRS})
+endif()
+
 target_compile_features(gamelib PUBLIC cxx_std_23)
 target_compile_features(nathan_stream PUBLIC cxx_std_23)
 
@@ -108,7 +112,7 @@ elseif(UNIX)
 target_link_libraries(
     gamelib
     PUBLIC imguilib Jolt lua
-    PRIVATE GL glfw Backtrace::Backtrace stdc++exp libzstd_static
+    PRIVATE GL glfw Backtrace::Backtrace stdc++exp libzstd_static Freetype::Freetype
 )
 target_link_libraries(
     nathan_stream

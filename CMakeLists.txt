@@ -110,6 +110,7 @@ FetchContent_MakeAvailable(lua)
 if(UNIX)
 find_package(glfw3 REQUIRED)
 find_package(Backtrace REQUIRED)
+find_package(Freetype REQUIRED)
 endif()
 
 
