@@ -265,13 +265,13 @@ namespace game
         const auto left = -right;
         const auto top = height / 2.f;
         const auto bottom = -top;
-        const auto far = depth;
-        const auto near = 0.0f;
+        const auto far_p = depth;
+        const auto near_p = 0.0f;
 
         return {{2.f / (right - left), 0.f, 0.f, 0.f,
                  0.f, 2.f / (top - bottom), 0.f, 0.f,
-                 0.f, 0.f, -2.f / (far - near), 0.f,
-                 -(right + left) / (right - left), -(top + bottom) / (top - bottom), -(far + near) / (far - near), 1.f}};
+                 0.f, 0.f, -2.f / (far_p - near_p), 0.f,
+                 -(right + left) / (right - left), -(top + bottom) / (top - bottom), -(far_p + near_p) / (far_p - near_p), 1.f}};
     }
 
     inline auto Matrix4::to_string() const -> std::string
