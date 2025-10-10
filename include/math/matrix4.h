@@ -152,6 +152,7 @@ namespace game
 
         static auto look_at(const Vector3 &eye, const Vector3 &look_at, const Vector3 &up) -> Matrix4;
         static auto perspective(float fov, float width, float height, float near_plane, float far_plane) -> Matrix4;
+        static auto orthographic(float width, float height, float depth) -> Matrix4;
 
         auto make_translate(const game::Vector3 &v1) -> game::Matrix4
         {
@@ -256,6 +257,21 @@ namespace game
                         0.f, 0.f, -(2.f * far_plane * near_plane) / (far_plane - near_plane), 0.f}};
 
         return m;
+    }
+
+    inline auto Matrix4::orthographic(float width, float height, float depth) -> Matrix4
+    {
+        const auto right = width / 2.f;
+        const auto left = -right;
+        const auto top = height / 2.f;
+        const auto bottom = -top;
+        const auto far = depth;
+        const auto near = 0.0f;
+
+        return {{2.f / (right - left), 0.f, 0.f, 0.f,
+                 0.f, 2.f / (top - bottom), 0.f, 0.f,
+                 0.f, 0.f, -2.f / (far - near), 0.f,
+                 -(right + left) / (right - left), -(top + bottom) / (top - bottom), -(far + near) / (far - near), 1.f}};
     }
 
     inline auto Matrix4::to_string() const -> std::string
