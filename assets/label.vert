@@ -20,6 +20,4 @@ void main()
 {
     gl_Position = projection * view * model * vec4(in_position, 1.0);
     tex_coord = in_uv;
-
-    frag_position = model * vec4(in_position, 1.0);
 }
