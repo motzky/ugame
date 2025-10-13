@@ -42,12 +42,12 @@ namespace game
     }
 
     Camera::Camera(float width, float height, float depth)
-        : _view{Matrix4::look_at({0.f}, {}, {0.f, 1.f, 0.f})},
+        : _view{Matrix4::look_at({0.f, 0.f, 1.f}, {}, {0.f, 1.f, 0.f})},
           _projection{Matrix4::orthographic(width, height, depth)},
-          _position{{0.f}},
-          _direction{{}},
+          _position{Vector3{0.f, 0.f, 1.f}},
+          _direction{Vector3{0.f, 0.f, -1.f}},
           _up{Vector3{0.f, 1.f, 0.f}},
-          _right(),
+          _right{},
           _pitch{},
           _yaw{-std::numbers::pi_v<float> / 2.f},
           _fov(0.f),
