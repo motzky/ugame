@@ -198,6 +198,9 @@ namespace game
 
         static const auto orth_camera = Camera{1920.f, 1080.f, 1000.f};
 
+        ::glEnable(GL_BLEND);
+        ::glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
         _label_material.use();
         _post_process_sprite.bind();
 
@@ -215,11 +218,14 @@ namespace game
                 Vector3{static_cast<float>(x), static_cast<float>(y), 0.0f},
                 Vector3{static_cast<float>(texture->width()), static_cast<float>(texture->height()), 1.0f}};
             _label_material.set_uniform("model", model);
+            _label_material.set_uniform("textColor", Color{.r = 1.f, .g = 1.f, .b = 1.f});
 
             _label_material.bind_texture(0, texture, scene.skybox_sampler);
 
             ::glDrawElements(GL_TRIANGLES, _post_process_sprite.index_count(), GL_UNSIGNED_INT, reinterpret_cast<void *>(_post_process_sprite.index_offset()));
         }
         _post_process_sprite.unbind();
+
+        ::glDisable(GL_BLEND);
     }
 }
