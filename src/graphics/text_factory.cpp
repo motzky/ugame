@@ -39,7 +39,7 @@ namespace game
 
         // const auto font_data = _resource_loader.load("CaskaydiaCoveNerdFont-Regular.ttf").as_bytes();
 
-        ensure(::FT_New_Face(_ft, "../assets/CaskaydiaCoveNerdFont-Regular.ttf", 0, std::out_ptr(face)) == 0, "failed to load font");
+        ensure(::FT_New_Face(_ft, "./assets/CaskaydiaCoveNerdFont-Regular.ttf", 0, std::out_ptr(face)) == 0, "failed to load font");
 
         ensure(::FT_Set_Pixel_Sizes(face.get(), 0, pixel_size) == 0, "failed to set pixel sizes");
 
