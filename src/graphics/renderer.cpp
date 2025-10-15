@@ -216,8 +216,11 @@ namespace game
             ::glBindBufferBase(GL_UNIFORM_BUFFER, 0, _camera_buffer.native_handle());
 
             const auto model = Matrix4{
-                Vector3{static_cast<float>(x) + texture->width() + 5, static_cast<float>(y) - texture->height(), 0.0f},
-                Vector3{static_cast<float>(texture->width()), static_cast<float>(texture->height()), 1.0f}};
+                Vector3{
+                    static_cast<float>(x) + (texture->width() / 2.f) + 5,
+                    static_cast<float>(y) - (texture->height() / 2.f),
+                    0.0f},
+                Vector3{static_cast<float>(texture->width()) / 2.f, static_cast<float>(texture->height()) / 2.f, 1.0f}};
             _label_material.set_uniform("model", model);
             _label_material.set_uniform("textColor", Color{.r = 1.f, .g = 1.f, .b = 1.f});
 
