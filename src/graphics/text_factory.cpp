@@ -30,7 +30,7 @@ namespace game
 
     auto TextFactory::create(std::string_view text, const TextureSampler *sampler) const -> Texture
     {
-        log::debug("creating text for: {}", text);
+        log::info("creating text for: {}", text);
 
         const auto releaseFace = [](auto *up)
         { ::FT_Done_Face(up); };
@@ -40,10 +40,7 @@ namespace game
         // const auto font_data = _resource_loader.load("CaskaydiaCoveNerdFont-Regular.ttf").as_bytes();
 
         ensure(::FT_New_Face(_ft, "../assets/CaskaydiaCoveNerdFont-Regular.ttf", 0, std::out_ptr(face)) == 0, "failed to load font");
-        // ensure(::FT_New_Memory_Face(_ft, reinterpret_cast<const unsigned char *>(font_data.data()), font_data.size_bytes(), 0, std::out_ptr(face)) == 0, "failed to load font");
 
-        const auto pixel_size = 24u;
-        // set pixel size to 0 x 48 -> 48x48
         ensure(::FT_Set_Pixel_Sizes(face.get(), 0, pixel_size) == 0, "failed to set pixel sizes");
 
         auto tex_desc = TextureDescription{
@@ -64,8 +61,6 @@ namespace game
             ensure(::FT_Load_Char(face.get(), c, FT_LOAD_RENDER) == 0, "failed to load bitmap for character {}", c);
 
             auto *glyph = face->glyph;
-
-            log::debug("glyph {}: {}x{}", i, face->glyph->bitmap.width, face->glyph->bitmap.rows);
 
             const auto bitmap_width = glyph->bitmap.width;
             const auto width_padded = bitmap_width % 4 == 0 ? bitmap_width : bitmap_width + 4 - (bitmap_width % 4);
