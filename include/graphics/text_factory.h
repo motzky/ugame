@@ -2,10 +2,8 @@
 
 #include <string_view>
 
-#ifndef WIN32
 #include <ft2build.h>
 #include FT_FREETYPE_H
-#endif
 
 #include "graphics/texture.h"
 #include "graphics/texture_sampler.h"
