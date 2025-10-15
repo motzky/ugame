@@ -167,6 +167,9 @@ namespace game
                 .data = {static_cast<std::byte>(0xff), static_cast<std::byte>(0xff), static_cast<std::byte>(0xff)}},
             sampler);
 
+        resource_cache.insert<TextureSampler>("sky_box", TextureSampler{});
+        resource_cache.insert<TextureSampler>("ui", TextureSampler{});
+
         game::log::info("Setting up scheduler...");
         auto scheduler = Scheduler{};
 

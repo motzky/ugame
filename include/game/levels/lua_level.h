@@ -9,7 +9,6 @@
 #include "game/player.h"
 #include "graphics/color.h"
 #include "graphics/cube_map.h"
-#include "graphics/texture_sampler.h"
 #include "messaging/auto_subscribe.h"
 #include "messaging/message_bus.h"
 #include "messaging/subscriber.h"
@@ -68,7 +67,6 @@ namespace game::levels
         std::vector<Entity> _entities;
         std::vector<Entity> _level_entities;
         CubeMap _skybox;
-        TextureSampler _skybox_sampler;
         messaging::MessageBus &_bus;
         DefaultCache &_resource_cache;
         std::unordered_map<const Entity *, BarrelInfo> _barrel_info;
