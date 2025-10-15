@@ -225,7 +225,7 @@ namespace game::levels
         }
 
         const auto text_factory = TextFactory{resource_loader};
-        static auto text_test = text_factory.create("Hello World!", &_skybox_sampler);
+        static auto text_test = text_factory.create("Hello World!", &_skybox_sampler, 12);
 
         _scene = Scene{
             .entities = _entities |
