@@ -16,6 +16,14 @@
 #include "resources/resource_loader.h"
 #include "utils/ensure.h"
 
+namespace
+{
+    auto text_widen(std::string_view text) -> std::wstring
+    {
+        return std::wstring(text.begin(), text.end());
+    }
+}
+
 namespace game
 {
     TextFactory::TextFactory(const ResourceLoader &resource_loader)
@@ -41,13 +49,17 @@ namespace game
 
         ensure(::FT_New_Face(_ft, "./assets/CaskaydiaCoveNerdFont-Regular.ttf", 0, std::out_ptr(face)) == 0, "failed to load font");
 
+        ensure(::FT_Select_Charmap(face.get(), FT_ENCODING_UNICODE) == 0, "failed to select unicode char map");
+
         ensure(::FT_Set_Pixel_Sizes(face.get(), 0, pixel_size) == 0, "failed to set pixel sizes");
+
+        const auto wide_text = text_widen(text);
 
         auto tex_desc = TextureDescription{
             .name = std::string(text.data()),
             .format = TextureFormat::R,
             .usage = TextureUsage::SRGB,
-            .width{pixel_size * static_cast<std::uint32_t>(text.size())},
+            .width{pixel_size * static_cast<std::uint32_t>(wide_text.size())},
             .height{pixel_size},
             .data{}};
 
@@ -55,10 +67,10 @@ namespace game
 
         auto old_width = 0u;
 
-        for (auto i = 0u; i < text.size(); ++i)
+        for (auto i = 0u; i < wide_text.size(); ++i)
         {
-            const auto c = text.data()[i];
-            ensure(::FT_Load_Char(face.get(), c, FT_LOAD_RENDER) == 0, "failed to load bitmap for character {}", c);
+            const auto c = wide_text.data()[i];
+            ensure(::FT_Load_Char(face.get(), c, FT_LOAD_RENDER) == 0, "failed to load bitmap for character {}", std::to_string(c));
 
             auto *glyph = face->glyph;
 
