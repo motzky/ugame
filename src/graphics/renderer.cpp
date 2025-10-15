@@ -108,8 +108,11 @@ namespace game
           _fb{width, height},
           _post_process_sprite{mesh_loader.sprite()},
           _post_process_material{create_post_process_material(reader)},
-          _label_material{create_label_material(reader)}
+          _label_material{create_label_material(reader)},
+          _orth_camera{static_cast<float>(width), static_cast<float>(height), 1000.f}
     {
+        _orth_camera.set_position({width / 2.f, height / -2.f, 0.f});
+        _orth_camera.update();
     }
 
     auto Renderer::render(const Camera &camera, const Scene &scene, float gamma) const -> void
@@ -196,10 +199,6 @@ namespace game
         ::glDrawElements(GL_TRIANGLES, _post_process_sprite.index_count(), GL_UNSIGNED_INT, reinterpret_cast<void *>(_post_process_sprite.index_offset()));
         _post_process_sprite.unbind();
 
-        static auto orth_camera = Camera{static_cast<float>(_fb.width()), static_cast<float>(_fb.height()), 1000.f};
-        orth_camera.set_position({_fb.width() / 2.f, _fb.height() / -2.f, 0.f});
-        orth_camera.update();
-
         ::glEnable(GL_BLEND);
         ::glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -210,9 +209,9 @@ namespace game
         {
             {
                 auto writer = BufferWriter{_camera_buffer};
-                writer.write(orth_camera.view());
-                writer.write(orth_camera.projection());
-                writer.write(orth_camera.position());
+                writer.write(_orth_camera.view());
+                writer.write(_orth_camera.projection());
+                writer.write(_orth_camera.position());
             }
             ::glBindBufferBase(GL_UNIFORM_BUFFER, 0, _camera_buffer.native_handle());
 
