@@ -78,6 +78,8 @@ target_include_directories(gamelib PUBLIC ${stb_lib_SOURCE_DIR} ${imgui_SOURCE_D
 
 if(${Freetype_FOUND})
 target_include_directories(gamelib PUBLIC ${FREETYPE_INCLUDE_DIRS})
+else()
+target_include_directories(gamelib PUBLIC ${freetype_INCLUDE_DIRS})
 endif()
 
 target_compile_features(gamelib PUBLIC cxx_std_23)
@@ -101,7 +103,7 @@ if(WIN32)
 target_link_libraries(
     gamelib
     PUBLIC imguilib Jolt opengl32 lua
-    PRIVATE libzstd_static
+    PRIVATE libzstd_static ${FREETYPE_LIBRARY_NAME}
 )
 target_link_libraries(
     nathan_stream
@@ -112,7 +114,7 @@ elseif(UNIX)
 target_link_libraries(
     gamelib
     PUBLIC imguilib Jolt lua
-    PRIVATE GL glfw Backtrace::Backtrace stdc++exp libzstd_static Freetype::Freetype
+    PRIVATE GL glfw Backtrace::Backtrace stdc++exp libzstd_static ${FREETYPE_LIBRARY_NAME}
 )
 target_link_libraries(
     nathan_stream

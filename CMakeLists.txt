@@ -111,9 +111,20 @@ FetchContent_MakeAvailable(lua)
 if(UNIX)
 find_package(glfw3 REQUIRED)
 find_package(Backtrace REQUIRED)
-find_package(Freetype REQUIRED)
 endif()
 
+find_package(Freetype REQUIRED)
+if(${Freetype_FOUND})
+    set(FREETYPE_LIBRARY_NAME Freetype::Freetype)
+else()
+    FetchContent_Declare(
+        freetype
+        GIT_REPOSITORY https://github.com/freetype/freetype.git
+        GIT_TAG VER-2-14-1    
+    )
+    FetchContent_MakeAvailable(freetype)
+    set(FREETYPE_LIBRARY_NAME freetype)
+endif()
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(FETCHCONTENT_QUIET FALSE)
