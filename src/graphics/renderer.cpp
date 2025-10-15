@@ -196,7 +196,9 @@ namespace game
         ::glDrawElements(GL_TRIANGLES, _post_process_sprite.index_count(), GL_UNSIGNED_INT, reinterpret_cast<void *>(_post_process_sprite.index_offset()));
         _post_process_sprite.unbind();
 
-        static const auto orth_camera = Camera{1920.f, 1080.f, 1000.f};
+        static auto orth_camera = Camera{static_cast<float>(_fb.width()), static_cast<float>(_fb.height()), 1000.f};
+        orth_camera.set_position({_fb.width() / 2.f, _fb.height() / -2.f, 0.f});
+        orth_camera.update();
 
         ::glEnable(GL_BLEND);
         ::glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -215,7 +217,7 @@ namespace game
             ::glBindBufferBase(GL_UNIFORM_BUFFER, 0, _camera_buffer.native_handle());
 
             const auto model = Matrix4{
-                Vector3{static_cast<float>(x), static_cast<float>(y), 0.0f},
+                Vector3{static_cast<float>(x) + texture->width() + 5, static_cast<float>(y) - texture->height(), 0.0f},
                 Vector3{static_cast<float>(texture->width()), static_cast<float>(texture->height()), 1.0f}};
             _label_material.set_uniform("model", model);
             _label_material.set_uniform("textColor", Color{.r = 1.f, .g = 1.f, .b = 1.f});
