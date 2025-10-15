@@ -106,7 +106,7 @@ namespace game
           _skybox_material(create_skybox_material(reader)),
           _debug_line_material(create_line_material(reader)),
           _fb{width, height},
-          _post_process_sprite{mesh_loader.sprite()},
+          _sprite{mesh_loader.sprite()},
           _post_process_material{create_post_process_material(reader)},
           _label_material{create_label_material(reader)},
           _orth_camera{static_cast<float>(width), static_cast<float>(height), 1000.f}
@@ -195,15 +195,15 @@ namespace game
         _post_process_material.bind_texture(0, &_fb.color_texture(), scene.skybox_sampler);
         _post_process_material.set_uniform("gamma", gamma);
 
-        _post_process_sprite.bind();
-        ::glDrawElements(GL_TRIANGLES, _post_process_sprite.index_count(), GL_UNSIGNED_INT, reinterpret_cast<void *>(_post_process_sprite.index_offset()));
-        _post_process_sprite.unbind();
+        _sprite.bind();
+        ::glDrawElements(GL_TRIANGLES, _sprite.index_count(), GL_UNSIGNED_INT, reinterpret_cast<void *>(_sprite.index_offset()));
+        _sprite.unbind();
 
         ::glEnable(GL_BLEND);
         ::glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
         _label_material.use();
-        _post_process_sprite.bind();
+        _sprite.bind();
 
         for (const auto &[x, y, texture] : scene.labels)
         {
@@ -223,9 +223,9 @@ namespace game
 
             _label_material.bind_texture(0, texture, scene.skybox_sampler);
 
-            ::glDrawElements(GL_TRIANGLES, _post_process_sprite.index_count(), GL_UNSIGNED_INT, reinterpret_cast<void *>(_post_process_sprite.index_offset()));
+            ::glDrawElements(GL_TRIANGLES, _sprite.index_count(), GL_UNSIGNED_INT, reinterpret_cast<void *>(_sprite.index_offset()));
         }
-        _post_process_sprite.unbind();
+        _sprite.unbind();
 
         ::glDisable(GL_BLEND);
     }

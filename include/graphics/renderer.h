@@ -25,7 +25,7 @@ namespace game
         Material _skybox_material;
         Material _debug_line_material;
         FrameBuffer _fb;
-        Mesh _post_process_sprite;
+        Mesh _sprite;
         Material _post_process_material;
         Material _label_material;
         Camera _orth_camera;
