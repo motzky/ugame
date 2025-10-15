@@ -64,7 +64,7 @@ namespace
 
         for (const auto &str : mesh_names)
         {
-            game::log::debug("loading mesh {}", str);
+            // game::log::debug("loading mesh {}", str);
             resource_cache.insert<game::Mesh>(str, reader, str);
         }
     }
