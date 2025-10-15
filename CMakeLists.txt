@@ -113,7 +113,7 @@ find_package(glfw3 REQUIRED)
 find_package(Backtrace REQUIRED)
 endif()
 
-find_package(Freetype REQUIRED)
+find_package(Freetype)
 if(${Freetype_FOUND})
     set(FREETYPE_LIBRARY_NAME Freetype::Freetype)
 else()
