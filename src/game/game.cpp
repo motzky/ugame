@@ -1,20 +1,13 @@
 #include "game/game.h"
 
-#include <array>
-#include <print>
 #include <ranges>
 #include <string>
 #include <string_view>
 #include <utility>
 
-// #ifndef WIN32
-// #include <GLFW/glfw3.h>
-// #endif
-
 #include "game/routines/input_routine.h"
 #include "game/routines/level_routine.h"
 #include "game/routines/render_routine.h"
-#include "graphics/cube_map.h"
 #include "graphics/material.h"
 #include "graphics/shader.h"
 #include "graphics/texture.h"
