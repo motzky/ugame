@@ -28,7 +28,7 @@ namespace game
         ::FT_Done_FreeType(_ft);
     }
 
-    auto TextFactory::create(std::string_view text, const TextureSampler *sampler) const -> Texture
+    auto TextFactory::create(std::string_view text, const TextureSampler *sampler, const std::uint32_t pixel_size) const -> Texture
     {
         log::info("creating text for: {}", text);
 

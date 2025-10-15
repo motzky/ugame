@@ -17,7 +17,7 @@ namespace game
     public:
         TextFactory(const ResourceLoader &resource_loader);
         ~TextFactory();
-        auto create(std::string_view text, const TextureSampler *sampler) const -> Texture;
+        auto create(std::string_view text, const TextureSampler *sampler, const std::uint32_t pixel_size = 24u) const -> Texture;
 
     private:
         FT_Library _ft;
