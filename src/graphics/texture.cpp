@@ -9,9 +9,6 @@
 #include <span>
 #include <string>
 
-// #define STB_IMAGE_IMPLEMENTATION
-// #include <stb_image.h>
-
 #include "graphics/opengl.h"
 #include "log.h"
 #include "tlv/tlv_reader.h"
