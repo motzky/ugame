@@ -61,6 +61,7 @@
     DO(::PFNGLDELETESAMPLERSPROC, glDeleteSamplers)                     \
     DO(::PFNGLBINDTEXTUREUNITPROC, glBindTextureUnit)                   \
     DO(::PFNGLBINDSAMPLERPROC, glBindSampler)                           \
+    DO(::PFNGLSAMPLERPARAMETERIPROC, glSamplerParamerteri)              \
     DO(::PFNGLCREATEFRAMEBUFFERSPROC, glCreateFramebuffers)             \
     DO(::PFNGLDELETEFRAMEBUFFERSPROC, glDeleteFramebuffers)             \
     DO(::PFNGLBINDFRAMEBUFFERPROC, glBindFramebuffer)                   \
