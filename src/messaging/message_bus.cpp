@@ -80,4 +80,10 @@ namespace game::messaging
         post_message(MessageType::QUIT, _subscribers, [](auto *sub)
                      { sub->handle_quit(); });
     }
+
+    auto MessageBus::post_state_change(GameState state) -> void
+    {
+        post_message(MessageType::STATE_CHANGE, _subscribers, [state](auto *sub)
+                     { sub->handle_state_change(state); });
+    }
 }

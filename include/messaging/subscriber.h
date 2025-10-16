@@ -5,6 +5,7 @@
 #include "events/key_event.h"
 #include "events/mouse_button_event.h"
 #include "events/mouse_event.h"
+#include "game/game_state.h"
 #include "log.h"
 
 namespace game
@@ -48,6 +49,10 @@ namespace game::messaging
         {
             log::error("unhandled message");
         };
+        virtual auto handle_state_change(GameState) -> void
+        {
+            log::error("unhandled message");
+        }
 
     private:
     };

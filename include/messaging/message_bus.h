@@ -6,6 +6,7 @@
 #include "events/key_event.h"
 #include "events/mouse_button_event.h"
 #include "events/mouse_event.h"
+#include "game/game_state.h"
 
 namespace game
 {
@@ -25,7 +26,8 @@ namespace game::messaging
         LEVEL_COMPLETE,
         ENTITY_INTERSECT,
         RESTART_LEVEL,
-        QUIT
+        QUIT,
+        STATE_CHANGE,
     };
 
     class MessageBus
@@ -48,6 +50,7 @@ namespace game::messaging
         auto post_entity_intersect(const game::Entity *a, const game::Entity *b) -> void;
         auto post_restart_level() -> void;
         auto post_quit() -> void;
+        auto post_state_change(GameState state) -> void;
 
     private:
         std::unordered_map<MessageType, std::vector<Subscriber *>> _subscribers;
