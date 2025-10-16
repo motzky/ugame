@@ -24,7 +24,9 @@ namespace game
         LCTRL = 0x155,
 #endif
 
+#ifdef _WIN32
         ESC = 0x1b,
+#endif
 
         SPACE = 0x20,
         PG_UP = 0x21,
@@ -94,6 +96,10 @@ namespace game
         NUMPAD_7 = 0x67,
         NUMPAD_8 = 0x68,
         NUMPAD_9 = 0x69,
+
+#ifndef WIN32
+        ESC = 0x100,
+#endif
 
 #ifndef WIN32
         RIGHT_ARROW = 0x106,
