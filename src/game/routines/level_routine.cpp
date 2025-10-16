@@ -7,6 +7,7 @@
 
 #include "camera.h"
 #include "game/levels/level.h"
+#include "game/routines/routine_base.h"
 #include "log.h"
 #include "messaging/message_bus.h"
 #include "messaging/subscriber.h"
@@ -116,8 +117,8 @@ namespace game::routines
 {
     LevelRoutine::LevelRoutine(const Window &window, messaging::MessageBus &bus, Scheduler &scheduler, DefaultCache &resource_cache, const TlvReader &reader,
                                const ResourceLoader &resource_loader)
-        : _window{window},
-          _bus{bus},
+        : RoutineBase{bus, {messaging::MessageType::KEY_PRESS, messaging::MessageType::LEVEL_COMPLETE}},
+          _window{window},
           _scheduler{scheduler},
           _player{bus, create_camera(window)},
           _level_num{},
@@ -127,9 +128,7 @@ namespace game::routines
           _reader{reader},
           _level{std::make_unique<levels::LuaLevel>(_level_names[_level_num], _resource_cache, _resource_loader, _reader, _player, _bus)},
           _show_physics_debug{false},
-          _show_debug{false},
-          _running{true},
-          _auto_subscribe{bus, {messaging::MessageType::KEY_PRESS, messaging::MessageType::LEVEL_COMPLETE, messaging::MessageType::QUIT}, this}
+          _show_debug{false}
     {
         _window.set_title(_level_names[_level_num].name());
     }
@@ -137,8 +136,13 @@ namespace game::routines
     auto LevelRoutine::create_task() -> Task
     {
         auto curernt_level = _level_num;
-        while (_running)
+        while (_state != GameState::EXITING)
         {
+            if (_state != GameState::RUNNING)
+            {
+                co_await Wait{_scheduler, GameState::RUNNING};
+            }
+
             if (_level == nullptr || curernt_level != _level_num)
             {
                 _player.restart();
@@ -161,7 +165,7 @@ namespace game::routines
                 entity->bounding_box().draw(level->physics().debug_renderer());
             }
 
-            if (_running)
+            if (_state != GameState::EXITING)
             {
                 co_await Wait{_scheduler, 1u};
             }
@@ -179,7 +183,7 @@ namespace game::routines
 
     auto LevelRoutine::handle_level_complete(const std::string_view &level_name) -> void
     {
-        game::log::info("level complete: {}", level_name);
+        log::info("level complete: {}", level_name);
         _level_num++;
         if (_level_num >= _level_names.size())
         {
@@ -191,7 +195,27 @@ namespace game::routines
 
     auto LevelRoutine::handle_key_press(const KeyEvent &event) -> void
     {
-        if (event.key() == game::Key::F1 && event.state() == game::KeyState::UP)
+        if (_state == GameState::PAUSED)
+        {
+            if (event.key() == Key::Q && event.state() == KeyState::UP)
+            {
+                _bus.post_state_change(GameState::EXITING);
+            }
+        }
+
+        if (event.key() == Key::ESC && event.state() == KeyState::UP)
+        {
+            if (_state == GameState::RUNNING)
+            {
+                _bus.post_state_change(GameState::PAUSED);
+            }
+            else if (_state == GameState::PAUSED)
+            {
+                _bus.post_state_change(GameState::RUNNING);
+            }
+            return;
+        }
+        if (event.key() == Key::F1 && event.state() == KeyState::UP)
         {
             _show_debug = !_show_debug;
             if (_level)
@@ -199,14 +223,9 @@ namespace game::routines
                 _level->set_show_debug(_show_debug);
             }
         }
-        else if (event.key() == game::Key::F2 && event.state() == game::KeyState::UP)
+        else if (event.key() == Key::F2 && event.state() == KeyState::UP)
         {
             _show_physics_debug = !_show_physics_debug;
         }
-    }
-
-    auto LevelRoutine::handle_quit() -> void
-    {
-        _running = false;
     }
 }

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "game/routines/routine_base.h"
 #include "messaging/message_bus.h"
 #include "scheduler/scheduler.h"
 #include "scheduler/task.h"
@@ -7,10 +8,11 @@
 
 namespace game::routines
 {
-    class InputRoutine
+    class InputRoutine : public RoutineBase
     {
     public:
         InputRoutine(const Window &window, messaging::MessageBus &bus, Scheduler &scheduler);
+        ~InputRoutine() override = default;
         InputRoutine(const InputRoutine &) = delete;
         auto operator=(const InputRoutine &) -> InputRoutine & = delete;
         InputRoutine(InputRoutine &&) = default;
@@ -19,7 +21,6 @@ namespace game::routines
 
     private:
         const Window &_window;
-        messaging::MessageBus &_bus;
         Scheduler &_scheduler;
     };
 }

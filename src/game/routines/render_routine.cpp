@@ -3,6 +3,7 @@
 #include <coroutine>
 
 #include "game/routines/level_routine.h"
+#include "game/routines/routine_base.h"
 #include "graphics/debug_ui.h"
 #include "graphics/renderer.h"
 #include "graphics/shape_wireframe_renderer.h"
@@ -23,9 +24,9 @@ namespace game::routines
         Scheduler &scheduler,
         const TlvReader &reader,
         MeshLoader &mesh_loader)
-        : _level_routine(level_routine),
+        : RoutineBase(bus, {messaging::MessageType::KEY_PRESS, messaging::MessageType::MOUSE_MOVE}),
+          _level_routine(level_routine),
           _window(window),
-          _bus(bus),
           _scheduler(scheduler),
           _renderer{reader,
                     mesh_loader,
@@ -33,9 +34,7 @@ namespace game::routines
                     _window.height()},
           _debug_wireframe_renderer{},
           _show_physics_debug(false),
-          _show_debug(false),
-          _running(true),
-          _auto_subscribe{bus, {messaging::MessageType::KEY_PRESS, messaging::MessageType::MOUSE_MOVE, messaging::MessageType::QUIT}, this}
+          _show_debug(false)
     {
     }
 
@@ -44,7 +43,7 @@ namespace game::routines
         auto gamma = 2.2f;
         // const auto debug_ui = game::DebugUi(_window.native_handle(), _level_routine.level().scene(), _player.camera(), gamma);
 
-        while (_running)
+        while (_state != GameState::EXITING)
         {
             auto level = _level_routine.level();
 
@@ -72,7 +71,7 @@ namespace game::routines
 
             _window.swap();
 
-            if (_running)
+            if (_state != GameState::EXITING)
             {
                 co_await Wait{_scheduler, 1u};
             }
@@ -89,11 +88,6 @@ namespace game::routines
         {
             _show_physics_debug = !_show_physics_debug;
         }
-    }
-
-    auto RenderRoutine::handle_quit() -> void
-    {
-        _running = false;
     }
 
     auto RenderRoutine::handle_mouse_move([[maybe_unused]] const MouseEvent &event) -> void

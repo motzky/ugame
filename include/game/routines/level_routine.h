@@ -7,6 +7,7 @@
 
 #include "game/levels/lua_level.h"
 #include "game/player.h"
+#include "game/routines/routine_base.h"
 #include "messaging/auto_subscribe.h"
 #include "messaging/message_bus.h"
 #include "messaging/subscriber.h"
@@ -19,10 +20,11 @@
 
 namespace game::routines
 {
-    class LevelRoutine : public messaging::Subscriber
+    class LevelRoutine : public RoutineBase
     {
     public:
         LevelRoutine(const Window &window, messaging::MessageBus &bus, Scheduler &scheduler, DefaultCache &resource_cache, const TlvReader &reader, const ResourceLoader &resource_loader);
+        ~LevelRoutine() override = default;
         LevelRoutine(const LevelRoutine &) = delete;
         auto operator=(const LevelRoutine &) -> LevelRoutine & = delete;
         LevelRoutine(LevelRoutine &&) = default;
@@ -33,11 +35,9 @@ namespace game::routines
 
         virtual auto handle_key_press(const KeyEvent &) -> void override;
         virtual auto handle_level_complete(const std::string_view &name) -> void override;
-        virtual auto handle_quit() -> void override;
 
     private:
         const Window &_window;
-        messaging::MessageBus &_bus;
         Scheduler &_scheduler;
         Player _player;
         std::size_t _level_num;
@@ -48,7 +48,5 @@ namespace game::routines
         std::unique_ptr<levels::LuaLevel> _level;
         bool _show_physics_debug;
         bool _show_debug;
-        bool _running;
-        messaging::AutoSubscribe _auto_subscribe;
     };
 }

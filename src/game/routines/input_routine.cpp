@@ -11,20 +11,19 @@
 namespace game::routines
 {
     InputRoutine::InputRoutine(const Window &window, messaging::MessageBus &bus, Scheduler &scheduler)
-        : _window(window),
-          _bus(bus),
+        : RoutineBase{bus, {}},
+          _window(window),
           _scheduler(scheduler)
     {
     }
 
     auto InputRoutine::create_task() -> Task
     {
-        auto running = true;
         auto show_debug = false;
-        while (running)
+        while (_state != GameState::EXITING)
         {
             auto event = _window.pump_event();
-            while (event && running)
+            while (event && _state != GameState::EXITING)
             {
                 std::visit(
                     [&](auto &&arg)
@@ -32,7 +31,7 @@ namespace game::routines
                         using T = std::decay_t<decltype(arg)>;
                         if constexpr (std::same_as<T, game::StopEvent>)
                         {
-                            running = false;
+                            _bus.post_state_change(GameState::EXITING);
                         }
                         else if constexpr (std::same_as<T, game::KeyEvent>)
                         {
@@ -65,14 +64,14 @@ namespace game::routines
                 event = _window.pump_event();
             }
 
-            if (running)
+            if (_state != GameState::EXITING)
             {
                 co_await Wait{_scheduler, 1u};
             }
-            else
-            {
-                _bus.post_quit();
-            }
+            // else
+            // {
+            //     _bus.post_quit();
+            // }
         }
     }
 
