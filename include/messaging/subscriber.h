@@ -19,6 +19,8 @@ namespace game::messaging
     class Subscriber
     {
     public:
+        virtual ~Subscriber() = default;
+
         virtual auto handle_key_press(const KeyEvent &) -> void
         {
             log::error("unhandled message");
