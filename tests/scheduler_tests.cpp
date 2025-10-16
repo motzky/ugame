@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 
+#include "messaging/message_bus.h"
 #include "scheduler/scheduler.h"
 #include "scheduler/task.h"
 #include "scheduler/wait.h"
@@ -24,7 +25,8 @@ TEST(scheduler, simple)
 {
     TEST_IMPL(
         auto done = false;
-        auto sched = game::Scheduler{};
+        auto bus = game::messaging::MessageBus{};
+        auto sched = game::Scheduler{bus};
 
         sched.add([&done]() -> game::Task
                   {
@@ -44,7 +46,8 @@ TEST(scheduler, simple_await_tick)
 {
     // TEST_IMPL(
     auto log = std::vector<std::string>{};
-    auto sched = game::Scheduler{};
+    auto bus = game::messaging::MessageBus{};
+    auto sched = game::Scheduler{bus};
 
     sched.add([](game::Scheduler &scheduler, std::vector<std::string> &log) -> game::Task
               { 
@@ -77,7 +80,8 @@ TEST(scheduler, simple_await_ticks_two_tasks)
 {
     // TEST_IMPL(
     auto log = std::vector<std::string>{};
-    auto sched = game::Scheduler{};
+    auto bus = game::messaging::MessageBus{};
+    auto sched = game::Scheduler{bus};
 
     sched.add([](game::Scheduler &scheduler, std::vector<std::string> &log) -> game::Task
               { 
@@ -131,7 +135,8 @@ TEST(scheduler, simple_await_time)
 {
     // TEST_IMPL(
     auto log = std::vector<std::string>{};
-    auto sched = game::Scheduler{};
+    auto bus = game::messaging::MessageBus{};
+    auto sched = game::Scheduler{bus};
 
     sched.add([](game::Scheduler &scheduler, std::vector<std::string> &log) -> game::Task
               {
@@ -158,7 +163,8 @@ TEST(scheduler, simple_await_task)
 {
     // TEST_IMPL(
     auto log = std::vector<std::string>{};
-    auto sched = game::Scheduler{};
+    auto bus = game::messaging::MessageBus{};
+    auto sched = game::Scheduler{bus};
 
     sched.add([](game::Scheduler &scheduler, [[maybe_unused]] std::vector<std::string> &log) -> game::Task
               {
@@ -182,7 +188,8 @@ TEST(scheduler, exception)
 {
     // TEST_IMPL(
     auto log = std::vector<std::string>{};
-    auto sched = game::Scheduler{};
+    auto bus = game::messaging::MessageBus{};
+    auto sched = game::Scheduler{bus};
 
     sched.add([] -> game::Task
               {

@@ -5,16 +5,21 @@
 #include <optional>
 #include <ranges>
 
+#include "game/game_state.h"
 #include "log.h"
+#include "messaging/message_bus.h"
 #include "scheduler/task.h"
 #include "utils/ensure.h"
 
 namespace game
 {
-    Scheduler::Scheduler()
-        : _queue{},
+    Scheduler::Scheduler(messaging::MessageBus &bus)
+        : _auto_subscribe{bus, {messaging::MessageType::STATE_CHANGE}, this},
+          _queue{},
           _tick_count{},
-          _elapsed{}
+          _elapsed{},
+          _state{GameState::RUNNING},
+          _next_state{GameState::RUNNING}
     {
     }
     auto Scheduler::add(Task task) -> void
@@ -61,6 +66,16 @@ namespace game
         };
     }
 
+    auto Scheduler::reschedule(std::coroutine_handle<> handle, GameState state) -> void
+    {
+        auto task = std::ranges::find_if(_queue, [handle](const auto &e)
+                                         { return e.task.has_handle(handle); });
+        expect(task != std::ranges::end(_queue), "could not find task");
+
+        task->check_resume = [state, this]
+        { return _state == state || _state == GameState::EXITING; };
+    }
+
     auto Scheduler::run() -> void
     {
         while (!_queue.empty())
@@ -85,7 +100,12 @@ namespace game
 
             ++_tick_count;
             _elapsed += std::chrono::steady_clock::now() - start;
+            _state = _next_state;
         }
     }
 
+    auto Scheduler::handle_state_change(GameState state) -> void
+    {
+        _next_state = state;
+    }
 }

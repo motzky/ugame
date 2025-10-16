@@ -164,7 +164,7 @@ namespace game
         resource_cache.insert<TextureSampler>("ui", TextureSampler{});
 
         game::log::info("Setting up scheduler...");
-        auto scheduler = Scheduler{};
+        auto scheduler = Scheduler{_message_bus};
 
         auto input_routine = routines::InputRoutine{_window, _message_bus, scheduler};
         scheduler.add(input_routine.create_task());
