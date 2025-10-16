@@ -6,6 +6,7 @@
 #include "camera.h"
 #include "events/key_event.h"
 #include "events/mouse_event.h"
+#include "game/game_state.h"
 #include "math/vector3.h"
 #include "messaging/auto_subscribe.h"
 #include "messaging/message_bus.h"
@@ -21,6 +22,7 @@ namespace game
         auto handle_key_press(const KeyEvent &event) -> void override;
         auto handle_mouse_move(const MouseEvent &event) -> void override;
         auto handle_restart_level() -> void override;
+        auto handle_state_change(GameState state) -> void override;
 
         auto camera() const -> const Camera &;
         auto position() const -> Vector3;
@@ -38,5 +40,7 @@ namespace game
         bool _flying;
         Vector3 _start_position;
         messaging::AutoSubscribe _auto_subscribe;
+        bool _frozen;
+        bool _dead;
     };
 }

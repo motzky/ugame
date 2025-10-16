@@ -5,6 +5,7 @@
 
 #include "camera.h"
 #include "events/key_event.h"
+#include "game/game_state.h"
 #include "math/vector3.h"
 #include "messaging/message_bus.h"
 
@@ -15,12 +16,23 @@ namespace game
           _key_state{},
           _flying{false},
           _start_position{camera.position()},
-          _auto_subscribe{bus, {messaging::MessageType::KEY_PRESS, messaging::MessageType::MOUSE_MOVE, messaging::MessageType::RESTART_LEVEL}, this}
+          _auto_subscribe{bus,
+                          {messaging::MessageType::KEY_PRESS,
+                           messaging::MessageType::MOUSE_MOVE,
+                           messaging::MessageType::RESTART_LEVEL,
+                           messaging::MessageType::STATE_CHANGE},
+                          this},
+          _frozen{false},
+          _dead{false}
     {
     }
 
     auto Player::handle_key_press(const KeyEvent &event) -> void
     {
+        if (_frozen)
+        {
+            return;
+        }
         _key_state[event.key()] = event.state() == game::KeyState::DOWN;
 
         if (event.key() == game::Key::F1 && event.state() == game::KeyState::UP)
@@ -31,6 +43,10 @@ namespace game
 
     auto Player::handle_mouse_move(const MouseEvent &event) -> void
     {
+        if (_frozen)
+        {
+            return;
+        }
         static constexpr auto sensitivity = float{0.005f};
         _camera.adjust_pitch(event.delta_y() * sensitivity);
         _camera.adjust_yaw(-event.delta_x() * sensitivity);
@@ -38,6 +54,11 @@ namespace game
     auto Player::handle_restart_level() -> void
     {
         restart();
+    }
+
+    auto Player::handle_state_change(GameState state) -> void
+    {
+        _frozen = state != GameState::RUNNING;
     }
 
     auto Player::camera() const -> const Camera &
