@@ -205,14 +205,16 @@ namespace game
         _label_material.use();
         _sprite.bind();
 
+        if (!scene.labels.empty())
+        {
+            auto writer = BufferWriter{_camera_buffer};
+            writer.write(_orth_camera.view());
+            writer.write(_orth_camera.projection());
+            writer.write(_orth_camera.position());
+        }
+
         for (const auto &[x, y, texture] : scene.labels)
         {
-            {
-                auto writer = BufferWriter{_camera_buffer};
-                writer.write(_orth_camera.view());
-                writer.write(_orth_camera.projection());
-                writer.write(_orth_camera.position());
-            }
             ::glBindBufferBase(GL_UNIFORM_BUFFER, 0, _camera_buffer.native_handle());
 
             const auto model = Matrix4{
@@ -222,7 +224,7 @@ namespace game
                     0.0f},
                 Vector3{static_cast<float>(texture->width()) / 2.f, static_cast<float>(texture->height()) / 2.f, 1.0f}};
             _label_material.set_uniform("model", model);
-            _label_material.set_uniform("textColor", Color{.r = 1.f, .g = 1.f, .b = 1.f});
+            _label_material.set_uniform("textColor", Color::white());
 
             _label_material.bind_texture(0, texture, scene.skybox_sampler);
 
