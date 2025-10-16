@@ -224,7 +224,8 @@ namespace game::levels
         }
 
         const auto text_factory = TextFactory{resource_loader};
-        static auto text_test = text_factory.create("Hello World!", _resource_cache.get<TextureSampler>("ui"), 12);
+        static auto text_test = text_factory.create("Hello World!", _resource_cache.get<TextureSampler>("ui"), 16);
+        static auto text_test2 = text_factory.create("Hello Corner!", _resource_cache.get<TextureSampler>("ui"), 16);
 
         _scene = Scene{
             .entities = _entities |
@@ -248,7 +249,7 @@ namespace game::levels
             .debug_lines = {},
             .skybox = &_skybox,
             .skybox_sampler = _resource_cache.get<TextureSampler>("sky_box"),
-            .labels = {{0, 0, &text_test}}};
+            .labels = {{0, 0, &text_test}, {1707, 0, &text_test2}}};
 
         if (runner.has_function("Level_get_ambient"))
         {
