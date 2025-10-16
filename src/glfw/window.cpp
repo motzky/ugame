@@ -115,14 +115,8 @@ namespace
         game::log::error("{}", description);
     }
 
-    auto key_callback(GLFWwindow *window, int key, int, int action, int) -> void
+    auto key_callback([[maybe_unused]] GLFWwindow *window, int key, int, int action, int) -> void
     {
-        if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-        {
-            glfwSetWindowShouldClose(window, GLFW_TRUE);
-            return;
-        }
-
         if (action == GLFW_PRESS)
         {
             g_event_queue.emplace(game::KeyEvent{static_cast<game::Key>(key), game::KeyState::DOWN});
