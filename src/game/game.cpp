@@ -168,15 +168,15 @@ namespace game
         auto scheduler = Scheduler{_message_bus};
 
         auto input_routine = routines::InputRoutine{_window, _message_bus, scheduler};
-        scheduler.add(input_routine.create_task());
-
-        auto main_menu_routine = routines::MainMenuRoutine{_window, _message_bus, scheduler, resource_cache, reader, resource_loader};
-        scheduler.add(main_menu_routine.create_task());
-
         auto level_routine = routines::LevelRoutine{_window, _message_bus, scheduler, resource_cache, reader, resource_loader};
-        scheduler.add(level_routine.create_task());
+        auto render_routine = routines::RenderRoutine{_window, _message_bus, scheduler, reader, mesh_loader};
 
-        auto render_routine = routines::RenderRoutine{level_routine, _window, _message_bus, scheduler, reader, mesh_loader};
+        // has to be last, because it sends messages in constructor
+        auto main_menu_routine = routines::MainMenuRoutine{_window, _message_bus, scheduler, resource_cache, reader, resource_loader};
+
+        scheduler.add(input_routine.create_task());
+        scheduler.add(main_menu_routine.create_task());
+        scheduler.add(level_routine.create_task());
         scheduler.add(render_routine.create_task());
 
         game::log::info("Running scheduler...");
