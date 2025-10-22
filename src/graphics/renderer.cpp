@@ -58,14 +58,14 @@ namespace
         return game::Material{vertex_shader, fragment_shader};
     }
 
-    auto create_post_process_material(const game::TlvReader &reader) -> game::Material
+    auto create_hdr_material(const game::TlvReader &reader) -> game::Material
     {
-        const auto vert_file = game::TlvReader::get_text_file(reader, "post_process.vert");
+        const auto vert_file = game::TlvReader::get_text_file(reader, "hdr.vert");
         const auto vert_data = vert_file.data;
 
         const auto vertex_shader = game::Shader{vert_data, game::ShaderType::VERTEX};
 
-        const auto frag_file = game::TlvReader::get_text_file(reader, "post_process.frag");
+        const auto frag_file = game::TlvReader::get_text_file(reader, "hdr.frag");
         const auto frag_data = frag_file.data;
 
         const auto fragment_shader = game::Shader{frag_data, game::ShaderType::FRAGMENT};
@@ -107,7 +107,7 @@ namespace game
           _debug_line_material(create_line_material(reader)),
           _fb{width, height},
           _sprite{mesh_loader.sprite()},
-          _post_process_material{create_post_process_material(reader)},
+          _hdr_material{create_hdr_material(reader)},
           _label_material{create_label_material(reader)},
           _orth_camera{static_cast<float>(width), static_cast<float>(height), 1000.f}
     {
@@ -191,9 +191,9 @@ namespace game
         _fb.unbind();
 
         ::glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        _post_process_material.use();
-        _post_process_material.bind_texture(0, &_fb.color_texture(), scene.skybox_sampler);
-        _post_process_material.set_uniform("gamma", gamma);
+        _hdr_material.use();
+        _hdr_material.bind_texture(0, &_fb.color_texture(), scene.skybox_sampler);
+        _hdr_material.set_uniform("gamma", gamma);
 
         _sprite.bind();
         ::glDrawElements(GL_TRIANGLES, _sprite.index_count(), GL_UNSIGNED_INT, reinterpret_cast<void *>(_sprite.index_offset()));

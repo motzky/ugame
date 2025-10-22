@@ -26,7 +26,7 @@ namespace game
         Material _debug_line_material;
         FrameBuffer _fb;
         Mesh _sprite;
-        Material _post_process_material;
+        Material _hdr_material;
         Material _label_material;
         Camera _orth_camera;
     };
