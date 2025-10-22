@@ -2,7 +2,7 @@
 
 #include <vector>
 
-#include "camera.h"
+#include "graphics/camera.h"
 #include "graphics/color.h"
 #include "graphics/line_data.h"
 

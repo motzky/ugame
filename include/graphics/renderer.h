@@ -1,7 +1,7 @@
 #pragma once
 
-#include "camera.h"
 #include "events/key_event.h"
+#include "graphics/camera.h"
 #include "graphics/cube_map.h"
 #include "graphics/frame_buffer.h"
 #include "graphics/material.h"

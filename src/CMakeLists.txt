@@ -1,6 +1,5 @@
 add_library(
     gamelib STATIC
-    camera.cpp
     primitives/debug_lines.cpp
     primitives/entity.cpp
 )

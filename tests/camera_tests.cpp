@@ -3,7 +3,7 @@
 
 #include <gtest/gtest.h>
 
-#include "camera.h"
+#include "graphics/camera.h"
 
 TEST(camera, simple)
 {

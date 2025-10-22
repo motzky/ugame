@@ -1,5 +1,6 @@
 target_sources(gamelib PUBLIC
     buffer.cpp
+    camera.cpp
     cube_map.cpp
     frame_buffer.cpp
     material.cpp

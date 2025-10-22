@@ -3,8 +3,8 @@
 #include <cstdint>
 #include <ranges>
 
-#include "camera.h"
 #include "core/buffer_writer.h"
+#include "graphics/camera.h"
 #include "graphics/color.h"
 #include "graphics/cube_map.h"
 #include "graphics/frame_buffer.h"

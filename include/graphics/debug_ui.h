@@ -2,8 +2,8 @@
 
 #include "imgui.h"
 
-#include "camera.h"
 #include "events/mouse_button_event.h"
+#include "graphics/camera.h"
 #include "graphics/scene.h"
 #include "window.h"
 

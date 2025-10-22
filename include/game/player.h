@@ -3,10 +3,10 @@
 #include <queue>
 #include <unordered_map>
 
-#include "camera.h"
 #include "events/key_event.h"
 #include "events/mouse_event.h"
 #include "game/game_state.h"
+#include "graphics/camera.h"
 #include "math/vector3.h"
 #include "messaging/auto_subscribe.h"
 #include "messaging/message_bus.h"

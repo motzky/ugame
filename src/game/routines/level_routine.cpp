@@ -5,9 +5,9 @@
 #include <string>
 #include <vector>
 
-#include "camera.h"
 #include "game/levels/level.h"
 #include "game/routines/routine_base.h"
+#include "graphics/camera.h"
 #include "log.h"
 #include "messaging/message_bus.h"
 #include "messaging/subscriber.h"
