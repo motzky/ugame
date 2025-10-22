@@ -46,51 +46,13 @@ namespace
 #pragma warning(pop)
 #endif
 
-    auto create_skybox_material(const game::TlvReader &reader) -> game::Material
+    auto create_material(const game::TlvReader &reader, std::string_view vert_name, std::string_view frag_name) -> game::Material
     {
-        const auto vert_file = game::TlvReader::get_text_file(reader, "cube.vert");
+        const auto vert_file = game::TlvReader::get_text_file(reader, vert_name);
         const auto vert_data = vert_file.data;
         const auto vertex_shader = game::Shader{vert_data, game::ShaderType::VERTEX};
 
-        const auto frag_file = game::TlvReader::get_text_file(reader, "cube.frag");
-        const auto frag_data = frag_file.data;
-        const auto fragment_shader = game::Shader{frag_data, game::ShaderType::FRAGMENT};
-        return game::Material{vertex_shader, fragment_shader};
-    }
-
-    auto create_hdr_material(const game::TlvReader &reader) -> game::Material
-    {
-        const auto vert_file = game::TlvReader::get_text_file(reader, "hdr.vert");
-        const auto vert_data = vert_file.data;
-
-        const auto vertex_shader = game::Shader{vert_data, game::ShaderType::VERTEX};
-
-        const auto frag_file = game::TlvReader::get_text_file(reader, "hdr.frag");
-        const auto frag_data = frag_file.data;
-
-        const auto fragment_shader = game::Shader{frag_data, game::ShaderType::FRAGMENT};
-        return game::Material{vertex_shader, fragment_shader};
-    }
-
-    auto create_line_material(const game::TlvReader &reader) -> game::Material
-    {
-        const auto vert_file = game::TlvReader::get_text_file(reader, "line.vert");
-        const auto vert_data = vert_file.data;
-        const auto vertex_shader = game::Shader{vert_data, game::ShaderType::VERTEX};
-
-        const auto frag_file = game::TlvReader::get_text_file(reader, "line.frag");
-        const auto frag_data = frag_file.data;
-        const auto fragment_shader = game::Shader{frag_data, game::ShaderType::FRAGMENT};
-        return game::Material{vertex_shader, fragment_shader};
-    }
-
-    auto create_label_material(const game::TlvReader &reader) -> game::Material
-    {
-        const auto vert_file = game::TlvReader::get_text_file(reader, "label.vert");
-        const auto vert_data = vert_file.data;
-        const auto vertex_shader = game::Shader{vert_data, game::ShaderType::VERTEX};
-
-        const auto frag_file = game::TlvReader::get_text_file(reader, "label.frag");
+        const auto frag_file = game::TlvReader::get_text_file(reader, frag_name);
         const auto frag_data = frag_file.data;
         const auto fragment_shader = game::Shader{frag_data, game::ShaderType::FRAGMENT};
         return game::Material{vertex_shader, fragment_shader};
@@ -103,12 +65,13 @@ namespace game
         : _camera_buffer(sizeof(Matrix4) * 2u + sizeof(Vector3)),
           _light_buffer(10240u),
           _skybox_cube(mesh_loader.cube()),
-          _skybox_material(create_skybox_material(reader)),
-          _debug_line_material(create_line_material(reader)),
+          _skybox_material(create_material(reader, "cube.vert", "cube.frag")),
+          _debug_line_material(create_material(reader, "line.vert", "line.frag")),
           _fb{width, height},
           _sprite{mesh_loader.sprite()},
-          _hdr_material{create_hdr_material(reader)},
-          _label_material{create_label_material(reader)},
+          _hdr_material{create_material(reader, "hdr.vert", "hdr.frag")},
+          _grey_scale_material{create_material(reader, "grey_scale.vert", "grey_scale.frag")},
+          _label_material{create_material(reader, "label.vert", "label.frag")},
           _orth_camera{static_cast<float>(width), static_cast<float>(height), 1000.f}
     {
         _orth_camera.set_position({width / 2.f, height / -2.f, 0.f});
