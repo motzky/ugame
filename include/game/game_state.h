@@ -8,6 +8,7 @@ namespace game
 {
     enum class GameState
     {
+        MAIN_MENU,
         RUNNING,
         PAUSED,
         EXITING
@@ -18,6 +19,8 @@ namespace game
         switch (obj)
         {
             using enum GameState;
+        case MAIN_MENU:
+            return "MAIN_MENU";
         case RUNNING:
             return "RUNNING";
         case PAUSED:
