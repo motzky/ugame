@@ -19,7 +19,7 @@ namespace game
 {
     RoutineBase::RoutineBase(messaging::MessageBus &bus, std::set<messaging::MessageType> types)
         : _bus{bus},
-          _state{GameState::RUNNING},
+          _state{GameState::MAIN_MENU},
           _auto_subscribe{_bus, enrich_types(std::move(types)), this}
     {
     }

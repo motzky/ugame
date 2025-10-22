@@ -18,8 +18,8 @@ namespace game
           _queue{},
           _tick_count{},
           _elapsed{},
-          _state{GameState::RUNNING},
-          _next_state{GameState::RUNNING}
+          _state{GameState::MAIN_MENU},
+          _next_state{_state}
     {
     }
     auto Scheduler::add(Task task) -> void
