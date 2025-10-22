@@ -73,6 +73,7 @@ namespace game
           _hdr_material{create_material(reader, "hdr.vert", "hdr.frag")},
           _grey_scale_material{create_material(reader, "grey_scale.vert", "grey_scale.frag")},
           _label_material{create_material(reader, "label.vert", "label.frag")},
+          _blur_material{create_material(reader, "blur.vert", "blur.frag")},
           _orth_camera{static_cast<float>(width), static_cast<float>(height), 1000.f}
     {
         _orth_camera.set_position({width / 2.f, height / -2.f, 0.f});
@@ -160,14 +161,14 @@ namespace game
         if (scene.effects.hdr)
         {
             write_fb->bind();
-        ::glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        _hdr_material.use();
-        _hdr_material.bind_texture(0, &_fb.color_texture(), scene.skybox_sampler);
-        _hdr_material.set_uniform("gamma", gamma);
+            ::glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            _hdr_material.use();
+            _hdr_material.bind_texture(0, &read_fb->color_texture(), scene.skybox_sampler);
+            _hdr_material.set_uniform("gamma", gamma);
 
-        _sprite.bind();
-        ::glDrawElements(GL_TRIANGLES, _sprite.index_count(), GL_UNSIGNED_INT, reinterpret_cast<void *>(_sprite.index_offset()));
-        _sprite.unbind();
+            _sprite.bind();
+            ::glDrawElements(GL_TRIANGLES, _sprite.index_count(), GL_UNSIGNED_INT, reinterpret_cast<void *>(_sprite.index_offset()));
+            _sprite.unbind();
 
             write_fb->unbind();
             std::ranges::swap(read_fb, write_fb);
@@ -179,6 +180,23 @@ namespace game
             ::glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             _grey_scale_material.use();
             _grey_scale_material.bind_texture(0, &read_fb->color_texture(), scene.skybox_sampler);
+
+            _sprite.bind();
+            ::glDrawElements(GL_TRIANGLES, _sprite.index_count(), GL_UNSIGNED_INT, reinterpret_cast<void *>(_sprite.index_offset()));
+            _sprite.unbind();
+
+            write_fb->unbind();
+            std::ranges::swap(read_fb, write_fb);
+        }
+
+        if (scene.effects.blur)
+        {
+            write_fb->bind();
+            ::glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            _blur_material.use();
+            _blur_material.bind_texture(0, &read_fb->color_texture(), scene.skybox_sampler);
+            _blur_material.set_uniform("screen_width", static_cast<float>(write_fb->width()));
+            _blur_material.set_uniform("screen_height", static_cast<float>(write_fb->height()));
 
             _sprite.bind();
             ::glDrawElements(GL_TRIANGLES, _sprite.index_count(), GL_UNSIGNED_INT, reinterpret_cast<void *>(_sprite.index_offset()));

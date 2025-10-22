@@ -30,6 +30,7 @@ namespace game
         Material _hdr_material;
         Material _grey_scale_material;
         Material _label_material;
+        Material _blur_material;
         Camera _orth_camera;
     };
 }
