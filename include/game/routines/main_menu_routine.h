@@ -11,6 +11,7 @@
 #include "messaging/auto_subscribe.h"
 #include "messaging/message_bus.h"
 #include "messaging/subscriber.h"
+#include "primitives/entity.h"
 #include "resources/resource_cache.h"
 #include "resources/resource_loader.h"
 #include "scheduler/scheduler.h"
@@ -37,6 +38,8 @@ namespace game::routines
         const Window &_window;
         Scheduler &_scheduler;
         DefaultCache &_resource_cache;
+        std::vector<Entity> _entities;
+        std::vector<Entity> _level_entities;
         const ResourceLoader &_resource_loader;
         const TlvReader &_reader;
         Camera _camera;
