@@ -114,18 +114,21 @@ namespace game
 
         ::glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, _light_buffer.native_handle());
 
-        ::glDepthMask(GL_FALSE);
+        if (scene.skybox)
+        {
+            ::glDepthMask(GL_FALSE);
 
-        _skybox_material.use();
-        _skybox_cube.bind();
+            _skybox_material.use();
+            _skybox_cube.bind();
 
-        ::glDrawElements(GL_TRIANGLES, _skybox_cube.index_count(), GL_UNSIGNED_INT, reinterpret_cast<void *>(_skybox_cube.index_offset()));
+            ::glDrawElements(GL_TRIANGLES, _skybox_cube.index_count(), GL_UNSIGNED_INT, reinterpret_cast<void *>(_skybox_cube.index_offset()));
 
-        _skybox_material.bind_cube_map(scene.skybox, scene.skybox_sampler);
+            _skybox_material.bind_cube_map(scene.skybox, scene.skybox_sampler);
 
-        _skybox_cube.unbind();
+            _skybox_cube.unbind();
 
-        ::glDepthMask(GL_TRUE);
+            ::glDepthMask(GL_TRUE);
+        }
 
         // for (const auto *entity : scene.entities | std::views::filter([](const auto *e)
         //                                                               { return e->is_visible(); }))
