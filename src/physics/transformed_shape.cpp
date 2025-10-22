@@ -63,6 +63,10 @@ namespace game
 
     auto TransformedShape::draw(DebugRenderer &debug_renderer) const -> void
     {
+        if (!_shape)
+        {
+            return;
+        }
         _shape->native_handle()->Draw(
             std::addressof(debug_renderer),
             to_jolt(_transform),
