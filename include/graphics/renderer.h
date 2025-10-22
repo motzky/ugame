@@ -24,7 +24,8 @@ namespace game
         Mesh _skybox_cube;
         Material _skybox_material;
         Material _debug_line_material;
-        FrameBuffer _fb;
+        FrameBuffer _fb1;
+        FrameBuffer _fb2;
         Mesh _sprite;
         Material _hdr_material;
         Material _grey_scale_material;

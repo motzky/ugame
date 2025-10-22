@@ -67,7 +67,8 @@ namespace game
           _skybox_cube(mesh_loader.cube()),
           _skybox_material(create_material(reader, "cube.vert", "cube.frag")),
           _debug_line_material(create_material(reader, "line.vert", "line.frag")),
-          _fb{width, height},
+          _fb1{width, height},
+          _fb2{width, height},
           _sprite{mesh_loader.sprite()},
           _hdr_material{create_material(reader, "hdr.vert", "hdr.frag")},
           _grey_scale_material{create_material(reader, "grey_scale.vert", "grey_scale.frag")},
@@ -80,7 +81,7 @@ namespace game
 
     auto Renderer::render(const Camera &camera, const Scene &scene, float gamma) const -> void
     {
-        _fb.bind();
+        _fb1.bind();
 
         ::glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -151,8 +152,14 @@ namespace game
             dbl->unbind();
         }
 
-        _fb.unbind();
+        _fb1.unbind();
 
+        auto *read_fb = &_fb1;
+        auto *write_fb = &_fb2;
+
+        if (scene.effects.hdr)
+        {
+            write_fb->bind();
         ::glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         _hdr_material.use();
         _hdr_material.bind_texture(0, &_fb.color_texture(), scene.skybox_sampler);
@@ -161,6 +168,27 @@ namespace game
         _sprite.bind();
         ::glDrawElements(GL_TRIANGLES, _sprite.index_count(), GL_UNSIGNED_INT, reinterpret_cast<void *>(_sprite.index_offset()));
         _sprite.unbind();
+
+            write_fb->unbind();
+            std::ranges::swap(read_fb, write_fb);
+        }
+
+        if (scene.effects.grey_scale)
+        {
+            write_fb->bind();
+            ::glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            _grey_scale_material.use();
+            _grey_scale_material.bind_texture(0, &read_fb->color_texture(), scene.skybox_sampler);
+
+            _sprite.bind();
+            ::glDrawElements(GL_TRIANGLES, _sprite.index_count(), GL_UNSIGNED_INT, reinterpret_cast<void *>(_sprite.index_offset()));
+            _sprite.unbind();
+
+            write_fb->unbind();
+            std::ranges::swap(read_fb, write_fb);
+        }
+
+        read_fb->bind();
 
         ::glEnable(GL_BLEND);
         ::glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -196,5 +224,21 @@ namespace game
         _sprite.unbind();
 
         ::glDisable(GL_BLEND);
+
+        read_fb->unbind();
+
+        ::glBlitNamedFramebuffer(
+            read_fb->native_handle(),
+            0u,
+            0u,
+            0u,
+            read_fb->width(),
+            read_fb->height(),
+            0u,
+            0u,
+            read_fb->width(),
+            read_fb->height(),
+            GL_COLOR_BUFFER_BIT,
+            GL_NEAREST);
     }
 }
