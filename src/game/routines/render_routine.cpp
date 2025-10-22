@@ -13,19 +13,21 @@
 #include "scheduler/task.h"
 #include "scheduler/wait.h"
 #include "tlv/tlv_reader.h"
+#include "utils/ensure.h"
 #include "window.h"
 
 namespace game::routines
 {
     RenderRoutine::RenderRoutine(
-        const LevelRoutine &level_routine,
         const Window &window,
         messaging::MessageBus &bus,
         Scheduler &scheduler,
         const TlvReader &reader,
         MeshLoader &mesh_loader)
-        : RoutineBase(bus, {messaging::MessageType::KEY_PRESS, messaging::MessageType::MOUSE_MOVE}),
-          _level_routine(level_routine),
+        : RoutineBase(bus, {messaging::MessageType::KEY_PRESS,
+                            messaging::MessageType::MOUSE_MOVE,
+                            messaging::MessageType::CHANGE_CAMERA,
+                            messaging::MessageType::CHANGE_SCENE}),
           _window(window),
           _scheduler(scheduler),
           _renderer{reader,
@@ -33,6 +35,8 @@ namespace game::routines
                     _window.width(),
                     _window.height()},
           _debug_wireframe_renderer{},
+          _scene{},
+          _camera{},
           _show_physics_debug(false),
           _show_debug(false)
     {
@@ -45,25 +49,10 @@ namespace game::routines
 
         while (_state != GameState::EXITING)
         {
-            auto level = _level_routine.level();
+            expect(_scene, "scene cannot be null");
+            expect(_camera, "camera cannot be null");
 
-            if (_show_physics_debug)
-            {
-                auto lines = _debug_wireframe_renderer.yield();
-                for (const auto line : level->physics().debug_renderer().lines())
-                {
-                    lines.push_back(line);
-                }
-                level->scene().debug_lines = game::DebugLines{lines};
-
-                level->physics().debug_renderer().clear();
-            }
-            else
-            {
-                level->scene().debug_lines.reset();
-            }
-
-            _renderer.render(_level_routine.player().camera(), _level_routine.level()->scene(), gamma);
+            _renderer.render(*_camera, *_scene, gamma);
             if (_show_debug)
             {
                 // _debug_ui.render();
@@ -93,6 +82,15 @@ namespace game::routines
     auto RenderRoutine::handle_mouse_move([[maybe_unused]] const MouseEvent &event) -> void
     {
         // _debug_ui.add_mouse_event(event);
+    }
+
+    auto RenderRoutine::handle_change_camera(const Camera *camera) -> void
+    {
+        _camera = camera;
+    }
+    auto RenderRoutine::handle_change_scene(Scene *scene) -> void
+    {
+        _scene = scene;
     }
 
 }

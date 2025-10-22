@@ -8,6 +8,7 @@
 #include "game/levels/level.h"
 #include "game/routines/routine_base.h"
 #include "graphics/camera.h"
+#include "graphics/line_data.h"
 #include "log.h"
 #include "messaging/message_bus.h"
 #include "messaging/subscriber.h"
@@ -141,6 +142,8 @@ namespace game::routines
             if (_state != GameState::RUNNING)
             {
                 co_await Wait{_scheduler, GameState::RUNNING};
+                _bus.post_change_camera(&_player.camera());
+                _bus.post_change_scene(&_level->scene());
             }
 
             if (_level == nullptr || curernt_level != _level_num)
@@ -163,6 +166,22 @@ namespace game::routines
                 entity->set_visibility(intersects_frustum(entity->bounding_box(), _player.camera().frustum_planes()));
 
                 entity->bounding_box().draw(level->physics().debug_renderer());
+            }
+
+            if (_show_physics_debug)
+            {
+                auto lines = std::vector<LineData>{};
+                for (const auto line : level->physics().debug_renderer().lines())
+                {
+                    lines.push_back(line);
+                }
+                level->scene().debug_lines = game::DebugLines{lines};
+
+                level->physics().debug_renderer().clear();
+            }
+            else
+            {
+                level->scene().debug_lines.reset();
             }
 
             if (_state != GameState::EXITING)
