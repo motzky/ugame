@@ -8,7 +8,6 @@ in mat3 tbn;
 out vec4 frag_color;
 
 uniform sampler2D tex0;
-uniform float gamma;
 
 void main()
 {
