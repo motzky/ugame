@@ -99,6 +99,10 @@ target_compile_options(gamelib PUBLIC -Wall -Wextra -Wpedantic -Werror -pedantic
 target_compile_options(nathan_stream PUBLIC -Wall -Wextra -Wpedantic -Werror -pedantic-errors)
 endif()
 
+if(NOT ${Freetype_FOUND})
+target_include_directories(gamelib PRIVATE ${freetype_SOURCE_DIR}/include)
+endif()
+
 if(WIN32)
 target_link_libraries(
     gamelib
