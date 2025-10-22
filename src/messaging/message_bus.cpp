@@ -86,4 +86,15 @@ namespace game::messaging
         post_message(MessageType::STATE_CHANGE, _subscribers, [state](auto *sub)
                      { sub->handle_state_change(state); });
     }
+
+    auto MessageBus::post_change_camera(const game::Camera *camera) -> void
+    {
+        post_message(MessageType::CHANGE_CAMERA, _subscribers, [](auto *sub, auto *c)
+                     { sub->handle_change_camera(c); }, camera);
+    }
+    auto MessageBus::post_change_scene(game::Scene *scene) -> void
+    {
+        post_message(MessageType::CHANGE_SCENE, _subscribers, [](auto *sub, auto *s)
+                     { sub->handle_change_scene(s); }, scene);
+    }
 }

@@ -10,7 +10,9 @@
 
 namespace game
 {
+    class Camera;
     class Entity;
+    struct Scene;
 }
 
 namespace game::messaging
@@ -52,6 +54,14 @@ namespace game::messaging
             log::error("unhandled message");
         };
         virtual auto handle_state_change(GameState) -> void
+        {
+            log::error("unhandled message");
+        }
+        virtual auto handle_change_camera(const Camera *) -> void
+        {
+            log::error("unhandled message");
+        }
+        virtual auto handle_change_scene(Scene *) -> void
         {
             log::error("unhandled message");
         }

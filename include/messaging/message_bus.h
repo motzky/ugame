@@ -11,6 +11,8 @@
 namespace game
 {
     class Entity;
+    class Camera;
+    struct Scene;
 }
 
 namespace game::messaging
@@ -28,6 +30,8 @@ namespace game::messaging
         RESTART_LEVEL,
         QUIT,
         STATE_CHANGE,
+        CHANGE_CAMERA,
+        CHANGE_SCENE,
     };
 
     class MessageBus
@@ -51,6 +55,8 @@ namespace game::messaging
         auto post_restart_level() -> void;
         auto post_quit() -> void;
         auto post_state_change(GameState state) -> void;
+        auto post_change_camera(const game::Camera *c) -> void;
+        auto post_change_scene(game::Scene *s) -> void;
 
     private:
         std::unordered_map<MessageType, std::vector<Subscriber *>> _subscribers;
