@@ -3,21 +3,18 @@
 #include <coroutine>
 #include <numbers>
 #include <string>
-#include <vector>
 
 #include "game/routines/routine_base.h"
 #include "graphics/camera.h"
+#include "graphics/scene.h"
 #include "log.h"
 #include "messaging/message_bus.h"
 #include "messaging/subscriber.h"
-#include "primitives/entity.h"
 #include "resources/resource_cache.h"
 #include "scheduler/scheduler.h"
 #include "scheduler/task.h"
 #include "scheduler/wait.h"
 #include "tlv/tlv_reader.h"
-
-using namespace std::string_view_literals;
 
 namespace
 {
@@ -41,12 +38,27 @@ namespace game::routines
         : RoutineBase{bus, {messaging::MessageType::KEY_PRESS}},
           _window{window},
           _scheduler{scheduler},
-          _player{bus, create_camera(window)},
           _resource_cache{resource_cache},
           _resource_loader{resource_loader},
-          _reader{reader}
+          _reader{reader},
+          _camera(create_camera(window)),
+          _scene{}
     {
-        _window.set_title("game");
+        _window.set_title("game: MainMenu");
+
+        _scene = Scene{
+            .entities = {},
+            .ambient = {.r = .5f, .g = .5f, .b = .5f},
+            .directional = {},
+            .points = {},
+            .debug_lines = {},
+            .skybox = nullptr,
+            .skybox_sampler = _resource_cache.get<TextureSampler>("sky_box"),
+            .labels = {},
+            .effects = {.hdr = true, .grey_scale = false, .blur = false}};
+
+        _bus.post_change_camera(&_camera);
+        _bus.post_change_scene(&_scene);
     }
 
     auto MainMenuRoutine::create_task() -> Task
@@ -64,10 +76,6 @@ namespace game::routines
             }
         }
     }
-    auto MainMenuRoutine::player() const -> const Player &
-    {
-        return _player;
-    }
 
     auto MainMenuRoutine::handle_key_press(const KeyEvent &event) -> void
     {
@@ -76,6 +84,7 @@ namespace game::routines
             if (event.key() == Key::ESC && event.state() == KeyState::UP)
             {
                 _bus.post_state_change(GameState::EXITING);
+                return;
             }
             if (event.state() == KeyState::UP)
             {

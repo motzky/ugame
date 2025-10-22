@@ -5,8 +5,9 @@
 #include <string>
 #include <vector>
 
-#include "game/player.h"
 #include "game/routines/routine_base.h"
+#include "graphics/camera.h"
+#include "graphics/scene.h"
 #include "messaging/auto_subscribe.h"
 #include "messaging/message_bus.h"
 #include "messaging/subscriber.h"
@@ -29,16 +30,16 @@ namespace game::routines
         MainMenuRoutine(MainMenuRoutine &&) = default;
 
         auto create_task() -> Task;
-        auto player() const -> const Player &;
 
         virtual auto handle_key_press(const KeyEvent &) -> void override;
 
     private:
         const Window &_window;
         Scheduler &_scheduler;
-        Player _player;
         DefaultCache &_resource_cache;
         const ResourceLoader &_resource_loader;
         const TlvReader &_reader;
+        Camera _camera;
+        Scene _scene;
     };
 }
