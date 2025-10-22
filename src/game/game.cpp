@@ -7,6 +7,7 @@
 
 #include "game/routines/input_routine.h"
 #include "game/routines/level_routine.h"
+#include "game/routines/main_menu_routine.h"
 #include "game/routines/render_routine.h"
 #include "graphics/material.h"
 #include "graphics/shader.h"
@@ -168,6 +169,9 @@ namespace game
 
         auto input_routine = routines::InputRoutine{_window, _message_bus, scheduler};
         scheduler.add(input_routine.create_task());
+
+        auto main_menu_routine = routines::MainMenuRoutine{_window, _message_bus, scheduler, resource_cache, reader, resource_loader};
+        scheduler.add(main_menu_routine.create_task());
 
         auto level_routine = routines::LevelRoutine{_window, _message_bus, scheduler, resource_cache, reader, resource_loader};
         scheduler.add(level_routine.create_task());
