@@ -208,11 +208,13 @@ namespace game::routines
             if (_state == GameState::RUNNING)
             {
                 _level->scene().effects.grey_scale = true;
+                _level->scene().effects.blur = true;
                 _bus.post_state_change(GameState::PAUSED);
             }
             else if (_state == GameState::PAUSED)
             {
                 _level->scene().effects.grey_scale = false;
+                _level->scene().effects.blur = false;
                 _bus.post_state_change(GameState::RUNNING);
             }
             return;
