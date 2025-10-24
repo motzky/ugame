@@ -6,6 +6,7 @@ namespace game
 {
 
     class Texture;
+    class Color;
 
     namespace graphics::ui
     {
@@ -14,6 +15,7 @@ namespace game
             std::uint32_t x;
             std::uint32_t y;
             const Texture *texture;
+            Color color;
         };
     }
 
