@@ -4,4 +4,5 @@ target_sources(gamelib PUBLIC
     main_menu_routine.cpp
     render_routine.cpp
     routine_base.cpp
+    sound_routine.cpp
 )
