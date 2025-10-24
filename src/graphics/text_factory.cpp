@@ -22,6 +22,21 @@ namespace
     {
         return std::wstring(text.begin(), text.end());
     }
+
+    auto ft_pos_to_int(::FT_Pos pos) -> std::int32_t
+    {
+        game::ensure((pos & 63) == 0, "failed to convert 26.6 fixed point value to int: fration not 0: {}", pos);
+
+        return static_cast<std::int32_t>(pos >> 6);
+    }
+    auto ft_pos_to_uint(::FT_Pos pos) -> std::uint32_t
+    {
+        game::ensure((pos & 63) == 0, "failed to convert 26.6 fixed point value to uint: fration not 0: {}", pos);
+        auto integer_part = pos >> 6;
+        game::ensure(integer_part >= 0, "failed to convert 26.6 fixed point value to uint: must be positive {}", pos);
+
+        return static_cast<std::uint32_t>(integer_part);
+    }
 }
 
 namespace game
@@ -55,17 +70,11 @@ namespace game
 
         const auto wide_text = text_widen(text);
 
-        auto tex_desc = TextureDescription{
-            .name = std::string(text.data()),
-            .format = TextureFormat::R,
-            .usage = TextureUsage::SRGB,
-            .width{pixel_size * static_cast<std::uint32_t>(wide_text.size())},
-            .height{pixel_size},
-            .data{}};
-
-        tex_desc.data.resize(tex_desc.height * tex_desc.width, std::byte{});
-
-        auto old_width = 0u;
+        auto baseline_y = 0;
+        auto y_min = 0;
+        auto bearing_y_max = 0;
+        auto x_max = 0u;
+        auto height_max = 0;
 
         for (auto i = 0u; i < wide_text.size(); ++i)
         {
@@ -74,34 +83,78 @@ namespace game
 
             auto *glyph = face->glyph;
 
-            const auto bitmap_width = glyph->bitmap.width;
-            const auto width_padded = bitmap_width % 4 == 0 ? bitmap_width : bitmap_width + 4 - (bitmap_width % 4);
+            const auto glyph_baseline_y = glyph->bitmap_top;
+            if (glyph_baseline_y > baseline_y)
+            {
+                baseline_y = glyph_baseline_y;
+            }
+            const auto glyph_height = ft_pos_to_int(glyph->metrics.height);
+            if (glyph_height > height_max)
+            {
+                height_max = glyph_height;
+            }
+            const auto glyph_bearing_y = ft_pos_to_int(glyph->metrics.horiBearingY);
+            if (glyph_bearing_y > bearing_y_max)
+            {
+                bearing_y_max = glyph_bearing_y;
+            }
+            const auto glyph_y_min = glyph_height - glyph_bearing_y;
+            if (glyph_y_min > y_min)
+            {
+                y_min = glyph_y_min;
+            }
 
-            const auto y_offset = tex_desc.height - glyph->bitmap_top;
+            const auto glyph_advance = ft_pos_to_int(glyph->metrics.horiAdvance);
+
+            x_max += glyph_advance;
+        }
+
+        // align to 4 bytes
+        x_max = x_max % 4 == 0 ? x_max : x_max + 4 - (x_max % 4);
+        auto h = static_cast<std::uint32_t>(height_max) + static_cast<std::uint32_t>(y_min);
+        h = h % 4 == 0 ? h : h + 4 - (h % 4);
+
+        auto tex_desc = TextureDescription{
+            .name = std::string(text.data()),
+            .format = TextureFormat::R,
+            .usage = TextureUsage::SRGB,
+            .width{x_max},
+            .height{h},
+            .data{}};
+
+        tex_desc.data.resize(tex_desc.height * tex_desc.width, std::byte{});
+
+        auto pen = 0u;
+
+        for (auto i = 0u; i < wide_text.size(); ++i)
+        {
+            const auto c = wide_text.data()[i];
+            ensure(::FT_Load_Char(face.get(), c, FT_LOAD_RENDER) == 0, "failed to load bitmap for character {}", std::to_string(c));
+
+            auto *glyph = face->glyph;
+
+            const auto glyph_width = ft_pos_to_uint(glyph->metrics.width);
+            const auto glyph_advance = ft_pos_to_int(glyph->metrics.horiAdvance);
+            const auto glyph_bearing_x = ft_pos_to_int(glyph->metrics.horiBearingX);
+            const auto glyph_bearing_y = ft_pos_to_int(glyph->metrics.horiBearingY);
 
             for (auto row = 0u; row < glyph->bitmap.rows; ++row)
             {
-                for (std::uint32_t col = 0; col < width_padded; ++col)
+                const auto dst_y = baseline_y - glyph_bearing_y + row;
+
+                for (std::uint32_t col = 0u; col < glyph_width; ++col)
                 {
-                    auto dst_x = old_width + col + glyph->bitmap_left;
-                    auto dst_y = y_offset == 0 ? row + 1 : y_offset + row - 1;
-                    auto dst_index = dst_y * tex_desc.width + dst_x;
+                    const auto dst_x = pen + glyph_bearing_x + col;
 
-                    if (col >= bitmap_width)
-                    {
-                        tex_desc.data[dst_index] = std::byte{};
-                        continue;
-                    }
-
-                    auto src_index = row * glyph->bitmap.width + col;
+                    const auto dst_index = dst_y * tex_desc.width + dst_x;
+                    const auto src_index = row * glyph->bitmap.width + col;
 
                     const auto val = glyph->bitmap.buffer[src_index];
                     tex_desc.data[dst_index] = static_cast<std::byte>(val);
                 }
             }
 
-            const auto advance_x = glyph->bitmap.width == 0 ? pixel_size / 2 : glyph->bitmap.width + glyph->bitmap_left;
-            old_width += advance_x;
+            pen += glyph_advance;
         }
 
         return {tex_desc, sampler};
