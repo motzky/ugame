@@ -9,6 +9,7 @@
 #include "game/routines/level_routine.h"
 #include "game/routines/main_menu_routine.h"
 #include "game/routines/render_routine.h"
+#include "game/routines/sound_routine.h"
 #include "graphics/material.h"
 #include "graphics/shader.h"
 #include "graphics/texture.h"
@@ -170,11 +171,13 @@ namespace game
         auto input_routine = routines::InputRoutine{_window, _message_bus, scheduler};
         auto level_routine = routines::LevelRoutine{_window, _message_bus, scheduler, resource_cache, reader, resource_loader};
         auto render_routine = routines::RenderRoutine{_window, _message_bus, scheduler, reader, mesh_loader};
+        auto sound_routine = routines::SoundRoutine{_message_bus, scheduler};
 
-        // has to be last, because it sends messages in constructor
+        // FIXME: has to be last, because it sends messages in constructor
         auto main_menu_routine = routines::MainMenuRoutine{_window, _message_bus, scheduler, resource_cache, reader, resource_loader};
 
         scheduler.add(input_routine.create_task());
+        scheduler.add(sound_routine.create_task());
         scheduler.add(main_menu_routine.create_task());
         scheduler.add(level_routine.create_task());
         scheduler.add(render_routine.create_task());
