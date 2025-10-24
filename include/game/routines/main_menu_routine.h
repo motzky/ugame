@@ -8,6 +8,7 @@
 #include "game/routines/routine_base.h"
 #include "graphics/camera.h"
 #include "graphics/scene.h"
+#include "graphics/texture.h"
 #include "messaging/auto_subscribe.h"
 #include "messaging/message_bus.h"
 #include "messaging/subscriber.h"
@@ -40,6 +41,7 @@ namespace game::routines
         DefaultCache &_resource_cache;
         std::vector<Entity> _entities;
         std::vector<Entity> _level_entities;
+        std::vector<Texture> _labels;
         const ResourceLoader &_resource_loader;
         const TlvReader &_reader;
         Camera _camera;

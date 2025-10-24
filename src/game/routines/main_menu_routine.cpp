@@ -1,14 +1,19 @@
 #include "game/routines/main_menu_routine.h"
 
+#include <cmath>
 #include <coroutine>
+#include <format>
 #include <numbers>
 #include <string>
 #include <string_view>
 #include <vector>
 
+#include "config.h"
 #include "game/routines/routine_base.h"
 #include "graphics/camera.h"
 #include "graphics/scene.h"
+#include "graphics/text_factory.h"
+#include "graphics/ui/label.h"
 #include "log.h"
 #include "messaging/message_bus.h"
 #include "messaging/subscriber.h"
@@ -25,7 +30,7 @@ namespace
 {
     auto create_camera(const game::Window &window) -> game::Camera
     {
-        return {{0.f, 2.f, 20.f},
+        return {{0.f, 1.5f, 10.f},
                 {0.f, 0.f, 0.f},
                 {0.f, 1.f, 0.f},
                 std::numbers::pi_v<float> / 4.f,
@@ -165,6 +170,7 @@ namespace game::routines
           _resource_cache{resource_cache},
           _entities{},
           _level_entities{},
+          _labels{},
           _resource_loader{resource_loader},
           _reader{reader},
           _camera(create_camera(window)),
@@ -180,7 +186,7 @@ namespace game::routines
         const auto *mesh = _resource_cache.get<Mesh>("barrel");
         _entities.emplace_back(Entity{mesh,
                                       _resource_cache.get<Material>("barrel_material"),
-                                      Vector3{0.0, -0.2, 0.0},
+                                      Vector3{0.f},
                                       {0.4f},
                                       {{0.f}, {1.f}, {0.707107f, 0.f, 0.f, 0.707107f}},
                                       barrel_textures,
@@ -188,9 +194,16 @@ namespace game::routines
                                       0u,
                                       0u});
 
-        const auto ambient_vec = Vector3{0.01f};
+        const auto text_factory = TextFactory{resource_loader};
+
+        _labels.push_back(text_factory.create("Barrel Game", _resource_cache.get<TextureSampler>("ui"), 32));
+        _labels.push_back(text_factory.create("Press any key to start", _resource_cache.get<TextureSampler>("ui"), 24));
+        _labels.push_back(text_factory.create("or ESC to exit", _resource_cache.get<TextureSampler>("ui"), 24));
+        _labels.push_back(text_factory.create(std::format("v{}.{}.{}", version::major, version::minor, version::patch), _resource_cache.get<TextureSampler>("ui"), 16));
+
+        const auto ambient_vec = Vector3{0.05f};
         const auto direction_light_dir = Vector3{-1.f, -1.f, 0.f};
-        const auto direction_light_color = Vector3{0.5};
+        const auto direction_light_color = Vector3{0.2};
 
         _scene = Scene{
             .entities = _entities |
@@ -201,17 +214,17 @@ namespace game::routines
             .directional =
                 {.direction = direction_light_dir,
                  .color = {.r = direction_light_color.x, .g = direction_light_color.y, .b = direction_light_color.z}},
-            .points = {{.position = {5.f, 5.f, 0.f},
+            .points = {{.position = {4.f, 2.f, 0.f},
                         .color = {.r = 1.f, .g = 0.f, .b = 0.f},
                         .const_attenuation = 1.f,
                         .linear_attenuation = .07f,
                         .quad_attenuation = 0.017f},
-                       {.position = {-5.f, 3.f, 0.f},
+                       {.position = {-4.f, 2.f, 0.f},
                         .color = {.r = 0.f, .g = 1.f, .b = 0.f},
                         .const_attenuation = 1.f,
                         .linear_attenuation = .07f,
                         .quad_attenuation = 0.017f},
-                       {.position = {-5.f, 3.f, 0.f},
+                       {.position = {0.f, 2.f, 4.f},
                         .color = {.r = 0.f, .g = 0.f, .b = 1.f},
                         .const_attenuation = 1.f,
                         .linear_attenuation = .07f,
@@ -219,7 +232,11 @@ namespace game::routines
             .debug_lines = {},
             .skybox = nullptr,
             .skybox_sampler = _resource_cache.get<TextureSampler>("sky_box"),
-            .labels = {},
+            .labels = {
+                {window.width() / 2 - _labels[0].width() / 2, 360, &_labels[0], Color::red()},
+                {window.width() / 2 - _labels[1].width() / 2, 900, &_labels[1], Color::green()},
+                {window.width() / 2 - _labels[2].width() / 2, 930, &_labels[2], Color::green()},
+                {5u, window.height() - 17u, &_labels[3], Color::white()}},
             .effects = {.hdr = true, .grey_scale = false, .blur = false}};
 
         const auto level_entity_names = std::vector{
@@ -263,12 +280,11 @@ namespace game::routines
                 [&](const auto e)
                 { return Entity{resource_cache.get<Mesh>(e),
                                 resource_cache.get<Material>(material_name_from_mesh(e)),
-                                {-20.f, -5.f, 0},
+                                {-218.f, -3.2f, 70},
                                 {10.f},
                                 std::vector<const Texture *>{
                                     resource_cache.get<Texture>(albedo_texture_name(e)),
                                     resource_cache.get<Texture>(normal_map_texture_name(e))},
-                                // {_ps.create_shape<BoxShape>(Vector3{10.f}), {{0.f, -2.f, 0}, {1.f}, {}}},
                                 {nullptr, {{0.f, -2.f, 0}, {1.f}, {}}},
                                 0u,
                                 0u}; }) |
@@ -285,6 +301,13 @@ namespace game::routines
 
     auto MainMenuRoutine::create_task() -> Task
     {
+        auto theta = 0.f;
+
+        const auto pi2 = std::numbers::pi_v<float> * 2.0;
+        const auto rpm = 30;
+        const auto delta_theta = rpm / 3600.f;
+        const auto radius = 10.f;
+
         while (_state != GameState::EXITING)
         {
             if (_state != GameState::MAIN_MENU)
@@ -292,9 +315,26 @@ namespace game::routines
                 co_await Wait{_scheduler, GameState::MAIN_MENU};
             }
 
+            theta += delta_theta;
+            if (theta > pi2)
+            {
+                theta -= pi2;
+            }
+
+            const auto translation = Vector3{
+                radius * std::sin(theta),
+                _camera.position().y,
+                radius * std::cos(theta)};
+
+            _camera.set_position(translation);
+
+            _camera.adjust_yaw(-delta_theta);
+
+            _camera.update();
+
             if (_state != GameState::EXITING)
             {
-                co_await Wait{_scheduler, 16u};
+                co_await Wait{_scheduler, 16666us};
             }
         }
     }
