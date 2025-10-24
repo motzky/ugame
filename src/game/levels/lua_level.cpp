@@ -242,14 +242,14 @@ namespace game::levels
                         .const_attenuation = 1.f,
                         .linear_attenuation = .07f,
                         .quad_attenuation = 0.017f},
-                       {.position = {-5.f, 3.f, 0.f}, .color = {.r = 0.f, .g = 0.f, .b = 1.f}, //
+                       {.position = {0.f, 3.f, 5.f}, .color = {.r = 0.f, .g = 0.f, .b = 1.f}, //
                         .const_attenuation = 1.f,
                         .linear_attenuation = .07f,
                         .quad_attenuation = 0.017f}},
             .debug_lines = {},
             .skybox = &_skybox,
             .skybox_sampler = _resource_cache.get<TextureSampler>("sky_box"),
-            .labels = {{0, 0, &text_test}, {1707, 0, &text_test2}},
+            .labels = {{0, 0, &text_test, Color::white()}, {1707, 0, &text_test2, Color::white()}},
             .effects = {.hdr = true, .grey_scale = false, .blur = false}};
 
         if (runner.has_function("Level_get_ambient"))
@@ -308,7 +308,7 @@ namespace game::levels
                 [&](const auto e)
                 { return Entity{resource_cache.get<Mesh>(e),
                                 resource_cache.get<Material>(material_name_from_mesh(e)),
-                                {0.f, -5.f, 0},
+                                {-180.f, -3.8f, 0},
                                 {10.f},
                                 std::vector<const Texture *>{
                                     resource_cache.get<Texture>(albedo_texture_name(e)),
