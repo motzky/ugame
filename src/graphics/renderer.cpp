@@ -225,18 +225,18 @@ namespace game
             writer.write(_orth_camera.position());
         }
 
-        for (const auto &[x, y, texture] : scene.labels)
+        for (const auto &[x, y, texture, color] : scene.labels)
         {
             ::glBindBufferBase(GL_UNIFORM_BUFFER, 0, _camera_buffer.native_handle());
 
             const auto model = Matrix4{
                 Vector3{
                     static_cast<float>(x) + (texture->width() / 2.f) + 5,
-                    static_cast<float>(y) - (texture->height() / 2.f),
+                    -static_cast<float>(y) - (texture->height() / 2.f),
                     0.0f},
                 Vector3{static_cast<float>(texture->width()) / 2.f, static_cast<float>(texture->height()) / 2.f, 1.0f}};
             _label_material.set_uniform("model", model);
-            _label_material.set_uniform("textColor", Color::white());
+            _label_material.set_uniform("textColor", color);
 
             _label_material.bind_texture(0, texture, scene.skybox_sampler);
 
