@@ -1,6 +1,11 @@
+#ifdef _WIN32
+#error This code unit is NOT for Windows !
+#endif
+
 #include "game/routines/sound_routine.h"
 
 #include <coroutine>
+#include <memory>
 
 #include "messaging/message_bus.h"
 #include "scheduler/scheduler.h"
@@ -9,11 +14,18 @@
 
 namespace game::routines
 {
+    struct SoundRoutine::implementation
+    {
+    };
+
     SoundRoutine::SoundRoutine(messaging::MessageBus &bus, Scheduler &scheduler)
         : RoutineBase{bus, {}},
+          _impl(std::make_unique<SoundRoutine::implementation>()),
           _scheduler(scheduler)
     {
     }
+
+    SoundRoutine::~SoundRoutine() = default;
 
     auto SoundRoutine::create_task() -> Task
     {
