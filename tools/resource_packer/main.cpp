@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <cstddef>
 #include <cstdint>
 #include <filesystem>
@@ -70,11 +71,51 @@ namespace
                    std::forward<Args>(args)...) |
                std::ranges::to<std::vector>();
     }
+
+    const std::byte wav_riff_cc[] = {std::byte{'R'}, std::byte{'I'}, std::byte{'F'}, std::byte{'F'}};
+    const std::byte wav_wave_cc[] = {std::byte{'W'}, std::byte{'A'}, std::byte{'V'}, std::byte{'E'}};
+    const std::byte wav_fmt_cc[] = {std::byte{'f'}, std::byte{'m'}, std::byte{'t'}, std::byte{' '}};
+    const std::byte wav_data_cc[] = {std::byte{'d'}, std::byte{'a'}, std::byte{'t'}, std::byte{'a'}};
+
+    auto find_chunk(std::span<const std::byte> source, std::span<const std::byte> control_code) -> std::span<const std::byte>
+    {
+        const auto chunk_header = std::ranges::search(source, control_code);
+        game::ensure(!chunk_header.empty(), "could not find control code in chunk");
+
+        const auto header_offset = std::ranges::distance(std::ranges::cbegin(source), std::ranges::cbegin(chunk_header));
+
+        auto chunk_size = std::uint32_t{};
+        std::memcpy(&chunk_size, source.data() + header_offset + chunk_header.size(), sizeof(chunk_size));
+
+        return std::span{source.data() + header_offset + chunk_header.size() + sizeof(chunk_size), chunk_size};
+    }
+
+    auto parse_chunk(std::span<const std::byte> source) -> std::span<const std::byte>
+    {
+        const auto chunk_header = std::ranges::search(source, wav_riff_cc);
+        if (!chunk_header.empty())
+        {
+            return std::span{source.data() + chunk_header.size() + 4u, 4u};
+        }
+
+        auto chunk_size = std::uint32_t{};
+        std::memcpy(&chunk_size, source.data() + 4u, sizeof(chunk_size));
+
+        if (chunk_size % 2 != 0)
+        {
+            // data is padded to WORD boundary, but chunk_size field does only count data, not padding
+            ++chunk_size;
+        }
+
+        return std::span{source.data() + 8u, chunk_size};
+    }
+
 }
 
 auto write_texture(const std::string &path, const std::string &asset_name, const std::string &ext, const std::string &file_name, game::TlvWriter &writer) -> void;
 auto write_mesh(const std::string &path, const std::string &asset_name, const std::string &ext, const std::string &file_name, game::TlvWriter &writer) -> void;
 auto write_text_file(const std::string &path, const std::string &file_name, game::TlvWriter &writer) -> void;
+auto write_sound_file(const std::string &path, const std::string &file_name, game::TlvWriter &writer) -> void;
 
 auto main(int argc, char **argv) -> int
 {
@@ -87,6 +128,7 @@ auto main(int argc, char **argv) -> int
         const auto image_extensions = std::set<std::string>{".png", ".jpg"};
         const auto mesh_extensions = std::set<std::string>{".fbx", ".obj"};
         const auto text_file_extensions = std::set<std::string>{".vert", ".frag", ".lua"};
+        const auto sound_file_extensions = std::set<std::string>{".wav"};
 
         game::log::info("packing {} into {}", std::string{argv[1]}, std::string{argv[2]});
 
@@ -119,6 +161,10 @@ auto main(int argc, char **argv) -> int
             {
                 write_text_file(path, file_name, writer);
                 continue;
+            }
+            if (sound_file_extensions.contains(ext))
+            {
+                write_sound_file(path, file_name, writer);
             }
         }
         const auto resource_data = writer.yield();
@@ -248,4 +294,33 @@ auto write_text_file(const std::string &path, const std::string &file_name, game
     game::log::info("packing text file: {}", file_name);
 
     writer.write(file_name, content);
+}
+
+auto write_sound_file(const std::string &path, const std::string &file_name, game::TlvWriter &writer) -> void
+{
+    const auto audio_file = game::File{path};
+    const auto data = audio_file.as_bytes();
+
+    game::log::info("packing audio file: {}", file_name);
+
+    const auto riff_chunk = find_chunk(data, wav_riff_cc);
+    if (riff_chunk.empty())
+    {
+        game::log::warn("RIFF chunk not found ! Not a wave file ?");
+        return;
+    };
+    const auto filetype = parse_chunk(riff_chunk);
+    if (!std::ranges::equal(filetype, wav_wave_cc))
+    {
+        game::log::warn("Not a WAV file...");
+        return;
+    };
+
+    const auto fmt_chunk = find_chunk(data, wav_fmt_cc);
+    const auto fmt_data = parse_chunk(fmt_chunk);
+
+    const auto data_chunk = find_chunk(data, wav_data_cc);
+    const auto data_chunk_data = parse_chunk(data_chunk);
+
+    writer.write(file_name, {fmt_data, data_chunk_data});
 }

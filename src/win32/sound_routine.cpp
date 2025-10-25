@@ -24,48 +24,10 @@
 
 namespace
 {
-    const std::byte riff_cc[] = {std::byte{'R'}, std::byte{'I'}, std::byte{'F'}, std::byte{'F'}};
-    const std::byte wave_cc[] = {std::byte{'W'}, std::byte{'A'}, std::byte{'V'}, std::byte{'E'}};
-    const std::byte fmt_cc[] = {std::byte{'f'}, std::byte{'m'}, std::byte{'t'}, std::byte{' '}};
-    const std::byte data_cc[] = {std::byte{'d'}, std::byte{'a'}, std::byte{'t'}, std::byte{'a'}};
-
     constexpr auto release = [](auto *obj)
     { obj->Release(); };
     constexpr auto destroy_voice = [](auto *obj)
     { obj->DestroyVoice(); };
-
-    auto find_chunk(std::span<const std::byte> source, std::span<const std::byte> control_code) -> std::span<const std::byte>
-    {
-        const auto chunk_header = std::ranges::search(source, control_code);
-        game::ensure(!chunk_header.empty(), "could not find control code in chunk");
-
-        const auto header_offset = std::ranges::distance(std::ranges::cbegin(data), std::ranges::cbegin(chunk_header));
-
-        auto chunk_size = std::uint32_t{};
-        std::memcpy(&chunk_size, source.data() + header_offset + chunk_header.size(), sizeof(chunk_size));
-
-        return std::span{source.data() + header_offset + chunk_header.size() + sizeof(chunk_size), chunk_size};
-    }
-
-    auto parse_chunk(std::span<const std::byte> source) -> std::span<const std::byte>
-    {
-        const auto chunk_header = std::ranges::search(source, riff_cc);
-        if (!chunk_header.empty())
-        {
-            return std::span{source.data() + chunk_header.size_bytes() + 4u, 4u};
-        }
-
-        auto chunk_size = std::uint32_t{};
-        std::memcpy(&chunk_size, source.data() + 4u, sizeof(chunk_size));
-
-        if (chunk_size % 2 != 0)
-        {
-            // data is padded to WORD boundary, but chunk_size field does only count data, not padding
-            ++chunk_size;
-        }
-
-        return std::span{source.data() + 8u, chunk_size};
-    }
 }
 
 namespace game::routines
@@ -91,22 +53,9 @@ namespace game::routines
                    0u, nullptr, nullptr) == S_OK,
                "failed to create mastering voice");
 
-        const auto audio_file = File{"./assets/main_theme.wav"};
-        const auto data = audio_file.as_bytes();
-
-        const auto riff_chunk = find_chunk(data, riff_cc);
-        const auto filetype = parse_chunk(riff_chunk);
-        ensure(std::ranges::equals(filetype, wave_cc), "Wrong file type: {}", filetype);
-
-        const auto fmt_chunk = find_chunk(wave_chunk, fmt_cc);
-        const auto fmt_data = parse_chunk(fmt_chunk);
-
         auto wfx = ::WAVEFORMATEXTENSIBLE{};
         ensure(fmt_data.size_bytes() >= sizeof(wfx), "fmt chunk to small");
         std::memcpy(&wfx, fmt_data.data(), sizeof(wfx));
-
-        const auto data_chunk = find_chunk(wave_chunk, data_cc);
-        const auto data_chunk_data = parse_chunk(data_chunk);
 
         _impl->sound_data = data_chunk_data | std::ranges::to<std::vector>();
 
