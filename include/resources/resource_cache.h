@@ -4,6 +4,7 @@
 #include <string_view>
 #include <tuple>
 
+#include "sound/sound_data.h"
 #include "utils/ensure.h"
 #include "utils/string_unordered_map.h"
 
@@ -58,9 +59,25 @@ namespace game
             auto &map = std::get<StringUnorderedMap<U>>(_maps);
 
             const auto iter = map.find(name);
-            expect(iter != std::ranges::end(map), "{} doesn;t exists", name);
+            expect(iter != std::ranges::end(map), "{} doesn't exist", name);
 
             return std::addressof(iter->second);
+        }
+
+        /**
+         * Query, if a name is in cache
+         *
+         * @param name
+         *   Name to query, undefined behaviour if it doesn't exist.
+         *
+         * @returns
+         *   true, if name was found in cache of objects of type U
+         */
+        template <class U>
+        auto contains(std::string_view name)
+        {
+            auto &map = std::get<StringUnorderedMap<U>>(_maps);
+            return map.contains(name);
         }
 
     private:
@@ -69,5 +86,5 @@ namespace game
     };
 
     // default cache for the game
-    using DefaultCache = ResourceCache<Mesh, Material, Texture, TextureSampler>;
+    using DefaultCache = ResourceCache<Mesh, Material, Texture, TextureSampler, SoundData>;
 }
