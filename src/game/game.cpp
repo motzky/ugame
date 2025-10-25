@@ -20,6 +20,7 @@
 #include "resources/resource_cache.h"
 #include "resources/resource_loader.h"
 #include "scheduler/scheduler.h"
+#include "sound/sound_data.h"
 #include "tlv/tlv_entry.h"
 #include "tlv/tlv_reader.h"
 #include "utils/decompress.h"
@@ -165,13 +166,24 @@ namespace game
         resource_cache.insert<TextureSampler>("sky_box", TextureSampler{});
         resource_cache.insert<TextureSampler>("ui", TextureSampler{});
 
+        const auto main_theme_data = std::ranges::find_if(reader, [](const auto &entry)
+                                                          { return entry.is_sound("main_theme.wav"); });
+        if (main_theme_data == std::ranges::cend(reader))
+        {
+            log::error("Could not find sound: main theme");
+        }
+        else
+        {
+            resource_cache.insert<SoundData>("main_theme", (*main_theme_data).sound_data_value());
+        }
+
         game::log::info("Setting up scheduler...");
         auto scheduler = Scheduler{_message_bus};
 
         auto input_routine = routines::InputRoutine{_window, _message_bus, scheduler};
         auto level_routine = routines::LevelRoutine{_window, _message_bus, scheduler, resource_cache, reader, resource_loader};
         auto render_routine = routines::RenderRoutine{_window, _message_bus, scheduler, reader, mesh_loader};
-        auto sound_routine = routines::SoundRoutine{_message_bus, scheduler};
+        auto sound_routine = routines::SoundRoutine{_message_bus, scheduler, resource_cache};
 
         // FIXME: has to be last, because it sends messages in constructor
         auto main_menu_routine = routines::MainMenuRoutine{_window, _message_bus, scheduler, resource_cache, reader, resource_loader};
