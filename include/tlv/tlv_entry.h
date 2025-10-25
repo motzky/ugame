@@ -10,6 +10,7 @@
 
 #include "graphics/mesh_data.h"
 #include "graphics/texture.h"
+#include "sound/sound_data.h"
 
 namespace game
 {
@@ -21,6 +22,7 @@ namespace game
 
     enum class TlvType : std::uint32_t
     {
+        // scalar
         UINT32,
         UINT32_ARRAY,
         STRING,
@@ -30,10 +32,12 @@ namespace game
         VERTEX_DATA,
         VERTEX_DATA_ARRAY,
 
+        // composite
         TEXTURE_DESCRIPTION,
         MESH_DATA,
         OBJECT_SUB_MESH_NAMES,
         TEXT_FILE,
+        SOUND_DATA,
     };
 
     class TlvEntry
@@ -60,6 +64,8 @@ namespace game
         auto is_text_file(std::string_view name) const -> bool;
         auto is_object_data(std::string_view name) const -> bool;
         auto object_data_value() const -> std::vector<std::string>;
+        auto sound_data_value() const -> SoundData;
+        auto is_sound(std::string_view name) const -> bool;
 
         auto size() const -> std::uint32_t;
 

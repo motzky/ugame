@@ -165,4 +165,18 @@ namespace game
 
         write_entry(_buffer, type, length, value_bytes);
     }
+
+    auto TlvWriter::write(std::string_view name, const SoundData &data) -> void
+    {
+        auto sub_writer = TlvWriter{};
+        sub_writer.write(name);
+        sub_writer.write(data.format);
+        sub_writer.write(data.data);
+
+        const auto type = TlvType::SOUND_DATA;
+        const auto value_bytes = sub_writer.yield();
+        const auto length = static_cast<std::uint32_t>(value_bytes.size());
+
+        write_entry(_buffer, type, length, value_bytes);
+    }
 }

@@ -300,6 +300,48 @@ namespace game
         return value;
     }
 
+    auto TlvEntry::sound_data_value() const -> SoundData
+    {
+        ensure(_type == TlvType::SOUND_DATA, "incorrect type");
+
+        auto reader = TlvReader(_value);
+        auto reader_cursor = std::ranges::begin(reader);
+        ensure(reader_cursor != std::ranges::end(reader), "TLV too small");
+        ensure((*reader_cursor).type() == TlvType::STRING, "first member not a string");
+
+        const auto name = (*reader_cursor).string_value();
+        ++reader_cursor;
+        ensure(reader_cursor != std::ranges::end(reader), "TLV too small");
+
+        ensure((*reader_cursor).type() == TlvType::BYTE_ARRAY, "second member not byte data array");
+        const auto format = (*reader_cursor).byte_array_value();
+        ++reader_cursor;
+        ensure(reader_cursor != std::ranges::end(reader), "TLV too small");
+
+        ensure((*reader_cursor).type() == TlvType::BYTE_ARRAY, "third member not byte data array");
+        const auto data = (*reader_cursor).byte_array_value();
+        ++reader_cursor;
+        ensure(reader_cursor == std::ranges::end(reader), "TLV too large");
+
+        return {format, data};
+    }
+
+    auto TlvEntry::is_sound(std::string_view name) const -> bool
+    {
+        if (_type != TlvType::SOUND_DATA)
+        {
+            return false;
+        }
+
+        auto reader = TlvReader(_value);
+        auto reader_cursor = std::ranges::begin(reader);
+        ensure(reader_cursor != std::ranges::end(reader), "mesh TLV too small");
+        ensure((*reader_cursor).type() == TlvType::STRING, "first member not a string");
+
+        const auto mesh_name = (*reader_cursor).string_value();
+        return mesh_name == name;
+    }
+
     auto TlvEntry::size() const -> std::uint32_t
     {
         return static_cast<std::uint32_t>(sizeof(_type)) + static_cast<std::uint32_t>(sizeof(std::uint32_t)) + static_cast<std::uint32_t>(_value.size());
@@ -345,6 +387,9 @@ namespace game
             break;
         case OBJECT_SUB_MESH_NAMES:
             str = "OBJECT_SUB_MESH_NAMES"sv;
+            break;
+        case SOUND_DATA:
+            str = "SOUND_DATA"sv;
             break;
         }
         return std::format("{}", str);
