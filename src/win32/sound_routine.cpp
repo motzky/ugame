@@ -40,10 +40,11 @@ namespace game::routines
         std::vector<std::byte> sound_data;
     };
 
-    SoundRoutine::SoundRoutine(messaging::MessageBus &bus, Scheduler &scheduler)
+    SoundRoutine::SoundRoutine(messaging::MessageBus &bus, Scheduler &scheduler, DefaultCache &resource_cache)
         : RoutineBase{bus, {}},
           _impl(std::make_unique<SoundRoutine::implementation>()),
-          _scheduler(scheduler)
+          _scheduler(scheduler),
+          _resource_cache(resource_cache)
     {
         ensure(::XAudio2Create(std::out_ptr(_impl->xaudio), 0, XAUDIO2_DEFAULT_PROCESSOR) == S_OK, "failed to create xaudio2");
         ensure(_impl->xaudio->CreateMasteringVoice(
@@ -53,21 +54,30 @@ namespace game::routines
                    0u, nullptr, nullptr) == S_OK,
                "failed to create mastering voice");
 
-        auto wfx = ::WAVEFORMATEXTENSIBLE{};
-        ensure(fmt_data.size_bytes() >= sizeof(wfx), "fmt chunk to small");
-        std::memcpy(&wfx, fmt_data.data(), sizeof(wfx));
+        if (!_resource_cache.contains<SoundData>("main_theme"))
+        {
+            log::error("Could not find sound data in cache: {}", "main_theme");
+        }
+        else
+        {
+            const *auto main_theme_data = _resource_cache.get<SoundData>("main_theme");
 
-        _impl->sound_data = data_chunk_data | std::ranges::to<std::vector>();
+            auto wfx = ::WAVEFORMATEXTENSIBLE{};
+            ensure(main_theme_data.format.size_bytes() >= sizeof(wfx), "fmt chunk to small");
+            std::memcpy(&wfx, main_theme_data.format..data(), sizeof(wfx));
 
-        const auto xaudio_buffer = ::XAUDIO2_BUFFER{
-            .Flags = XAUDIO2_END_OF_STREAM,
-            .AudioBytes = static_cast<::UINT32>(_impl->sound_data.size_bytes()),
-            .pAudioData = reinterpret_cast<const ::BYTE *>(_impl->sound_data.data())};
+            _impl->sound_data = main_theme_data.data | std::ranges::to<std::vector>();
 
-        ensure(_impl->xaudio->CreateSourceVoice(std::out_ptr(_impl->source_voice), &wfx.Format) == S_OK, "failed to create source voice");
+            const auto xaudio_buffer = ::XAUDIO2_BUFFER{
+                .Flags = XAUDIO2_END_OF_STREAM,
+                .AudioBytes = static_cast<::UINT32>(_impl->sound_data.size_bytes()),
+                .pAudioData = reinterpret_cast<const ::BYTE *>(_impl->sound_data.data())};
 
-        ensure(_impl->source_voice->SubmitSourceBuffer(&xaudio_buffer) == S_OK, "failed to submit source voice buffer");
-        ensure(_impl->source_voice->Start(0) == S_OK, "failed to start source voice");
+            ensure(_impl->xaudio->CreateSourceVoice(std::out_ptr(_impl->source_voice), &wfx.Format) == S_OK, "failed to create source voice");
+
+            ensure(_impl->source_voice->SubmitSourceBuffer(&xaudio_buffer) == S_OK, "failed to submit source voice buffer");
+            ensure(_impl->source_voice->Start(0) == S_OK, "failed to start source voice");
+        }
     }
 
     SoundRoutine::~SoundRoutine() = default;

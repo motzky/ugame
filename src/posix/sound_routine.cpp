@@ -18,10 +18,11 @@ namespace game::routines
     {
     };
 
-    SoundRoutine::SoundRoutine(messaging::MessageBus &bus, Scheduler &scheduler)
+    SoundRoutine::SoundRoutine(messaging::MessageBus &bus, Scheduler &scheduler, DefaultCache &resource_cache)
         : RoutineBase{bus, {}},
           _impl(std::make_unique<SoundRoutine::implementation>()),
-          _scheduler(scheduler)
+          _scheduler(scheduler),
+          _resource_cache(resource_cache)
     {
     }
 
