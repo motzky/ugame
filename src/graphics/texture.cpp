@@ -102,6 +102,10 @@ namespace game
 
         ::glTextureStorage2D(_handle, 1, get_storage_format(data.usage, num_channels), data.width, data.height);
         ::glTextureSubImage2D(_handle, 0, 0, 0, data.width, data.height, get_sub_image_format(num_channels), GL_UNSIGNED_BYTE, data.data.data());
+        if (data.usage == TextureUsage::SRGB)
+        {
+            ::glGenerateTextureMipmap(_handle);
+        }
     }
 
     Texture::Texture(const TlvReader &reader, std::string_view name, const TextureSampler *sampler)

@@ -67,6 +67,7 @@
     DO(::PFNGLBINDFRAMEBUFFERPROC, glBindFramebuffer)                   \
     DO(::PFNGLNAMEDFRAMEBUFFERTEXTUREPROC, glNamedFramebufferTexture)   \
     DO(::PFNGLBLITNAMEDFRAMEBUFFERPROC, glBlitNamedFramebuffer)         \
+    DO(::PFNGLGENERATETEXTUREMIPMAPPROC, glGenerateTextureMipmap)       \
     DO(::PFNGLDRAWARRAYSEXTPROC, glDrawArraysExt)
 
 #define DO_INLINE(TYPE, NAME) inline TYPE NAME;
