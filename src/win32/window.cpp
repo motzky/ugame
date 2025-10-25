@@ -257,6 +257,8 @@ namespace game
     {
         log::info("running on Windows...");
 
+        ensure(::CoInitializeEx(nullptr, COINIT_MULTITHREADED) == S_OK, "failed to initialize COM");
+
         _wc = {
             .style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC,
             .lpfnWndProc = ::window_proc,
