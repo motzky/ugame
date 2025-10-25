@@ -71,7 +71,8 @@ namespace game::routines
             const auto xaudio_buffer = ::XAUDIO2_BUFFER{
                 .Flags = XAUDIO2_END_OF_STREAM,
                 .AudioBytes = static_cast<::UINT32>(_impl->sound_data.size_bytes()),
-                .pAudioData = reinterpret_cast<const ::BYTE *>(_impl->sound_data.data())};
+                .pAudioData = reinterpret_cast<const ::BYTE *>(_impl->sound_data.data()),
+                .LoopCount = XAUDIO2_LOOP_INFINITE};
 
             ensure(_impl->xaudio->CreateSourceVoice(std::out_ptr(_impl->source_voice), &wfx.Format) == S_OK, "failed to create source voice");
 
