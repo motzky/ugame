@@ -8,6 +8,7 @@ target_sources(gamelib PUBLIC
     renderer.cpp
     shader.cpp
     shape_wireframe_renderer.cpp
+    text_factory.cpp
     texture.cpp
     texture_sampler.cpp
 )

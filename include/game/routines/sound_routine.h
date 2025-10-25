@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #include "game/routines/routine_base.h"
 #include "messaging/message_bus.h"
 #include "scheduler/scheduler.h"
@@ -11,7 +13,7 @@ namespace game::routines
     {
     public:
         SoundRoutine(messaging::MessageBus &bus, Scheduler &scheduler);
-        ~SoundRoutine() override = default;
+        ~SoundRoutine() override;
         SoundRoutine(const SoundRoutine &) = delete;
         auto operator=(const SoundRoutine &) -> SoundRoutine & = delete;
         SoundRoutine(SoundRoutine &&) = default;
@@ -19,6 +21,8 @@ namespace game::routines
         auto create_task() -> Task;
 
     private:
+        struct implementation;
+        std::unique_ptr<implementation> _impl;
         Scheduler &_scheduler;
     };
 }

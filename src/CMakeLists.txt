@@ -54,7 +54,7 @@ configure_file(${PROJECT_SOURCE_DIR}/include/config.h.in ${PROJECT_SOURCE_DIR}/i
 if(WIN32)
     target_sources(
         gamelib
-        PRIVATE win32/window.cpp win32/debug_ui.cpp win32/file.cpp
+        PRIVATE win32/window.cpp win32/debug_ui.cpp win32/file.cpp win32/sound_routine.cpp
     )
     target_sources(
         imguilib
@@ -63,7 +63,7 @@ if(WIN32)
 elseif(UNIX)
     target_sources(
         gamelib
-        PRIVATE glfw/window.cpp glfw/debug_ui.cpp posix/file.cpp graphics/text_factory.cpp
+        PRIVATE glfw/window.cpp glfw/debug_ui.cpp posix/file.cpp posix/sound_routine.cpp
     )
     target_sources(
         imguilib
