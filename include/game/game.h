@@ -22,6 +22,7 @@ namespace game
     private:
         bool _running;
         messaging::MessageBus _message_bus;
+        std::uint8_t _samples;
         Window _window;
     };
 }

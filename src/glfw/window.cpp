@@ -207,7 +207,7 @@ namespace
 
 namespace game
 {
-    Window::Window(std::uint32_t width, std::uint32_t height, std::uint32_t x, std::uint32_t y)
+    Window::Window(std::uint32_t width, std::uint32_t height, std::uint32_t x, std::uint32_t y, std::uint8_t samples)
         : _windowHandle{}, _width(width), _height(height)
     {
         log::info("Running on *nix, crating window with GLFW");
@@ -222,7 +222,10 @@ namespace game
             ::glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
         }
 
-        ::glfwWindowHint(GLFW_SAMPLES, 4);
+        if (samples > 1)
+        {
+            ::glfwWindowHint(GLFW_SAMPLES, samples);
+        }
 
         _windowHandle = {::glfwCreateWindow(width, height, "Game Window", nullptr, nullptr),
                          ::glfwDestroyWindow};
@@ -266,7 +269,10 @@ namespace game
         // ::glEnable(GL_CULL_FACE);
         ::glEnable(GL_DEPTH_TEST);
 
-        ::glEnable(GL_MULTISAMPLE);
+        if (samples > 1)
+        {
+            ::glEnable(GL_MULTISAMPLE);
+        }
 
         auto vendor_str = ::glGetString(GL_VENDOR);
         game::log::info("Current render device vendor: {}", reinterpret_cast<const char *>(vendor_str));

@@ -47,6 +47,16 @@ namespace
         return std::stol(args[index + 1].data());
     }
 
+    auto get_uint8_arg(const std::vector<std::string_view> &args, std::string_view arg_name, std::uint8_t defval = 0u) -> std::uint8_t
+    {
+        auto u32 = get_uint_arg(args, arg_name, defval);
+        if (u32 > 255)
+        {
+            return defval;
+        }
+        return static_cast<std::uint8_t>(u32);
+    }
+
     auto load_sub_meshes_into_cache(game::DefaultCache &resource_cache, std::string_view obj_name, const game::TlvReader &reader) -> void
     {
 
@@ -72,11 +82,13 @@ namespace game
     Game::Game(const std::vector<std::string_view> &args)
         : _running(true),
           _message_bus{},
+          _samples{get_uint8_arg(args, "-m"sv, 1u)},
           _window{
               get_uint_arg(args, "-width"sv, 1920u),
               get_uint_arg(args, "-height"sv, 1080u),
               get_uint_arg(args, "-x"sv),
-              get_uint_arg(args, "-y"sv)}
+              get_uint_arg(args, "-y"sv),
+              _samples}
     {
     }
 

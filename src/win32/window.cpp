@@ -188,7 +188,7 @@ namespace
         game::ensure(::wglMakeCurrent(dc, 0) == TRUE, "failed to unbind context");
     }
 
-    auto init_opengl(HDC dc) -> void
+    auto init_opengl(HDC dc, std::uint8_t samples) -> void
     {
         int pixel_format_attribs[]{
             WGL_DRAW_TO_WINDOW_ARB,
@@ -210,7 +210,7 @@ namespace
             WGL_SAMPLE_BUFFERS_ARB,
             GL_TRUE,
             WGL_SAMPLES_ARB,
-            8,
+            samples,
             0};
 
         auto pixel_format = 0;
@@ -254,7 +254,7 @@ namespace
 
 namespace game
 {
-    Window::Window(std::uint32_t width, std::uint32_t height, std::uint32_t x, std::uint32_t y)
+    Window::Window(std::uint32_t width, std::uint32_t height, std::uint32_t x, std::uint32_t y, std::uint8_t samples)
         : _windowHandle({}), _width(width), _height(height),
           //
           _wc({}), _dc({})
@@ -308,7 +308,7 @@ namespace game
         ensure(::RegisterRawInputDevices(&rid, 1, sizeof(rid)) == TRUE, "failed to register input device");
 
         resolve_wgl_functions(_wc.hInstance);
-        init_opengl(_dc);
+        init_opengl(_dc, samples);
         resolve_global_gl_functions();
         setup_debug();
 
