@@ -2,11 +2,15 @@
 
 #include <cstdint>
 #include <memory>
+#include <mutex> // added
 
 #include "utils/ensure.h"
 
 namespace game
 {
+    std::unique_ptr<Settings> Settings::_instance = nullptr;
+    static std::mutex _instance_mutex;
+
     Settings::Settings()
         : _width{1280},
           _height(720),
@@ -19,16 +23,19 @@ namespace game
 
     auto Settings::instance() -> Settings &
     {
+        std::lock_guard<std::mutex> lock(_instance_mutex); // thread-safe creation
         if (!_instance)
         {
-            _instance = std::make_unique<Settings>();
+            // can't use std::make_unique here because Settings() is private
+            _instance.reset(new Settings());
         }
         return *_instance.get();
     }
 
     auto Settings::destroy() -> void
     {
-        _instance.release();
+        std::lock_guard<std::mutex> lock(_instance_mutex);
+        _instance.reset();
     }
 
     auto Settings::width() const -> std::uint32_t
