@@ -15,7 +15,7 @@ namespace game
     class Renderer
     {
     public:
-        Renderer(const TlvReader &reader, MeshLoader &mesh_loader, std::uint32_t width, std::uint32_t height);
+        Renderer(const TlvReader &reader, MeshLoader &mesh_loader, std::uint32_t width, std::uint32_t height, std::uint8_t samples = 1);
         auto render(const Camera &camera, const Scene &scene, float gamma) const -> void;
 
     private:
@@ -24,8 +24,9 @@ namespace game
         Mesh _skybox_cube;
         Material _skybox_material;
         Material _debug_line_material;
-        FrameBuffer _fb1;
-        FrameBuffer _fb2;
+        FrameBuffer _main_framebuffer;
+        FrameBuffer _post_processing_framebuffer_1;
+        FrameBuffer _post_processing_framebuffer_2;
         Mesh _sprite;
         Material _hdr_material;
         Material _grey_scale_material;

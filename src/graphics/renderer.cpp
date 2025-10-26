@@ -61,14 +61,15 @@ namespace
 
 namespace game
 {
-    Renderer::Renderer(const TlvReader &reader, MeshLoader &mesh_loader, std::uint32_t width, std::uint32_t height)
+    Renderer::Renderer(const TlvReader &reader, MeshLoader &mesh_loader, std::uint32_t width, std::uint32_t height, std::uint8_t samples)
         : _camera_buffer(sizeof(Matrix4) * 2u + sizeof(Vector3)),
           _light_buffer(10240u),
           _skybox_cube(mesh_loader.cube()),
           _skybox_material(create_material(reader, "cube.vert", "cube.frag")),
           _debug_line_material(create_material(reader, "line.vert", "line.frag")),
-          _fb1{width, height},
-          _fb2{width, height},
+          _main_framebuffer{width, height, samples},
+          _post_processing_framebuffer_1{width, height, 1},
+          _post_processing_framebuffer_2{width, height, 1},
           _sprite{mesh_loader.sprite()},
           _hdr_material{create_material(reader, "hdr.vert", "hdr.frag")},
           _grey_scale_material{create_material(reader, "grey_scale.vert", "grey_scale.frag")},
@@ -82,7 +83,7 @@ namespace game
 
     auto Renderer::render(const Camera &camera, const Scene &scene, float gamma) const -> void
     {
-        _fb1.bind();
+        _main_framebuffer.bind();
 
         ::glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -156,10 +157,24 @@ namespace game
             dbl->unbind();
         }
 
-        _fb1.unbind();
+        _main_framebuffer.unbind();
 
-        auto *read_fb = &_fb1;
-        auto *write_fb = &_fb2;
+        ::glBlitNamedFramebuffer(
+            _main_framebuffer.native_handle(),
+            _post_processing_framebuffer_1.native_handle(),
+            0u,
+            0u,
+            _post_processing_framebuffer_1.width(),
+            _post_processing_framebuffer_1.height(),
+            0u,
+            0u,
+            _post_processing_framebuffer_1.width(),
+            _post_processing_framebuffer_1.height(),
+            GL_COLOR_BUFFER_BIT,
+            GL_NEAREST);
+
+        auto *read_fb = &_post_processing_framebuffer_1;
+        auto *write_fb = &_post_processing_framebuffer_2;
 
         if (scene.effects.hdr)
         {
