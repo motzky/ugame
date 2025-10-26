@@ -100,7 +100,14 @@ namespace game
 
         auto num_channels = num_channels_from_format(data.format);
 
-        ::glTextureStorage2D(_handle, 1, get_storage_format(data.usage, num_channels), data.width, data.height);
+        ::GLsizei levels = data.usage == TextureUsage::SRGB ? 1 + static_cast<::GLsizei>(std::floor(std::log(std::max(data.width, data.height)))) : 1;
+
+        ::glTextureStorage2D(
+            _handle,
+            levels,
+            get_storage_format(data.usage, num_channels),
+            data.width,
+            data.height);
         ::glTextureSubImage2D(_handle, 0, 0, 0, data.width, data.height, get_sub_image_format(num_channels), GL_UNSIGNED_BYTE, data.data.data());
         if (data.usage == TextureUsage::SRGB)
         {
