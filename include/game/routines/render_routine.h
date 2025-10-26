@@ -15,7 +15,7 @@ namespace game::routines
     class RenderRoutine : public RoutineBase
     {
     public:
-        RenderRoutine(const Window &window, messaging::MessageBus &bus, Scheduler &scheduler, const TlvReader &reader, MeshLoader &mesh_loader);
+        RenderRoutine(const Window &window, messaging::MessageBus &bus, Scheduler &scheduler, const TlvReader &reader, MeshLoader &mesh_loader, std::uint8_t samples = 1);
         ~RenderRoutine() override = default;
         RenderRoutine(const RenderRoutine &) = delete;
         auto operator=(const RenderRoutine &) -> RenderRoutine & = delete;

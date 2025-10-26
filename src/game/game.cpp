@@ -194,7 +194,7 @@ namespace game
 
         auto input_routine = routines::InputRoutine{_window, _message_bus, scheduler};
         auto level_routine = routines::LevelRoutine{_window, _message_bus, scheduler, resource_cache, reader, resource_loader};
-        auto render_routine = routines::RenderRoutine{_window, _message_bus, scheduler, reader, mesh_loader};
+        auto render_routine = routines::RenderRoutine{_window, _message_bus, scheduler, reader, mesh_loader, _samples};
         auto sound_routine = routines::SoundRoutine{_message_bus, scheduler, resource_cache};
 
         // FIXME: has to be last, because it sends messages in constructor
@@ -209,5 +209,4 @@ namespace game
         game::log::info("Running scheduler...");
         scheduler.run();
     }
-
 }

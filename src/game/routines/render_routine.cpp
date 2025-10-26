@@ -23,7 +23,8 @@ namespace game::routines
         messaging::MessageBus &bus,
         Scheduler &scheduler,
         const TlvReader &reader,
-        MeshLoader &mesh_loader)
+        MeshLoader &mesh_loader,
+        std::uint8_t samples)
         : RoutineBase(bus, {messaging::MessageType::KEY_PRESS,
                             messaging::MessageType::MOUSE_MOVE,
                             messaging::MessageType::CHANGE_CAMERA,
