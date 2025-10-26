@@ -11,7 +11,7 @@ namespace game
     class FrameBuffer
     {
     public:
-        FrameBuffer(std::uint32_t width, std::uint32_t height);
+        FrameBuffer(std::uint32_t width, std::uint32_t height, std::uint8_t samples = 1);
 
         auto native_handle() const -> ::GLuint;
         auto bind() const -> void;
