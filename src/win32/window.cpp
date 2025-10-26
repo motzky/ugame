@@ -207,6 +207,10 @@ namespace
             24,
             WGL_STENCIL_BITS_ARB,
             8,
+            WGL_SAMPLE_BUFFERS_ARB,
+            GL_TRUE,
+            WGL_SAMPLES_ARB,
+            8,
             0};
 
         auto pixel_format = 0;
@@ -309,6 +313,7 @@ namespace game
         setup_debug();
 
         ::glEnable(GL_DEPTH_TEST);
+        ::glEnable(GL_MULTISAMPLE);
     }
 
     auto Window::pump_event() const -> std::optional<Event>

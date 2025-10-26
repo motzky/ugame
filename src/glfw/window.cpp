@@ -222,6 +222,8 @@ namespace game
             ::glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
         }
 
+        ::glfwWindowHint(GLFW_SAMPLES, 4);
+
         _windowHandle = {::glfwCreateWindow(width, height, "Game Window", nullptr, nullptr),
                          ::glfwDestroyWindow};
         game::ensure(_windowHandle, "failed to create window");
@@ -263,6 +265,8 @@ namespace game
         //      so enabling backface culling will cull the skybox !
         // ::glEnable(GL_CULL_FACE);
         ::glEnable(GL_DEPTH_TEST);
+
+        ::glEnable(GL_MULTISAMPLE);
 
         auto vendor_str = ::glGetString(GL_VENDOR);
         game::log::info("Current render device vendor: {}", reinterpret_cast<const char *>(vendor_str));
