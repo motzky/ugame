@@ -45,7 +45,7 @@ namespace game
     class Texture
     {
     public:
-        Texture(TextureUsage usage, std::uint32_t width, std::uint32_t height);
+        Texture(TextureUsage usage, std::uint32_t width, std::uint32_t height, std::uint8_t samples = 1);
         Texture(const TextureDescription &data, const TextureSampler *sampler);
         Texture(const TlvReader &reader, std::string_view name, const TextureSampler *sampler);
 

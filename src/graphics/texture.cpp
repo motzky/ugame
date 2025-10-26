@@ -83,6 +83,7 @@ namespace
             return 0u;
         }
     }
+
 }
 
 namespace game
@@ -134,23 +135,46 @@ namespace game
         std::ranges::swap(_handle, tex._handle);
     }
 
-    Texture::Texture(TextureUsage usage, std::uint32_t width, std::uint32_t height)
+    Texture::Texture(TextureUsage usage, std::uint32_t width, std::uint32_t height, std::uint8_t samples)
         : _handle{0u, [](auto texture)
                   { ::glDeleteTextures(1u, &texture); }},
           _sampler(nullptr),
           _width{width},
           _height{height}
     {
-        ::glCreateTextures(GL_TEXTURE_2D, 1u, &_handle);
+        expect(samples > 0, "cannot have 0 samples");
+
         switch (usage)
         {
             using enum TextureUsage;
         case FRAMEBUFFER:
-            ::glTextureStorage2D(_handle, 1, GL_RGB16F, width, height);
+        {
+            if (samples == 1)
+            {
+                ::glCreateTextures(GL_TEXTURE_2D, 1u, &_handle);
+                ::glTextureStorage2D(_handle, 1, GL_RGB16F, width, height);
+            }
+            else
+            {
+                ::glCreateTextures(GL_TEXTURE_2D_MULTISAMPLE, 1u, &_handle);
+                ::glTextureStorage2DMultisample(_handle, samples, GL_RGB16F, width, height, GL_FALSE);
+            }
             break;
+        }
         case DEPTH:
-            ::glTextureStorage2D(_handle, 1, GL_DEPTH_COMPONENT24, width, height);
+        {
+            if (samples == 1)
+            {
+                ::glCreateTextures(GL_TEXTURE_2D, 1u, &_handle);
+                ::glTextureStorage2D(_handle, 1, GL_DEPTH_COMPONENT24, width, height);
+            }
+            else
+            {
+                ::glCreateTextures(GL_TEXTURE_2D_MULTISAMPLE, 1u, &_handle);
+                ::glTextureStorage2DMultisample(_handle, samples, GL_DEPTH_COMPONENT24, width, height, GL_FALSE);
+            }
             break;
+        }
         default:
             ensure(false, "invalid usage");
             break;
