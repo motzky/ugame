@@ -99,7 +99,9 @@ namespace game
         auto mesh_loader = game::MeshLoader{};
         auto resource_cache = game::DefaultCache{};
 
-        const auto *sampler = resource_cache.insert<game::TextureSampler>("default");
+        const auto *mipmap = resource_cache.insert<game::TextureSampler>("mipmap", TextureSampler{FilterType::LINEAR_MIPMAP, FilterType::NEAREST, std::make_optional(16.f)});
+        resource_cache.insert<TextureSampler>("sky_box", TextureSampler{FilterType::NEAREST, FilterType::NEAREST});
+        resource_cache.insert<TextureSampler>("ui", TextureSampler{FilterType::NEAREST, FilterType::NEAREST});
 
         game::log::info("loading resources...");
         auto resource_loader = game::ResourceLoader{resource_root};
@@ -142,17 +144,17 @@ namespace game
 
         game::log::info("Creating GL textures...");
 
-        resource_cache.insert<Texture>("barrel_albedo", reader, "barrel_base_albedo", sampler);
-        resource_cache.insert<Texture>("barrel_specular", reader, "barrel_metallic", sampler);
-        resource_cache.insert<Texture>("barrel_normal", reader, "barrel_normal_ogl", sampler);
+        resource_cache.insert<Texture>("barrel_albedo", reader, "barrel_base_albedo", mipmap);
+        resource_cache.insert<Texture>("barrel_specular", reader, "barrel_metallic", mipmap);
+        resource_cache.insert<Texture>("barrel_normal", reader, "barrel_normal_ogl", mipmap);
 
-        resource_cache.insert<Texture>("Concrete042A_2K-JPG_Color", reader, "Concrete042A_2K-JPG_Color", sampler);
-        resource_cache.insert<Texture>("Concrete042A_2K-JPG_NormalGL", reader, "Concrete042A_2K-JPG_NormalGL", sampler);
-        resource_cache.insert<Texture>("Metal025_2K-JPG_NormalGL", reader, "Metal025_2K-JPG_NormalGL", sampler);
-        resource_cache.insert<Texture>("Floor lines map", reader, "Floor lines map", sampler);
-        resource_cache.insert<Texture>("Blue line map", reader, "Blue line map", sampler);
-        resource_cache.insert<Texture>("Floor diffuse", reader, "Floor diffuse", sampler);
-        resource_cache.insert<Texture>("Main walls diffuse", reader, "Main walls diffuse", sampler);
+        resource_cache.insert<Texture>("Concrete042A_2K-JPG_Color", reader, "Concrete042A_2K-JPG_Color", mipmap);
+        resource_cache.insert<Texture>("Concrete042A_2K-JPG_NormalGL", reader, "Concrete042A_2K-JPG_NormalGL", mipmap);
+        resource_cache.insert<Texture>("Metal025_2K-JPG_NormalGL", reader, "Metal025_2K-JPG_NormalGL", mipmap);
+        resource_cache.insert<Texture>("Floor lines map", reader, "Floor lines map", mipmap);
+        resource_cache.insert<Texture>("Blue line map", reader, "Blue line map", mipmap);
+        resource_cache.insert<Texture>("Floor diffuse", reader, "Floor diffuse", mipmap);
+        resource_cache.insert<Texture>("Main walls diffuse", reader, "Main walls diffuse", mipmap);
 
         resource_cache.insert<Texture>("Iron_diffuse",
                                        TextureDescription{
@@ -162,7 +164,7 @@ namespace game
                                            .width = 1u,
                                            .height = 1u,
                                            .data = {static_cast<std::byte>(0), static_cast<std::byte>(33), static_cast<std::byte>(105)}},
-                                       sampler);
+                                       mipmap);
 
         resource_cache.insert<Texture>(
             "white",
@@ -173,10 +175,7 @@ namespace game
                 .width = 1u,
                 .height = 1u,
                 .data = {static_cast<std::byte>(0xff), static_cast<std::byte>(0xff), static_cast<std::byte>(0xff)}},
-            sampler);
-
-        resource_cache.insert<TextureSampler>("sky_box", TextureSampler{});
-        resource_cache.insert<TextureSampler>("ui", TextureSampler{});
+            mipmap);
 
         const auto main_theme_data = std::ranges::find_if(reader, [](const auto &entry)
                                                           { return entry.is_sound("main_theme.wav"); });
