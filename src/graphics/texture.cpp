@@ -100,7 +100,11 @@ namespace game
 
         auto num_channels = num_channels_from_format(data.format);
 
-        ::GLsizei levels = data.usage == TextureUsage::SRGB ? 1 + static_cast<::GLsizei>(std::floor(std::log(std::max(data.width, data.height)))) : 1;
+        ::GLsizei levels = 1;
+        if (data.usage == TextureUsage::SRGB)
+        {
+            levels += static_cast<::GLsizei>(std::floor(std::log(std::max(data.width, data.height))));
+        }
 
         ::glTextureStorage2D(
             _handle,
