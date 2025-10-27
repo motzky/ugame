@@ -239,16 +239,8 @@ namespace game
 
     auto Camera::clamp_pitch() -> void
     {
-        if (_pitch > 1.55334303f)
-        {
-            _pitch = 1.55334303f;
-            return;
-        }
-        if (_pitch < -1.55334303f)
-        {
-            _pitch = -1.55334303f;
-            return;
-        }
+        constexpr auto pitch_eps = 0.0001f;
+        _pitch = std::clamp(_pitch, (-std::numbers::pi_v<float> / 2.f) + pitch_eps, (std::numbers::pi_v<float> / 2.f) - pitch_eps);
     }
 
 }
