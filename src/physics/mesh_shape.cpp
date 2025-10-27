@@ -36,7 +36,10 @@ namespace
         auto settings = ::JPH::MeshShapeSettings{jolt_vertex_list, jolt_index_list};
 
         auto result = settings.Create();
-        game::ensure(result.IsValid(), "failed to create mesh shape: {}", result.GetError());
+        if (!result.IsValid())
+        {
+            game::ensure(false, "failed to create mesh shape: {}", result.GetError());
+        }
 
         return result.Get();
     }
