@@ -123,7 +123,7 @@ namespace game::routines
           _ps{ps},
           _window{window},
           _scheduler{scheduler},
-          _player{bus, create_camera(window)},
+          _player{bus, create_camera(window), _ps.character_controller()},
           _level_num{},
           _level_names{get_level_loaders(reader)},
           _resource_cache{resource_cache},
@@ -133,7 +133,7 @@ namespace game::routines
           _show_physics_debug{false},
           _show_debug{false}
     {
-        _window.set_title(_level_names[_level_num].name());
+        // _window.set_title(_level_names[_level_num].name());
     }
 
     auto LevelRoutine::create_task() -> Task

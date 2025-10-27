@@ -22,20 +22,25 @@ namespace game
 
         ::JPH::Ref<::JPH::CharacterVirtualSettings> settings = new ::JPH::CharacterVirtualSettings();
         settings->mShape = ::JPH::RotatedTranslatedShapeSettings{
-            ::JPH::Vec3(0.f, .5f * height_standing + radius_standing, 0),
+            ::JPH::RVec3::sZero(),
             ::JPH::Quat::sIdentity(),
             new ::JPH::CapsuleShape{.5f * height_standing, radius_standing}}
                                .Create()
                                .Get();
         settings->mInnerBodyLayer = to_jolt_layer(RigidBodyType::DYNAMIC);
 
-        _character = new ::JPH::CharacterVirtual{settings, ::JPH::RVec3::sZero(), ::JPH::Quat::sIdentity(), 0, physics_system};
+        _character = new ::JPH::CharacterVirtual{settings, ::JPH::Vec3(0.f, .5f * height_standing + radius_standing, 0), ::JPH::Quat::sIdentity(), 0, physics_system};
         _character->SetListener(this);
     }
 
     auto CharacterController::position() const -> Vector3
     {
         return to_native(_character->GetPosition());
+    }
+
+    auto CharacterController::set_position(Vector3 position) -> void
+    {
+        _character->SetPosition(to_jolt(position));
     }
 
     auto CharacterController::debug_draw(::JPH::DebugRenderer *debug_renderer, PassKey<PhysicsSystem>) const -> void

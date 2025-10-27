@@ -19,6 +19,7 @@ namespace game
         CharacterController(::JPH::PhysicsSystem *physics_system, PassKey<PhysicsSystem>);
 
         auto position() const -> Vector3;
+        auto set_position(Vector3 position) -> void;
 
         auto debug_draw(::JPH::DebugRenderer *debug_renderer, PassKey<PhysicsSystem>) const -> void;
 

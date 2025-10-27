@@ -11,11 +11,12 @@
 
 namespace game
 {
-    Player::Player(messaging::MessageBus &bus, Camera camera)
+    Player::Player(messaging::MessageBus &bus, Camera camera, CharacterController &controller)
         : _camera(std::move(camera)),
           _key_state{},
           _flying{false},
           _start_position{camera.position()},
+          _controller{controller},
           _auto_subscribe{bus,
                           {messaging::MessageType::KEY_PRESS,
                            messaging::MessageType::MOUSE_MOVE,
@@ -25,6 +26,7 @@ namespace game
           _frozen{false},
           _dead{false}
     {
+        _controller.set_position(_start_position);
     }
 
     auto Player::handle_key_press(const KeyEvent &event) -> void
@@ -33,9 +35,9 @@ namespace game
         {
             return;
         }
-        _key_state[event.key()] = event.state() == game::KeyState::DOWN;
+        _key_state[event.key()] = event.state() == KeyState::DOWN;
 
-        if (event.key() == game::Key::F1 && event.state() == game::KeyState::UP)
+        if (event.key() == Key::F1 && event.state() == KeyState::UP)
         {
             _flying = !_flying;
         }
@@ -83,29 +85,29 @@ namespace game
 
     auto Player::update() -> void
     {
-        auto walk_direction = game::Vector3{0.f};
+        auto walk_direction = Vector3{0.f};
 
-        if (_key_state[game::Key::D] || _key_state[game::Key::RIGHT_ARROW])
+        if (_key_state[Key::D] || _key_state[Key::RIGHT_ARROW])
         {
             walk_direction += _camera.right();
         }
-        if (_key_state[game::Key::A] || _key_state[game::Key::LEFT_ARROW])
+        if (_key_state[Key::A] || _key_state[Key::LEFT_ARROW])
         {
             walk_direction -= _camera.right();
         }
-        if (_key_state[game::Key::W] || _key_state[game::Key::UP_ARROW])
+        if (_key_state[Key::W] || _key_state[Key::UP_ARROW])
         {
             walk_direction += _camera.direction();
         }
-        if (_key_state[game::Key::S] || _key_state[game::Key::DOWN_ARROW])
+        if (_key_state[Key::S] || _key_state[Key::DOWN_ARROW])
         {
             walk_direction -= _camera.direction();
         }
-        if (_key_state[game::Key::SPACE])
+        if (_key_state[Key::SPACE])
         {
             walk_direction += _camera.up();
         }
-        if (_key_state[game::Key::LCTRL])
+        if (_key_state[Key::LCTRL])
         {
             walk_direction -= _camera.up();
         }
@@ -115,14 +117,19 @@ namespace game
             walk_direction.y = 0.f;
         }
 
-        const auto speed = _key_state[game::Key::LSHIFT] ? 30.f : 10.f;
-        _camera.translate(game::Vector3::normalize(walk_direction) * (speed / 60.f));
+        const auto speed = _key_state[Key::LSHIFT] ? 30.f : 10.f;
+        const auto velocity = Vector3::normalize(walk_direction) * (speed / 60.f);
+        _controller.set_linear_velocity(velocity * 180.f);
+        // _camera.set_position(_controller.position() + Vector3{0.f, 2.f, 0.f});
+        _camera.set_position(_controller.position());
         _camera.update();
     }
 
     auto Player::restart() -> void
     {
         _camera.set_position(_start_position);
+        _controller.set_position(_start_position);
+        // _controller.set_position(_start_position - Vector3{0.f, 2.f, 0.f});
         _camera.set_pitch(0.f);
         _camera.set_yaw(-std::numbers::pi_v<float> / 2.f);
 
