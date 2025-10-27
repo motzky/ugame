@@ -92,6 +92,8 @@ namespace game::routines
                 co_await Wait{_scheduler, 1u};
             }
         }
+
+        ensure(_impl->source_voice->Stop(0) == S_OK, "failed to stop sound");
     }
 
 }
