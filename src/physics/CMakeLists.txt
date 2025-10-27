@@ -4,6 +4,7 @@ target_sources(gamelib PUBLIC
     cylinder_shape.cpp
     debug_renderer.cpp
     jolt_utils.cpp
+    mesh_shape.cpp
     physics_system.cpp
     rigid_body.cpp
     shape.cpp
