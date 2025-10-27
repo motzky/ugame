@@ -167,7 +167,14 @@ namespace game::routines
             {
                 entity->set_visibility(intersects_frustum(entity->bounding_box(), _player.camera().frustum_planes()));
 
-                entity->bounding_box().draw(level->physics().debug_renderer());
+                if (_show_physics_debug)
+                {
+                    entity->bounding_box().draw(level->physics().debug_renderer());
+                    if (const auto static_collider = entity->static_collider(); static_collider)
+                    {
+                        static_collider->draw(level->physics().debug_renderer());
+                    }
+                }
             }
 
             if (_show_physics_debug)

@@ -1,6 +1,7 @@
 #include "game/levels/lua_level.h"
 
 #include <algorithm>
+#include <optional>
 #include <ranges>
 #include <span>
 #include <string_view>
@@ -17,6 +18,7 @@
 #include "graphics/ui/label.h"
 #include "messaging/message_bus.h"
 #include "physics/box_shape.h"
+#include "physics/mesh_shape.h"
 #include "physics/physics_sytem.h"
 #include "physics/transformed_shape.h"
 #include "resources/resource_cache.h"
@@ -163,6 +165,18 @@ namespace
 
         return "level_material";
     }
+
+    auto is_collision_relevant_mesh(std::string_view mesh_name) -> bool
+    {
+        if ( // mesh_name == "Main_floor" ||
+            mesh_name == "Main_walls" ||
+            mesh_name == "Concrete_wall_with_lines" ||
+            mesh_name == "Collums")
+        {
+            return true;
+        }
+        return false;
+    }
 }
 
 namespace game::levels
@@ -307,21 +321,34 @@ namespace game::levels
             level_entity_names |
             std::views::transform(
                 [&](const auto e)
-                { return Entity{resource_cache.get<Mesh>(e),
-                                resource_cache.get<Material>(material_name_from_mesh(e)),
-                                {-180.f, -3.8f, 40.f},
-                                {10.f},
-                                std::vector<const Texture *>{
-                                    resource_cache.get<Texture>(albedo_texture_name(e)),
-                                    resource_cache.get<Texture>(normal_map_texture_name(e))},
-                                {_ps.create_shape<BoxShape>(Vector3{10.f}), {{0.f, -2.f, 0}, {1.f}, {}}},
-                                0u,
-                                0u}; }) |
+                { 
+                    auto *mesh = resource_cache.get<Mesh>(e);
+                    auto collider = std::optional<TransformedShape>{};
+                    if(is_collision_relevant_mesh(e))
+                    {
+                        collider = std::make_optional(TransformedShape{_ps.create_shape<MeshShape>(mesh->mesh_data()), {{-180.f, -3.8f, 40.f}, {10.f}, {}}});
+                    }
+                    return Entity{mesh,
+                                    resource_cache.get<Material>(material_name_from_mesh(e)),
+                                    {-180.f, -3.8f, 40.f},
+                                    {10.f},
+                                    std::vector<const Texture *>{
+                                        resource_cache.get<Texture>(albedo_texture_name(e)),
+                                        resource_cache.get<Texture>(normal_map_texture_name(e))},
+                                    {_ps.create_shape<BoxShape>(Vector3{10.f}), {{-180.f, -3.8f, 40.f}, {10.f}, {}}},
+                                    2u,
+                                    2u,
+                                collider}; }) |
             std::ranges::to<std::vector>();
 
         for (auto &ent : _level_entities)
         {
             _scene.entities.push_back(&ent);
+
+            if (const auto &static_collider = ent.static_collider(); static_collider)
+            {
+                _shapes.push_back(static_collider->shape());
+            }
         }
 
         restart();
