@@ -210,7 +210,7 @@ namespace game
     Window::Window(std::uint32_t width, std::uint32_t height, std::uint32_t x, std::uint32_t y, std::uint8_t samples)
         : _windowHandle{}, _width(width), _height(height)
     {
-        log::info("Running on *nix, crating window with GLFW");
+        log::info("Running on *nix, creating window with GLFW");
 
         game::ensure(glfwInit(), "failed to initialize GLFW");
 
