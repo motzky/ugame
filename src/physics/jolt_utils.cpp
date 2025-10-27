@@ -42,10 +42,13 @@ namespace game
         return {v.x, v.y, v.z};
     }
 
-    // auto to_jolt(const Color &c) -> ::JPH::Color
-    // {
-    //     return ::JPH::Color();
-    // }
+    auto to_jolt(const Color &c) -> ::JPH::Color
+    {
+        return ::JPH::Color{
+            static_cast<std::uint8_t>(c.r * 255.0),
+            static_cast<std::uint8_t>(c.g * 255.0),
+            static_cast<std::uint8_t>(c.b * 255.0)};
+    }
 
     auto to_jolt(const Quaternion &q) -> ::JPH::Quat
     {

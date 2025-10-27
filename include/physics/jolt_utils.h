@@ -25,7 +25,7 @@ namespace game
     auto to_native(::JPH::ColorArg c) -> Color;
 
     auto to_jolt(const Vector3 &v) -> ::JPH::RVec3;
-    // auto to_jolt(const Color &c) -> ::JPH::Color;
+    auto to_jolt(const Color &c) -> ::JPH::Color;
     auto to_jolt(const Quaternion &q) -> ::JPH::Quat;
     auto to_jolt(RigidBodyType type) -> ::JPH::EMotionType;
     auto to_jolt(PhysicsLayer layer) -> ::JPH::ObjectLayer;
