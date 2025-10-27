@@ -169,10 +169,10 @@ namespace game::routines
 
                 if (_show_physics_debug)
                 {
-                    entity->bounding_box().draw(level->physics().debug_renderer());
+                    entity->bounding_box().draw(level->physics().debug_renderer(), Color::white());
                     if (const auto static_collider = entity->static_collider(); static_collider)
                     {
-                        static_collider->draw(level->physics().debug_renderer());
+                        static_collider->draw(level->physics().debug_renderer(), Color::red());
                     }
                 }
             }

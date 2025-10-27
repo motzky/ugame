@@ -6,6 +6,7 @@
 #include <Jolt/Physics/Collision/CollisionDispatch.h>
 #include <Jolt/Physics/Collision/TransformedShape.h>
 
+#include "graphics/color.h"
 #include "log.h"
 #include "math/transform.h"
 #include "physics/jolt_utils.h"
@@ -61,7 +62,7 @@ namespace game
         return hit;
     }
 
-    auto TransformedShape::draw(DebugRenderer &debug_renderer) const -> void
+    auto TransformedShape::draw(DebugRenderer &debug_renderer, const Color &color) const -> void
     {
         if (!_shape)
         {
@@ -71,7 +72,7 @@ namespace game
             std::addressof(debug_renderer),
             to_jolt(_transform),
             ::JPH::RVec3::sOne(),
-            ::JPH::Color{255, 255, 255},
+            to_jolt(color),
             false, true);
     }
 

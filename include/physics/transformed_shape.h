@@ -13,7 +13,7 @@ namespace game
         TransformedShape(const Shape *shape, const Transform &transform);
         auto intersects(const TransformedShape &shape) const -> bool;
 
-        auto draw(DebugRenderer &debug_renderer) const -> void;
+        auto draw(DebugRenderer &debug_renderer, const Color &color) const -> void;
 
         auto set_position(const Vector3 &position) -> void;
         auto translate(const Vector3 &translation) -> void;

@@ -458,7 +458,7 @@ namespace game::levels
 
         for (const auto &e : transformed_shapes)
         {
-            e.draw(_ps.debug_renderer());
+            e.draw(_ps.debug_renderer(), Color::white());
         }
     }
 
