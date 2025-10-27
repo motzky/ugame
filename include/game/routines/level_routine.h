@@ -11,6 +11,7 @@
 #include "messaging/auto_subscribe.h"
 #include "messaging/message_bus.h"
 #include "messaging/subscriber.h"
+#include "physics/physics_sytem.h"
 #include "resources/resource_cache.h"
 #include "scheduler/scheduler.h"
 #include "scheduler/task.h"
@@ -23,7 +24,7 @@ namespace game::routines
     class LevelRoutine : public RoutineBase
     {
     public:
-        LevelRoutine(const Window &window, messaging::MessageBus &bus, Scheduler &scheduler, DefaultCache &resource_cache, const TlvReader &reader, const ResourceLoader &resource_loader);
+        LevelRoutine(PhysicsSystem &ps, const Window &window, messaging::MessageBus &bus, Scheduler &scheduler, DefaultCache &resource_cache, const TlvReader &reader, const ResourceLoader &resource_loader);
         ~LevelRoutine() override = default;
         LevelRoutine(const LevelRoutine &) = delete;
         auto operator=(const LevelRoutine &) -> LevelRoutine & = delete;
@@ -37,6 +38,7 @@ namespace game::routines
         virtual auto handle_level_complete(const std::string_view &name) -> void override;
 
     private:
+        PhysicsSystem &_ps;
         const Window &_window;
         Scheduler &_scheduler;
         Player _player;

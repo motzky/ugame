@@ -8,6 +8,7 @@
 #include "game/routines/input_routine.h"
 #include "game/routines/level_routine.h"
 #include "game/routines/main_menu_routine.h"
+#include "game/routines/physics_routine.h"
 #include "game/routines/render_routine.h"
 #include "game/routines/sound_routine.h"
 #include "graphics/material.h"
@@ -188,18 +189,22 @@ namespace game
             resource_cache.insert<SoundData>("main_theme", (*main_theme_data).sound_data_value());
         }
 
+        auto ps = PhysicsSystem{};
+
         game::log::info("Setting up scheduler...");
         auto scheduler = Scheduler{_message_bus};
 
         auto input_routine = routines::InputRoutine{_window, _message_bus, scheduler};
-        auto level_routine = routines::LevelRoutine{_window, _message_bus, scheduler, resource_cache, reader, resource_loader};
+        auto level_routine = routines::LevelRoutine{ps, _window, _message_bus, scheduler, resource_cache, reader, resource_loader};
         auto render_routine = routines::RenderRoutine{_window, _message_bus, scheduler, reader, mesh_loader, _samples};
         auto sound_routine = routines::SoundRoutine{_message_bus, scheduler, resource_cache};
+        auto physics_routine = routines::PhysicsRoutine{ps, _message_bus, scheduler};
 
         // FIXME: has to be last, because it sends messages in constructor
         auto main_menu_routine = routines::MainMenuRoutine{_window, _message_bus, scheduler, resource_cache, reader, resource_loader};
 
         scheduler.add(input_routine.create_task());
+        scheduler.add(physics_routine.create_task());
         scheduler.add(sound_routine.create_task());
         scheduler.add(main_menu_routine.create_task());
         scheduler.add(level_routine.create_task());

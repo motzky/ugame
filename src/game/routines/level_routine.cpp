@@ -13,6 +13,7 @@
 #include "messaging/message_bus.h"
 #include "messaging/subscriber.h"
 #include "physics/box_shape.h"
+#include "physics/physics_sytem.h"
 #include "primitives/entity.h"
 #include "resources/resource_cache.h"
 #include "scheduler/scheduler.h"
@@ -116,9 +117,10 @@ namespace
 
 namespace game::routines
 {
-    LevelRoutine::LevelRoutine(const Window &window, messaging::MessageBus &bus, Scheduler &scheduler, DefaultCache &resource_cache, const TlvReader &reader,
-                               const ResourceLoader &resource_loader)
+    LevelRoutine::LevelRoutine(PhysicsSystem &ps, const Window &window, messaging::MessageBus &bus, Scheduler &scheduler, DefaultCache &resource_cache,
+                               const TlvReader &reader, const ResourceLoader &resource_loader)
         : RoutineBase{bus, {messaging::MessageType::KEY_PRESS, messaging::MessageType::LEVEL_COMPLETE}},
+          _ps{ps},
           _window{window},
           _scheduler{scheduler},
           _player{bus, create_camera(window)},
@@ -127,7 +129,7 @@ namespace game::routines
           _resource_cache{resource_cache},
           _resource_loader{resource_loader},
           _reader{reader},
-          _level{std::make_unique<levels::LuaLevel>(_level_names[_level_num], _resource_cache, _resource_loader, _reader, _player, _bus)},
+          _level{std::make_unique<levels::LuaLevel>(_ps, _level_names[_level_num], _resource_cache, _resource_loader, _reader, _player, _bus)},
           _show_physics_debug{false},
           _show_debug{false}
     {
@@ -150,7 +152,7 @@ namespace game::routines
             {
                 _player.restart();
                 _level.reset();
-                _level = std::make_unique<levels::LuaLevel>(_level_names[_level_num], _resource_cache, _resource_loader, _reader, _player, _bus);
+                _level = std::make_unique<levels::LuaLevel>(_ps, _level_names[_level_num], _resource_cache, _resource_loader, _reader, _player, _bus);
                 _level->restart();
                 curernt_level = _level_num;
 
@@ -171,13 +173,13 @@ namespace game::routines
             if (_show_physics_debug)
             {
                 auto lines = std::vector<LineData>{};
-                for (const auto line : level->physics().debug_renderer().lines())
+                for (const auto line : _ps.debug_renderer().lines())
                 {
                     lines.push_back(line);
                 }
                 level->scene().debug_lines = game::DebugLines{lines};
 
-                level->physics().debug_renderer().clear();
+                _ps.debug_renderer().clear();
             }
             else
             {

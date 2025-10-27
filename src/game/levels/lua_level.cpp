@@ -168,13 +168,14 @@ namespace
 namespace game::levels
 {
     LuaLevel::LuaLevel(
+        PhysicsSystem &ps,
         const ScriptLoader &loader,
         DefaultCache &resource_cache,
         const ResourceLoader &resource_loader,
         const TlvReader &reader,
         const Player &player,
         messaging::MessageBus &bus)
-        : _ps{},
+        : _ps{ps},
           _script{loader.load()},
           _entities{},
           _level_entities{},
@@ -308,7 +309,7 @@ namespace game::levels
                 [&](const auto e)
                 { return Entity{resource_cache.get<Mesh>(e),
                                 resource_cache.get<Material>(material_name_from_mesh(e)),
-                                {-180.f, -3.8f, 0},
+                                {-180.f, -3.8f, 40.f},
                                 {10.f},
                                 std::vector<const Texture *>{
                                     resource_cache.get<Texture>(albedo_texture_name(e)),

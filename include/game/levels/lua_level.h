@@ -41,6 +41,7 @@ namespace game::levels
         };
 
         LuaLevel(
+            PhysicsSystem &ps,
             const ScriptLoader &loader,
             DefaultCache &resource_cache,
             const ResourceLoader &resource_loader,
@@ -60,7 +61,7 @@ namespace game::levels
         auto handle_restart_level() -> void override;
 
     private:
-        PhysicsSystem _ps;
+        PhysicsSystem &_ps;
 
         LuaScript _script;
 
