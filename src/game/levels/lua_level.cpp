@@ -168,8 +168,14 @@ namespace
 
     auto is_collision_relevant_mesh(std::string_view mesh_name) -> bool
     {
-        if ( // mesh_name == "Main_floor" ||
+        if (mesh_name == "Main_floor" ||
             mesh_name == "Main_walls" ||
+            mesh_name == "Wall_beams" ||
+            mesh_name == "Wall_beams.001" ||
+            mesh_name == "Wall_beams.002" ||
+            mesh_name == "Wall_beams.003" ||
+            mesh_name == "Wall_beams.004" ||
+            mesh_name == "Wall_beams.005" ||
             mesh_name == "Concrete_wall_with_lines" ||
             mesh_name == "Collums")
         {
@@ -323,11 +329,10 @@ namespace game::levels
                 [&](const auto e)
                 { 
                     auto *mesh = resource_cache.get<Mesh>(e);
-                    auto collider = std::optional<TransformedShape>{};
-                    if(is_collision_relevant_mesh(e))
-                    {
-                        collider = std::make_optional(TransformedShape{_ps.create_shape<MeshShape>(mesh->mesh_data()), {{-180.f, -3.8f, 40.f}, {10.f}, {}}});
-                    }
+                    auto collider = is_collision_relevant_mesh(e) ?
+                        std::make_optional(TransformedShape{_ps.create_shape<MeshShape>(mesh->mesh_data()), {{-180.f, -3.8f, 40.f}, {10.f}, {}}}) :
+                        std::nullopt;
+                    
                     return Entity{mesh,
                                     resource_cache.get<Material>(material_name_from_mesh(e)),
                                     {-180.f, -3.8f, 40.f},
