@@ -10,7 +10,6 @@
 
 #include "math/vector3.h"
 #include "physics/jolt_utils.h"
-#include "physics/physics_sytem.h"
 #include "physics/shape.h"
 #include "utils/ensure.h"
 #include "utils/pass_key.h"
