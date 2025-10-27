@@ -21,16 +21,18 @@ namespace game
                    std::span<const Texture *const> textures,
                    TransformedShape bounding_box,
                    std::uint32_t collision_layer,
-                   std::uint32_t collision_mask)
+                   std::uint32_t collision_mask,
+                   std::optional<TransformedShape> static_collider)
         : _mesh(mesh),
           _material(material),
           _transform(position, scale),
           _local_transform(),
           _textures(std::ranges::cbegin(textures), std::ranges::cend(textures)),
           _visible(true),
-          _bounding_box{bounding_box},
+          _bounding_box{std::move(bounding_box)},
           _collision_layer(collision_layer),
-          _collision_mask(collision_mask)
+          _collision_mask(collision_mask),
+          _static_collider{std::move(static_collider)}
     {
     }
 
@@ -42,16 +44,18 @@ namespace game
                    std::span<const Texture *const> textures,
                    TransformedShape bounding_box,
                    std::uint32_t collision_layer,
-                   std::uint32_t collision_mask)
+                   std::uint32_t collision_mask,
+                   std::optional<TransformedShape> static_collider)
         : _mesh(mesh),
           _material(material),
           _transform(position, scale),
           _local_transform(local_transform),
           _textures(std::ranges::cbegin(textures), std::ranges::cend(textures)),
           _visible(true),
-          _bounding_box{bounding_box},
+          _bounding_box{std::move(bounding_box)},
           _collision_layer(collision_layer),
-          _collision_mask(collision_mask)
+          _collision_mask(collision_mask),
+          _static_collider{std::move(static_collider)}
     {
         _transform.rotation = _local_transform.rotation;
     }
@@ -101,6 +105,10 @@ namespace game
     auto Entity::bounding_box() const -> const TransformedShape &
     {
         return _bounding_box;
+    }
+    auto Entity::static_collider() const -> std::optional<TransformedShape>
+    {
+        return _static_collider;
     }
 
     auto Entity::translate(const Vector3 &translation) -> void

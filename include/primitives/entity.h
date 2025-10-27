@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <optional>
 #include <tuple>
 #include <vector>
 
@@ -27,7 +28,8 @@ namespace game
                std::span<const Texture *const> textures,
                TransformedShape bounding_box,
                std::uint32_t collision_layer,
-               std::uint32_t collision_mask);
+               std::uint32_t collision_mask,
+               std::optional<TransformedShape> static_collider = std::nullopt);
         Entity(const Mesh *mesh,
                const Material *material,
                const Vector3 &position,
@@ -36,7 +38,8 @@ namespace game
                std::span<const Texture *const> textures,
                TransformedShape bounding_box,
                std::uint32_t collision_layer,
-               std::uint32_t collision_mask);
+               std::uint32_t collision_mask,
+               std::optional<TransformedShape> static_collider = std::nullopt);
 
         auto mesh() const -> const Mesh *;
         auto material() const -> const Material *;
@@ -47,6 +50,7 @@ namespace game
         auto is_visible() const -> bool;
         auto set_visibility(bool visible) -> void;
         auto bounding_box() const -> const TransformedShape &;
+        auto static_collider() const -> std::optional<TransformedShape>;
 
         auto set_position(const Vector3 &position) -> void;
         auto set_rotation(const Quaternion &rotation) -> void;
@@ -65,6 +69,7 @@ namespace game
         TransformedShape _bounding_box;
         std::uint32_t _collision_layer;
         std::uint32_t _collision_mask;
+        std::optional<TransformedShape> _static_collider;
     };
 
 }
