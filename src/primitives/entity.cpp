@@ -111,6 +111,11 @@ namespace game
         return _static_collider;
     }
 
+    auto Entity::has_static_collider() const -> bool
+    {
+        return _static_collider.has_value();
+    }
+
     auto Entity::translate(const Vector3 &translation) -> void
     {
         _transform.position += _local_transform.position + translation;

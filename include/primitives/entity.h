@@ -51,6 +51,7 @@ namespace game
         auto set_visibility(bool visible) -> void;
         auto bounding_box() const -> const TransformedShape &;
         auto static_collider() const -> std::optional<TransformedShape>;
+        auto has_static_collider() const -> bool;
 
         auto set_position(const Vector3 &position) -> void;
         auto set_rotation(const Quaternion &rotation) -> void;
