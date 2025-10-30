@@ -62,7 +62,7 @@ namespace
 
     auto create_camera(const game::Window &window) -> game::Camera
     {
-        return {{0.f, 2.f, 20.f},
+        return {{0.f, 0.f, 20.f},
                 {0.f, 0.f, 0.f},
                 {0.f, 1.f, 0.f},
                 std::numbers::pi_v<float> / 4.f,
