@@ -36,6 +36,7 @@ namespace game::routines
                 co_await Wait{_scheduler, 16666us};
             }
         }
+        log::info("PhysicsRoutine ending");
     }
 
     auto PhysicsRoutine::handle_key_press(const KeyEvent &event) -> void

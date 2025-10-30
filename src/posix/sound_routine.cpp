@@ -37,6 +37,7 @@ namespace game::routines
                 co_await Wait{_scheduler, 1u};
             }
         }
+        log::info("SoundRoutine ending");
     }
 
 }

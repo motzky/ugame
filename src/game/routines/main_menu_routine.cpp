@@ -337,6 +337,7 @@ namespace game::routines
                 co_await Wait{_scheduler, 16666us};
             }
         }
+        log::info("MainMenuRoutine ending");
     }
 
     auto MainMenuRoutine::handle_key_press(const KeyEvent &event) -> void

@@ -198,6 +198,7 @@ namespace game::routines
                 co_await Wait{_scheduler, 1u};
             }
         }
+        log::info("LevelRoutine ending");
     }
     auto LevelRoutine::player() const -> const Player &
     {

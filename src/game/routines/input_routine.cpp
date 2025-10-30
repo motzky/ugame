@@ -73,6 +73,8 @@ namespace game::routines
             //     _bus.post_quit();
             // }
         }
+
+        log::info("InputRoutine ending");
     }
 
 }

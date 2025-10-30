@@ -94,6 +94,8 @@ namespace game::routines
         }
 
         ensure(_impl->source_voice->Stop(0) == S_OK, "failed to stop sound");
+
+        log::info("SoundRoutine ending");
     }
 
 }

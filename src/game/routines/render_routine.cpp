@@ -67,6 +67,7 @@ namespace game::routines
                 co_await Wait{_scheduler, 1u};
             }
         }
+        log::info("RenderRoutine ending");
     }
 
     auto RenderRoutine::handle_key_press(const KeyEvent &event) -> void
