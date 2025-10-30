@@ -18,12 +18,12 @@
 
 namespace
 {
-    auto create_mesh_shape(game::MeshData mesh_data) -> ::JPH::Ref<::JPH::Shape>
+    auto create_mesh_shape(game::MeshData mesh_data, float scale = {1.f}) -> ::JPH::Ref<::JPH::Shape>
     {
         auto jolt_vertex_list =
             mesh_data.vertices |
-            std::views::transform([](const auto &e)
-                                  { return ::JPH::Float3{e.position.x, e.position.y, e.position.z}; }) |
+            std::views::transform([scale](const auto &e)
+                                  { return ::JPH::Float3{e.position.x * scale, e.position.y * scale, e.position.z * scale}; }) |
             std::ranges::to<::JPH::VertexList>();
 
         auto jolt_index_list =
@@ -47,9 +47,9 @@ namespace
 
 namespace game
 {
-    MeshShape::MeshShape(MeshData mesh_data, PassKey<PhysicsSystem> pk)
+    MeshShape::MeshShape(MeshData mesh_data, float scale, PassKey<PhysicsSystem> pk)
         : Shape(ShapeType::MESH, pk),
-          _shape{create_mesh_shape(mesh_data)}
+          _shape{create_mesh_shape(mesh_data, scale)}
 
     {
     }

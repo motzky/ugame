@@ -9,7 +9,6 @@
 #include <Jolt/Physics/Collision/Shape/MeshShape.h>
 
 #include "graphics/mesh_data.h"
-#include "math/vector3.h"
 #include "physics/shape.h"
 #include "utils/pass_key.h"
 
@@ -20,7 +19,7 @@ namespace game
     class MeshShape : public Shape
     {
     public:
-        MeshShape(MeshData mesh_data, PassKey<PhysicsSystem>);
+        MeshShape(MeshData mesh_data, float scale, PassKey<PhysicsSystem>);
 
         virtual auto native_handle() const -> const ::JPH::Shape * override;
 

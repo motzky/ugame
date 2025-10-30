@@ -329,11 +329,13 @@ namespace game::levels
                 [&](const auto e)
                 { 
                     auto *mesh = resource_cache.get<Mesh>(e);
-                    auto collider = is_collision_relevant_mesh(e) ?
-                        std::make_optional(TransformedShape{_ps.create_shape<MeshShape>(mesh->mesh_data()), {{-180.f, -3.8f, 40.f}, {10.f}, {}}}) :
+                    auto collider =
+                        is_collision_relevant_mesh(e) ?
+                        std::make_optional(TransformedShape{_ps.create_shape<MeshShape>(mesh->mesh_data(), 10.f), {{-180.f, -3.8f, 40.f}, {1.f}, {}}}) :
                         std::nullopt;
                     
-                    return Entity{mesh,
+                    return Entity{
+                        mesh,
                                     resource_cache.get<Material>(material_name_from_mesh(e)),
                                     {-180.f, -3.8f, 40.f},
                                     {10.f},
