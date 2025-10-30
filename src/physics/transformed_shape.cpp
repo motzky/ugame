@@ -50,8 +50,8 @@ namespace game
         ::JPH::CollisionDispatch::sCollideShapeVsShape(
             _shape->native_handle(),
             shape._shape->native_handle(),
-            ::JPH::RVec3::sOne() * .9f,
-            ::JPH::RVec3::sOne() * .9f,
+            to_jolt(_transform.scale),
+            to_jolt(shape._transform.scale),
             to_jolt(_transform),
             to_jolt(shape._transform),
             ::JPH::SubShapeIDCreator{},
