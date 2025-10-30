@@ -40,6 +40,12 @@ namespace game
         if (event.key() == Key::F1 && event.state() == KeyState::UP)
         {
             _flying = !_flying;
+            log::debug("player flying chaged to {}", _flying);
+            if (!_flying)
+            {
+                _camera.set_position(_controller.position());
+                _camera.update();
+            }
         }
     }
 
@@ -78,11 +84,6 @@ namespace game
         return _flying;
     }
 
-    auto Player::set_flying(bool flying) -> void
-    {
-        _flying = flying;
-    }
-
     auto Player::update() -> void
     {
         auto walk_direction = Vector3{0.f};
@@ -119,17 +120,23 @@ namespace game
 
         const auto speed = _key_state[Key::LSHIFT] ? 30.f : 10.f;
         const auto velocity = Vector3::normalize(walk_direction) * (speed / 60.f);
-        _controller.set_linear_velocity(velocity * 180.f);
-        // _camera.set_position(_controller.position() + Vector3{0.f, 2.f, 0.f});
-        _camera.set_position(_controller.position());
+        if (!_flying)
+        {
+            _controller.set_linear_velocity(velocity * 180.f);
+            _camera.set_position(_controller.position());
+        }
+        else
+        {
+            _camera.translate(velocity);
+        }
         _camera.update();
     }
 
     auto Player::restart() -> void
     {
+        _flying = false;
         _camera.set_position(_start_position);
         _controller.set_position(_start_position);
-        // _controller.set_position(_start_position - Vector3{0.f, 2.f, 0.f});
         _camera.set_pitch(0.f);
         _camera.set_yaw(-std::numbers::pi_v<float> / 2.f);
 

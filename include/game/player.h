@@ -29,7 +29,10 @@ namespace game
         auto position() const -> Vector3;
         auto flying() -> bool;
 
-        auto set_flying(bool flying) -> void;
+        auto controller(this auto &&self) -> auto &
+        {
+            return self._controller;
+        }
 
         auto update() -> void;
 
