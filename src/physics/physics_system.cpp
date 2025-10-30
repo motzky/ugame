@@ -158,7 +158,7 @@ namespace game
 
         _impl->physics_system.SetGravity({0.f, -9.80665f, 0.f});
 
-        _impl->character_controller = std::make_unique<CharacterController>(std::addressof(_impl->physics_system), PassKey<PhysicsSystem>{});
+        _impl->character_controller = std::make_unique<CharacterController>(this, std::addressof(_impl->physics_system), PassKey<PhysicsSystem>{});
     }
 
     auto PhysicsSystem::optimize() const -> void

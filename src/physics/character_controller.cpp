@@ -8,25 +8,35 @@
 #include <Jolt/Physics/Collision/Shape/RotatedTranslatedShape.h>
 
 #include "log.h"
+#include "physics/capsule_shape.h"
 #include "physics/jolt_utils.h"
+#include "physics/physics_sytem.h"
 #include "utils/pass_key.h"
+
+namespace
+{
+    constexpr auto height_standing = 8.f;
+    constexpr auto radius_standing = .66f;
+
+}
 
 namespace game
 {
-    CharacterController::CharacterController(::JPH::PhysicsSystem *physics_system, PassKey<PhysicsSystem>)
+    CharacterController::CharacterController(PhysicsSystem *ps, ::JPH::PhysicsSystem *physics_system, PassKey<PhysicsSystem>)
         : _character{},
-          _tmp_allocator{std::make_unique<::JPH::TempAllocatorImpl>(4 * 1025 * 1024)}
+          _tmp_allocator{std::make_unique<::JPH::TempAllocatorImpl>(4 * 1025 * 1024)},
+          _shape{ps->create_shape<CapsuleShape>(.5f * height_standing, radius_standing)}
     {
-        static constexpr auto height_standing = 2.f;
-        static constexpr auto radius_standing = .66f;
 
-        ::JPH::Ref<::JPH::CharacterVirtualSettings> settings = new ::JPH::CharacterVirtualSettings();
+        ::JPH::Ref<::JPH::CharacterVirtualSettings>
+            settings = new ::JPH::CharacterVirtualSettings();
         settings->mShape = ::JPH::RotatedTranslatedShapeSettings{
             ::JPH::RVec3::sZero(),
             ::JPH::Quat::sIdentity(),
-            new ::JPH::CapsuleShape{.5f * height_standing, radius_standing}}
+            _shape->native_handle()}
                                .Create()
                                .Get();
+
         settings->mInnerBodyLayer = to_jolt_layer(RigidBodyType::DYNAMIC);
 
         _character = new ::JPH::CharacterVirtual{settings, ::JPH::Vec3(0.f, .5f * height_standing + radius_standing, 0), ::JPH::Quat::sIdentity(), 0, physics_system};
@@ -80,4 +90,10 @@ namespace game
     {
         log::debug("contact: {}", bodyId2.GetIndex());
     }
+
+    auto CharacterController::shape() const -> const Shape *
+    {
+        return _shape;
+    }
+
 }

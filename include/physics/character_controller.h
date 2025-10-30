@@ -8,6 +8,8 @@
 #include <Jolt/Renderer/DebugRenderer.h>
 
 #include "math/vector3.h"
+#include "physics/shape.h"
+#include "utils/auto_release.h"
 #include "utils/pass_key.h"
 
 namespace game
@@ -16,7 +18,8 @@ namespace game
     class CharacterController : public ::JPH::CharacterContactListener
     {
     public:
-        CharacterController(::JPH::PhysicsSystem *physics_system, PassKey<PhysicsSystem>);
+        CharacterController(PhysicsSystem *ps, ::JPH::PhysicsSystem *physics_system, PassKey<PhysicsSystem>);
+        ~CharacterController() override = default;
 
         auto position() const -> Vector3;
         auto set_position(Vector3 position) -> void;
@@ -39,8 +42,11 @@ namespace game
             ::JPH::Vec3Arg contactNormal,
             ::JPH::CharacterContactSettings &settings) -> void override;
 
+        auto shape() const -> const Shape *;
+
     private:
         ::JPH::Ref<::JPH::CharacterVirtual> _character;
         std::unique_ptr<::JPH::TempAllocator> _tmp_allocator;
+        const Shape *_shape;
     };
 }

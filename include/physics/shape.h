@@ -14,7 +14,8 @@ namespace game
         BOX,
         CYLINDER,
         SPHERE,
-        MESH
+        MESH,
+        CAPSULE
     };
 
     class PhysicsSystem;
