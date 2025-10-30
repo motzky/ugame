@@ -40,7 +40,6 @@ namespace game
         if (event.key() == Key::F1 && event.state() == KeyState::UP)
         {
             _flying = !_flying;
-            log::debug("player flying chaged to {}", _flying);
             if (!_flying)
             {
                 _camera.set_position(_controller.position());
