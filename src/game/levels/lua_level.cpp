@@ -336,16 +336,16 @@ namespace game::levels
                     
                     return Entity{
                         mesh,
-                                    resource_cache.get<Material>(material_name_from_mesh(e)),
-                                    {-180.f, -3.8f, 40.f},
-                                    {10.f},
-                                    std::vector<const Texture *>{
-                                        resource_cache.get<Texture>(albedo_texture_name(e)),
-                                        resource_cache.get<Texture>(normal_map_texture_name(e))},
-                                    {_ps.create_shape<BoxShape>(Vector3{10.f}), {{-180.f, -3.8f, 40.f}, {10.f}, {}}},
-                                    2u,
-                                    2u,
-                                collider}; }) |
+                        resource_cache.get<Material>(material_name_from_mesh(e)),
+                        {-180.f, -3.8f, 40.f},
+                        {10.f},
+                        std::vector<const Texture *>{
+                            resource_cache.get<Texture>(albedo_texture_name(e)),
+                            resource_cache.get<Texture>(normal_map_texture_name(e))},
+                        {_ps.create_shape<BoxShape>(Vector3{10.f}), {{-180.f, -3.8f, 40.f}, {10.f}, {}}},
+                        2u,
+                        2u,
+                        collider}; }) |
             std::ranges::to<std::vector>();
 
         for (auto &ent : _level_entities)
@@ -418,6 +418,18 @@ namespace game::levels
                     std::get<0>(orig_positions[j]) = true;
                     _bus.post_entity_intersect(std::addressof(_entities[i]), std::addressof(_entities[j]));
                 }
+            }
+        }
+
+        const auto ts2 = TransformedShape{player.controller().shape(), {player.position(), {1.f}, {}}};
+        for (const auto &static_entity : _level_entities | std::views::filter([](const auto &e)
+                                                                              { return e.has_static_collider(); }))
+        {
+            const auto ts1 = static_entity.static_collider().value();
+            if (ts1.intersects(ts2))
+            {
+                static auto num = 0u;
+                log::debug("{} player collides with world", num++);
             }
         }
 
