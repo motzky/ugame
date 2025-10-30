@@ -31,7 +31,7 @@ namespace game
         {
         }
 
-        auto to_string() -> std::string;
+        auto to_string() const -> std::string;
 
         float x;
         float y;
@@ -57,7 +57,7 @@ namespace game
         return tmp *= q2;
     }
 
-    inline auto Quaternion::to_string() -> std::string
+    inline auto Quaternion::to_string() const -> std::string
     {
         return std::format("x={} y={} z={} w={}", x, y, z, w);
     }

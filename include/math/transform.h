@@ -1,5 +1,8 @@
 #pragma once
 
+#include <format>
+#include <string>
+
 #include "math/matrix4.h"
 #include "math/quaternion.h"
 #include "math/vector3.h"
@@ -33,4 +36,9 @@ namespace game
         Vector3 scale;
         Quaternion rotation;
     };
+
+    inline auto to_string(const Transform &transform) -> std::string
+    {
+        return std::format("pos: {} scale: {} rot: {}", transform.position, transform.scale, transform.rotation);
+    }
 }
