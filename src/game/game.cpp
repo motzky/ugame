@@ -165,6 +165,9 @@ namespace game
                                            .height = 1u,
                                            .data = {static_cast<std::byte>(0), static_cast<std::byte>(33), static_cast<std::byte>(105)}},
                                        mipmap);
+        // resource_cache.insert<Texture>("Iron_diffuse", reader, "powder-coated-metal_albedo", mipmap);
+        resource_cache.insert<Texture>("Iron_specular", reader, "powder-coated-metal_metallic", mipmap);
+        // resource_cache.insert<Texture>("Iron_normal", reader, "powder-coated-metal_normal-ogl", mipmap);
 
         resource_cache.insert<Texture>(
             "white",
