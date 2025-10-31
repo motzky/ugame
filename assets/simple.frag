@@ -55,7 +55,7 @@ vec3 calc_point(int index)
     vec3 attenuation = points[index].attenuation;
 
     vec3 n = texture(tex2, tex_coord).rgb;
-    n = (n * 2.0) + 1.0;
+    n = (n * 2.0) - 1.0;
     n = normalize(tbn * n);
 
     float dist = length(point_light - frag_position.xyz);
