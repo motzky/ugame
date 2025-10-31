@@ -341,6 +341,7 @@ namespace game::levels
                         {10.f},
                         std::vector<const Texture *>{
                             resource_cache.get<Texture>(albedo_texture_name(e)),
+                            resource_cache.get<Texture>(albedo_texture_name(e)),
                             resource_cache.get<Texture>(normal_map_texture_name(e))},
                         {_ps.create_shape<BoxShape>(Vector3{10.f}), {{-180.f, -3.8f, 40.f}, {10.f}, {}}},
                         2u,
