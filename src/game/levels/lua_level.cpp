@@ -50,7 +50,8 @@ namespace
 
     auto albedo_texture_name(std::string_view mesh_name) -> std::string
     {
-        if (mesh_name == "Collums" ||
+        if (mesh_name == "Main_walls" ||
+            mesh_name == "Collums" ||
             mesh_name == "Concrete_wall_with_lines" ||
             mesh_name == "Roof" ||
             mesh_name == "Lower_roof")
@@ -98,7 +99,41 @@ namespace
         //     return "Blue line map";
         // }
 
+        game::log::debug("returning albedo 'white' for {}", mesh_name);
+
         return "white";
+    }
+
+    auto specular_texture_name(std::string_view mesh_name) -> std::string
+    {
+        if (mesh_name == "Window_frames" ||
+            mesh_name == "Skylight_frame" ||
+            mesh_name == "Skylight_frame.001" ||
+            mesh_name == "Wall_beams" ||
+            mesh_name == "Wall_beams.001" ||
+            mesh_name == "Wall_beams.002" ||
+            mesh_name == "Wall_beams.003" ||
+            mesh_name == "Wall_beams.004" ||
+            mesh_name == "Wall_beams.005" ||
+            mesh_name == "Door_rail" ||
+            mesh_name == "Sliding_door" ||
+            mesh_name == "Sliding_door.001" ||
+            mesh_name == "Sliding_door.002" ||
+            mesh_name == "Sliding_door.003" ||
+            mesh_name == "Sliding_door_frame" ||
+            mesh_name == "Lower_roof_framing" ||
+            mesh_name == "Roof_framing" ||
+            mesh_name == "Roof_beams" ||
+            mesh_name == "Roof_beams.001" ||
+            mesh_name == "Window_Frame" ||
+            mesh_name == "Window_frames" ||
+            mesh_name == "Tap" ||
+            mesh_name == "Lamps")
+        {
+            return "Iron_specular";
+        }
+
+        return albedo_texture_name(mesh_name);
     }
 
     auto normal_map_texture_name(std::string_view mesh_name) -> std::string
@@ -145,6 +180,7 @@ namespace
             mesh_name == "Lamps")
         {
             return "Metal025_2K-JPG_NormalGL";
+            // return "Iron_normal";
         }
 
         return "barrel_normal";
@@ -254,7 +290,7 @@ namespace game::levels
                                               { return std::addressof(e); }) |
                         std::ranges::to<std::vector>(),
             .ambient = {.r = .2f, .g = .2f, .b = .2f},
-            .directional = {.direction = {-1.f, -1.f, -1.f}, .color = {.r = .3f, .g = .3f, .b = .3f}},
+            .directional = {.direction = {0.f, 0.f, 1.f}, .color = {.r = .3f, .g = .3f, .b = .3f}},
             .points = {{.position = {5.f, 3.f, 0.f}, .color = {.r = 1.f, .g = 0.f, .b = 0.f}, //
                         .const_attenuation = 1.f,
                         .linear_attenuation = .07f,
@@ -341,7 +377,7 @@ namespace game::levels
                         {10.f},
                         std::vector<const Texture *>{
                             resource_cache.get<Texture>(albedo_texture_name(e)),
-                            resource_cache.get<Texture>(albedo_texture_name(e)),
+                            resource_cache.get<Texture>(specular_texture_name(e)),
                             resource_cache.get<Texture>(normal_map_texture_name(e))},
                         {_ps.create_shape<BoxShape>(Vector3{10.f}), {{-180.f, -3.8f, 40.f}, {10.f}, {}}},
                         2u,
@@ -477,6 +513,12 @@ namespace game::levels
                                           .r = direction_light_color.x,
                                           .g = direction_light_color.y,
                                           .b = direction_light_color.z}};
+            }
+
+            for (const auto &[index, entity] : std::views::enumerate(_entities))
+            {
+                _scene.points[index].position.x = entity.position().x;
+                _scene.points[index].position.z = entity.position().z;
             }
         }
         break;
