@@ -137,11 +137,10 @@ namespace game
         const auto checker_fragment_shader = game::Shader{checker_fragment_shader_file.data, game::ShaderType::FRAGMENT};
         resource_cache.insert<Material>("checkerboard_material", checker_vertex_shader, checker_fragment_shader);
 
-        resource_cache.insert<Material>("level_material", vertex_shader, fragment_shader);
-
         const auto simple_fragment_shader_file = TlvReader::get_text_file(reader, "simple.frag");
         const auto simple_fragment_shader = game::Shader{simple_fragment_shader_file.data, game::ShaderType::FRAGMENT};
         resource_cache.insert<Material>("floor_material", vertex_shader, simple_fragment_shader);
+        resource_cache.insert<Material>("level_material", vertex_shader, simple_fragment_shader);
 
         game::log::info("Creating GL textures...");
 
