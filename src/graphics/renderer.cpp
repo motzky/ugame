@@ -115,6 +115,7 @@ namespace game
 
         ::glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, _light_buffer.native_handle());
 
+        ::glDisable(GL_CULL_FACE);
         if (scene.skybox)
         {
             ::glDepthMask(GL_FALSE);
@@ -130,6 +131,7 @@ namespace game
 
             ::glDepthMask(GL_TRUE);
         }
+        ::glEnable(GL_CULL_FACE);
 
         // for (const auto *entity : scene.entities | std::views::filter([](const auto *e)
         //                                                               { return e->is_visible(); }))

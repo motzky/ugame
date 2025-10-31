@@ -264,9 +264,6 @@ namespace game
         ::resolve_global_gl_functions();
         ::setup_debug();
 
-        // TODO skybox normals are facing outwards !!!
-        //      so enabling backface culling will cull the skybox !
-        // ::glEnable(GL_CULL_FACE);
         ::glEnable(GL_DEPTH_TEST);
 
         if (samples > 1)
