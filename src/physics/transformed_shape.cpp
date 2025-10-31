@@ -1,5 +1,7 @@
 #include "physics/transformed_shape.h"
 
+#include <optional>
+
 #include <Jolt/Jolt.h>
 
 #include <Jolt/Physics/Collision/CollideShape.h>
@@ -17,18 +19,22 @@ namespace
 {
     struct SimpleCollideShapeCollector : public ::JPH::CollideShapeCollector
     {
-        SimpleCollideShapeCollector(bool &hit) : hit(hit) {}
+        SimpleCollideShapeCollector() : collision_result{std::nullopt} {}
 
-        virtual auto AddHit([[maybe_unused]] const ::JPH::CollideShapeCollector::ResultType &inResult) -> void override
+        virtual auto AddHit(const ResultType &jolt_result) -> void override
         {
-            hit = true;
+            collision_result = {
+                .contact1 = game::to_native(jolt_result.mContactPointOn1),
+                .contact2 = game::to_native(jolt_result.mContactPointOn2),
+                .penetration_axis = game::to_native(jolt_result.mPenetrationAxis),
+                .penetration_depth = jolt_result.mPenetrationDepth};
         }
 
         virtual auto OnBody(const ::JPH::Body &) -> void override
         {
             game::log::debug("collision OnBody");
         }
-        bool &hit;
+        std::optional<game::CollisionResult> collision_result;
     };
 
 }
@@ -41,10 +47,9 @@ namespace game
     {
     }
 
-    auto TransformedShape::intersects(const TransformedShape &shape) const -> bool
+    auto TransformedShape::intersects(const TransformedShape &shape) const -> std::optional<CollisionResult>
     {
-        auto hit = false;
-        auto collector = SimpleCollideShapeCollector{hit};
+        auto collector = SimpleCollideShapeCollector{};
         const auto settings = ::JPH::CollideShapeSettings{};
 
         ::JPH::CollisionDispatch::sCollideShapeVsShape(
@@ -59,7 +64,7 @@ namespace game
             settings,
             collector);
 
-        return hit;
+        return collector.collision_result;
     }
 
     auto TransformedShape::draw(DebugRenderer &debug_renderer, const Color &color) const -> void

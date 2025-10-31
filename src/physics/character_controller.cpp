@@ -53,6 +53,11 @@ namespace game
         _character->SetPosition(to_jolt(position));
     }
 
+    auto CharacterController::bounce(const Vector3 amount) -> void
+    {
+        set_position(position() + amount);
+    }
+
     auto CharacterController::debug_draw(::JPH::DebugRenderer *debug_renderer, PassKey<PhysicsSystem>) const -> void
     {
         const auto transform = _character->GetCenterOfMassTransform();

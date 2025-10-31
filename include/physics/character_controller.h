@@ -24,6 +24,8 @@ namespace game
         auto position() const -> Vector3;
         auto set_position(Vector3 position) -> void;
 
+        auto bounce(const Vector3 amount) -> void;
+
         auto debug_draw(::JPH::DebugRenderer *debug_renderer, PassKey<PhysicsSystem>) const -> void;
 
         auto set_linear_velocity(const Vector3 &velocity) -> void;
