@@ -168,16 +168,16 @@ namespace
 
     auto is_collision_relevant_mesh(std::string_view mesh_name) -> bool
     {
-        if (mesh_name == "Main_floor" ||
-            mesh_name == "Main_walls" ||
-            mesh_name == "Wall_beams" ||
-            mesh_name == "Wall_beams.001" ||
-            mesh_name == "Wall_beams.002" ||
-            mesh_name == "Wall_beams.003" ||
-            mesh_name == "Wall_beams.004" ||
-            mesh_name == "Wall_beams.005" ||
-            mesh_name == "Concrete_wall_with_lines" ||
-            mesh_name == "Collums")
+        if ( // mesh_name == "Main_floor"sv ||
+            mesh_name == "Main_walls"sv ||
+            mesh_name == "Wall_beams"sv ||
+            mesh_name == "Wall_beams.001"sv ||
+            mesh_name == "Wall_beams.002"sv ||
+            mesh_name == "Wall_beams.003"sv ||
+            mesh_name == "Wall_beams.004"sv ||
+            mesh_name == "Wall_beams.005"sv ||
+            mesh_name == "Concrete_wall_with_lines"sv ||
+            mesh_name == "Collums"sv)
         {
             return true;
         }
@@ -361,7 +361,7 @@ namespace game::levels
         restart();
     }
 
-    auto LuaLevel::update(const Player &player) -> void
+    auto LuaLevel::update(Player &player) -> void
     {
         const auto runner = ScriptRunner{_script};
 
@@ -421,15 +421,21 @@ namespace game::levels
             }
         }
 
-        const auto ts2 = TransformedShape{player.controller().shape(), {player.position(), {1.f}, {}}};
-        for (const auto &static_entity : _level_entities | std::views::filter([](const auto &e)
-                                                                              { return e.has_static_collider(); }))
+        if (!player.flying())
         {
-            const auto ts1 = static_entity.static_collider().value();
-            if (ts1.intersects(ts2))
+            auto ts2 = TransformedShape{player.controller().shape(), {player.position(), {1.f}, {}}};
+            for (const auto &static_entity : _level_entities | std::views::filter([](const auto &e)
+                                                                                  { return e.has_static_collider(); }))
             {
-                static auto num = 0u;
-                log::debug("{} player collides with world", num++);
+                const auto ts1 = static_entity.static_collider().value();
+                auto collision = ts1.intersects(ts2);
+                while (collision)
+                {
+                    player.bounce(collision->penetration_axis, collision->penetration_depth);
+                    runner.execute("Level_update_level", player.position());
+                    ts2 = TransformedShape{player.controller().shape(), {player.position(), {1.f}, {}}};
+                    collision = ts1.intersects(ts2);
+                }
             }
         }
 

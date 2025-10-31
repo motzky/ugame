@@ -28,6 +28,7 @@ namespace game
         auto camera() const -> const Camera &;
         auto position() const -> Vector3;
         auto flying() -> bool;
+        auto bounce(const Vector3 dir, float depth) -> void;
 
         auto controller(this auto &&self) -> auto &
         {

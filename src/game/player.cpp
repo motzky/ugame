@@ -83,6 +83,15 @@ namespace game
         return _flying;
     }
 
+    auto Player::bounce(const Vector3 dir, float depth) -> void
+    {
+        auto norm = Vector3::normalize(dir);
+        auto amount = norm * (depth + (_key_state[Key::LSHIFT] ? .15f : .07f));
+        _controller.bounce(amount);
+        _camera.set_position(_controller.position());
+        _camera.update();
+    }
+
     auto Player::update() -> void
     {
         auto walk_direction = Vector3{0.f};

@@ -50,7 +50,7 @@ namespace game::levels
             messaging::MessageBus &bus);
         virtual ~LuaLevel() = default;
 
-        auto update(const Player &player) -> void override;
+        auto update(Player &player) -> void override;
         auto restart() -> void override;
 
         auto entities() const -> std::span<const Entity>;
