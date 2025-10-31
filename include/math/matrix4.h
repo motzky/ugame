@@ -9,7 +9,6 @@
 #include "math/quaternion.h"
 #include "math/vector3.h"
 #include "math/vector4.h"
-#include "physics/jolt_utils.h"
 #include "utils/ensure.h"
 
 namespace game
