@@ -93,6 +93,38 @@ namespace
         return "white";
     }
 
+    auto specular_texture_name(std::string_view mesh_name) -> std::string
+    {
+        if (mesh_name == "Window_frames" ||
+            mesh_name == "Skylight_frame" ||
+            mesh_name == "Skylight_frame.001" ||
+            mesh_name == "Wall_beams" ||
+            mesh_name == "Wall_beams.001" ||
+            mesh_name == "Wall_beams.002" ||
+            mesh_name == "Wall_beams.003" ||
+            mesh_name == "Wall_beams.004" ||
+            mesh_name == "Wall_beams.005" ||
+            mesh_name == "Door_rail" ||
+            mesh_name == "Sliding_door" ||
+            mesh_name == "Sliding_door.001" ||
+            mesh_name == "Sliding_door.002" ||
+            mesh_name == "Sliding_door.003" ||
+            mesh_name == "Sliding_door_frame" ||
+            mesh_name == "Lower_roof_framing" ||
+            mesh_name == "Roof_framing" ||
+            mesh_name == "Roof_beams" ||
+            mesh_name == "Roof_beams.001" ||
+            mesh_name == "Window_Frame" ||
+            mesh_name == "Window_frames" ||
+            mesh_name == "Tap" ||
+            mesh_name == "Lamps")
+        {
+            return "Iron_specular";
+        }
+
+        return albedo_texture_name(mesh_name);
+    }
+
     auto normal_map_texture_name(std::string_view mesh_name) -> std::string
     {
         if (mesh_name == "Main_floor" ||
@@ -201,8 +233,8 @@ namespace game::routines
         _labels.push_back(text_factory.create("or ESC to exit", _resource_cache.get<TextureSampler>("ui"), 24));
         _labels.push_back(text_factory.create(std::format("v{}.{}.{}", version::major, version::minor, version::patch), _resource_cache.get<TextureSampler>("ui"), 16));
 
-        const auto ambient_vec = Vector3{0.05f};
-        const auto direction_light_dir = Vector3{-1.f, -1.f, 0.f};
+        const auto ambient_vec = Vector3{0.15f};
+        const auto direction_light_dir = Vector3{0.f, 0.f, 1.f};
         const auto direction_light_color = Vector3{0.2};
 
         _scene = Scene{
@@ -284,6 +316,7 @@ namespace game::routines
                                 {10.f},
                                 std::vector<const Texture *>{
                                     resource_cache.get<Texture>(albedo_texture_name(e)),
+                                    resource_cache.get<Texture>(specular_texture_name(e)),
                                     resource_cache.get<Texture>(normal_map_texture_name(e))},
                                 {nullptr, {{0.f, -2.f, 0}, {1.f}, {}}},
                                 0u,
