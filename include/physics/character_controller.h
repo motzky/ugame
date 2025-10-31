@@ -2,53 +2,38 @@
 
 #include <Jolt/Jolt.h>
 
-#include <Jolt/Physics/Character/Character.h>
-#include <Jolt/Physics/Character/CharacterVirtual.h>
-#include <Jolt/Physics/PhysicsSystem.h>
 #include <Jolt/Renderer/DebugRenderer.h>
 
 #include "math/vector3.h"
 #include "physics/shape.h"
+#include "physics/transformed_shape.h"
 #include "utils/auto_release.h"
 #include "utils/pass_key.h"
 
 namespace game
 {
     class PhysicsSystem;
-    class CharacterController : public ::JPH::CharacterContactListener
+    class CharacterController
     {
     public:
-        CharacterController(PhysicsSystem *ps, ::JPH::PhysicsSystem *physics_system, PassKey<PhysicsSystem>);
-        ~CharacterController() override = default;
+        CharacterController(PhysicsSystem *ps, PassKey<PhysicsSystem>);
+        ~CharacterController() = default;
 
         auto position() const -> Vector3;
-        auto set_position(Vector3 position) -> void;
+        auto set_position(const Vector3 &pos) -> void;
 
-        auto bounce(const Vector3 amount) -> void;
+        auto bounce(const Vector3 &amount) -> void;
 
         auto debug_draw(::JPH::DebugRenderer *debug_renderer, PassKey<PhysicsSystem>) const -> void;
 
         auto set_linear_velocity(const Vector3 &velocity) -> void;
 
-        auto update(
-            float delta,
-            const ::JPH::BroadPhaseLayerFilter &broad_phase_layer_filter,
-            const ::JPH::ObjectLayerFilter &object_layer_filter,
-            PassKey<PhysicsSystem>) -> void;
+        auto update(float delta, PassKey<PhysicsSystem>) -> void;
 
-        auto OnContactAdded(
-            const ::JPH::CharacterVirtual *character,
-            const ::JPH::BodyID &bodyId2,
-            const ::JPH::SubShapeID &subShapeId2,
-            ::JPH::RVec3Arg contactPosition,
-            ::JPH::Vec3Arg contactNormal,
-            ::JPH::CharacterContactSettings &settings) -> void override;
-
-        auto shape() const -> const Shape *;
+        auto transformed_shape() const -> TransformedShape;
 
     private:
-        ::JPH::Ref<::JPH::CharacterVirtual> _character;
-        std::unique_ptr<::JPH::TempAllocator> _tmp_allocator;
-        const Shape *_shape;
+        TransformedShape _transformed_shape;
+        Vector3 _linear_velocity;
     };
 }

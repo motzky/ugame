@@ -81,9 +81,9 @@ namespace game
             false, true);
     }
 
-    auto TransformedShape::set_position([[maybe_unused]] const Vector3 &position) -> void
+    auto TransformedShape::set_position(const Vector3 &position) -> void
     {
-        expect(false, "Not implemented");
+        _transform.position = position;
     }
 
     auto TransformedShape::translate(const Vector3 &translation) -> void

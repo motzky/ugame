@@ -158,7 +158,7 @@ namespace game
 
         _impl->physics_system.SetGravity({0.f, -9.80665f, 0.f});
 
-        _impl->character_controller = std::make_unique<CharacterController>(this, std::addressof(_impl->physics_system), PassKey<PhysicsSystem>{});
+        _impl->character_controller = std::make_unique<CharacterController>(this, PassKey<PhysicsSystem>{});
     }
 
     auto PhysicsSystem::optimize() const -> void
@@ -177,11 +177,7 @@ namespace game
     auto PhysicsSystem::update() -> void
     {
         _impl->physics_system.Update(1.f / 60.f, 1, &_impl->temp_allocator, &_impl->job_system);
-        _impl->character_controller->update(
-            1.f / 60.f,
-            _impl->physics_system.GetDefaultBroadPhaseLayerFilter(to_jolt_layer(RigidBodyType::DYNAMIC)),
-            _impl->physics_system.GetDefaultLayerFilter(to_jolt_layer(RigidBodyType::DYNAMIC)),
-            {});
+        _impl->character_controller->update(1.f / 60.f, {});
 
         _impl->debug_renderer.clear();
         static const auto settings = ::JPH::BodyManager::DrawSettings{};

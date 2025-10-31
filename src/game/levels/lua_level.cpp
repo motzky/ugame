@@ -423,7 +423,7 @@ namespace game::levels
 
         if (!player.flying())
         {
-            auto ts2 = TransformedShape{player.controller().shape(), {player.position(), {1.f}, {}}};
+            auto ts2 = player.controller().transformed_shape();
             for (const auto &static_entity : _level_entities | std::views::filter([](const auto &e)
                                                                                   { return e.has_static_collider(); }))
             {
@@ -433,7 +433,7 @@ namespace game::levels
                 {
                     player.bounce(collision->penetration_axis, collision->penetration_depth);
                     runner.execute("Level_update_level", player.position());
-                    ts2 = TransformedShape{player.controller().shape(), {player.position(), {1.f}, {}}};
+                    ts2 = player.controller().transformed_shape();
                     collision = ts1.intersects(ts2);
                 }
             }
