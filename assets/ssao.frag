@@ -71,7 +71,7 @@ void main()
     const vec3 normal = normalize(texture(tex0, tex_coord).xyz);
 
     const int sample_count = 64;
-    const float radius = 0.5;
+    const float radius = 0.75;
     const float bias = 0.025;
 
     const int x = int(uv.x * size.x) % 4;
@@ -106,6 +106,7 @@ void main()
     }
 
     occlusion = 1.0 - (occlusion / sample_count);
+    occlusion = pow(occlusion, 2.0);
 
     frag_color = vec4(occlusion, occlusion, occlusion, 1.0);
 }
