@@ -269,7 +269,7 @@ namespace game::routines
                 {window.width() / 2 - _labels[1].width() / 2, 900, &_labels[1], Color::green()},
                 {window.width() / 2 - _labels[2].width() / 2, 930, &_labels[2], Color::green()},
                 {5u, window.height() - 17u, &_labels[3], Color::white()}},
-            .effects = {.hdr = true, .grey_scale = false, .blur = false}};
+            .effects = {.hdr = true, .grey_scale = false, .blur = false, .ssao = false}};
 
         const auto level_entity_names = std::vector{
             "Main_floor"sv,

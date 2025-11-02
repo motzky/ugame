@@ -34,6 +34,7 @@ namespace game
         bool hdr;
         bool grey_scale;
         bool blur;
+        bool ssao;
     };
 
     struct Scene

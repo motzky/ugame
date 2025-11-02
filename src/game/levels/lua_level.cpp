@@ -307,7 +307,7 @@ namespace game::levels
             .skybox = &_skybox,
             .skybox_sampler = _resource_cache.get<TextureSampler>("sky_box"),
             .labels = {{0, 0, &text_test, Color::white()}, {1707, 0, &text_test2, Color::white()}},
-            .effects = {.hdr = true, .grey_scale = false, .blur = false}};
+            .effects = {.hdr = true, .grey_scale = false, .blur = false, .ssao = true}};
 
         if (runner.has_function("Level_get_ambient"))
         {
