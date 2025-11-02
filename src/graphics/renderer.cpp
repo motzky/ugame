@@ -57,6 +57,16 @@ namespace
         const auto fragment_shader = game::Shader{frag_data, game::ShaderType::FRAGMENT};
         return game::Material{vertex_shader, fragment_shader};
     }
+
+    auto generate_textures(std::size_t n, game::TextureUsage usage, std::uint32_t width, std::uint32_t height, std::uint8_t sample_count) -> std::vector<game::Texture>
+    {
+        auto textures = std::vector<game::Texture>{};
+
+        std::ranges::generate_n(std::back_inserter(textures), n, [&]()
+                                { return game::Texture{usage, width, height, sample_count}; });
+
+        return textures;
+    }
 }
 
 namespace game
@@ -67,9 +77,12 @@ namespace game
           _skybox_cube(mesh_loader.cube()),
           _skybox_material(create_material(reader, "cube.vert", "cube.frag")),
           _debug_line_material(create_material(reader, "line.vert", "line.frag")),
-          _main_framebuffer{width, height, samples},
-          _post_processing_framebuffer_1{width, height, 1},
-          _post_processing_framebuffer_2{width, height, 1},
+          _main_framebuffer{generate_textures(2uz, TextureUsage::FRAMEBUFFER, width, height, samples),
+                            {TextureUsage::DEPTH, width, height, samples}},
+          _post_processing_framebuffer_1{generate_textures(1zu, TextureUsage::FRAMEBUFFER, width, height, 1),
+                                         {TextureUsage::DEPTH, width, height, 1}},
+          _post_processing_framebuffer_2{generate_textures(1zu, TextureUsage::FRAMEBUFFER, width, height, 1),
+                                         {TextureUsage::DEPTH, width, height, 1}},
           _sprite{mesh_loader.sprite()},
           _hdr_material{create_material(reader, "hdr.vert", "hdr.frag")},
           _grey_scale_material{create_material(reader, "grey_scale.vert", "grey_scale.frag")},
@@ -83,7 +96,7 @@ namespace game
 
     auto Renderer::render(const Camera &camera, const Scene &scene, float gamma) const -> void
     {
-        _main_framebuffer.bind();
+        _main_framebuffer.frame_buffer.bind();
 
         ::glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -159,31 +172,31 @@ namespace game
             dbl->unbind();
         }
 
-        _main_framebuffer.unbind();
+        _main_framebuffer.frame_buffer.unbind();
 
         ::glBlitNamedFramebuffer(
-            _main_framebuffer.native_handle(),
-            _post_processing_framebuffer_1.native_handle(),
+            _main_framebuffer.frame_buffer.native_handle(),
+            _post_processing_framebuffer_1.frame_buffer.native_handle(),
             0u,
             0u,
-            _post_processing_framebuffer_1.width(),
-            _post_processing_framebuffer_1.height(),
+            _main_framebuffer.frame_buffer.width(),
+            _main_framebuffer.frame_buffer.height(),
             0u,
             0u,
-            _post_processing_framebuffer_1.width(),
-            _post_processing_framebuffer_1.height(),
+            _post_processing_framebuffer_1.frame_buffer.width(),
+            _post_processing_framebuffer_1.frame_buffer.height(),
             GL_COLOR_BUFFER_BIT,
             GL_NEAREST);
 
-        auto *read_fb = &_post_processing_framebuffer_1;
-        auto *write_fb = &_post_processing_framebuffer_2;
+        auto *read_fb = &_post_processing_framebuffer_1.frame_buffer;
+        auto *write_fb = &_post_processing_framebuffer_2.frame_buffer;
 
         if (scene.effects.hdr)
         {
             write_fb->bind();
             ::glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             _hdr_material.use();
-            _hdr_material.bind_texture(0, &read_fb->color_texture(), scene.skybox_sampler);
+            _hdr_material.bind_texture(0, read_fb->color_textures().front(), scene.skybox_sampler);
             _hdr_material.set_uniform("gamma", gamma);
 
             _sprite.bind();
@@ -199,7 +212,7 @@ namespace game
             write_fb->bind();
             ::glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             _grey_scale_material.use();
-            _grey_scale_material.bind_texture(0, &read_fb->color_texture(), scene.skybox_sampler);
+            _grey_scale_material.bind_texture(0, read_fb->color_textures().front(), scene.skybox_sampler);
 
             _sprite.bind();
             ::glDrawElements(GL_TRIANGLES, _sprite.index_count(), GL_UNSIGNED_INT, reinterpret_cast<void *>(_sprite.index_offset()));
@@ -214,7 +227,7 @@ namespace game
             write_fb->bind();
             ::glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             _blur_material.use();
-            _blur_material.bind_texture(0, &read_fb->color_texture(), scene.skybox_sampler);
+            _blur_material.bind_texture(0, read_fb->color_textures().front(), scene.skybox_sampler);
             _blur_material.set_uniform("screen_width", static_cast<float>(write_fb->width()));
             _blur_material.set_uniform("screen_height", static_cast<float>(write_fb->height()));
 
