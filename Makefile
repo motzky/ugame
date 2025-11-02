@@ -18,7 +18,7 @@ game:
 
 run: game
 # 	DRI_PRIME=1 ./build/src/Debug/nathan_stream ./assets
-	DRI_PRIME=1 ./build/src/Debug/nathan_stream ./assets -m 2
+	DRI_PRIME=1 ./build/src/Debug/nathan_stream ./assets -m 4
 
 clean:
 	cmake --build build --target clean
