@@ -345,7 +345,7 @@ namespace game::levels
             "Wall_beams.005"sv,
             "Sliding_door"sv,
             "Door_rail"sv,
-            "Sliding_door.001"sv,
+            // "Sliding_door.001"sv,
             "Sliding_door.002"sv,
             "Sliding_door_frame"sv,
             "Sliding_door.003"sv,
@@ -359,6 +359,8 @@ namespace game::levels
             "Light"sv,
         };
 
+        constexpr auto level_origin = Vector3{-180.f, -3.5f, 40.f};
+
         _level_entities =
             level_entity_names |
             std::views::transform(
@@ -367,19 +369,19 @@ namespace game::levels
                     auto *mesh = resource_cache.get<Mesh>(e);
                     auto collider =
                         is_collision_relevant_mesh(e) ?
-                        std::make_optional(TransformedShape{_ps.create_shape<MeshShape>(mesh->mesh_data(), 10.f), {{-180.f, -3.8f, 40.f}, {1.f}, {}}}) :
+                        std::make_optional(TransformedShape{_ps.create_shape<MeshShape>(mesh->mesh_data(), 10.f), {level_origin, {1.f}, {}}}) :
                         std::nullopt;
                     
                     return Entity{
                         mesh,
                         resource_cache.get<Material>(material_name_from_mesh(e)),
-                        {-180.f, -3.8f, 40.f},
+                        level_origin,
                         {10.f},
                         std::vector<const Texture *>{
                             resource_cache.get<Texture>(albedo_texture_name(e)),
                             resource_cache.get<Texture>(specular_texture_name(e)),
                             resource_cache.get<Texture>(normal_map_texture_name(e))},
-                        {_ps.create_shape<BoxShape>(Vector3{10.f}), {{-180.f, -3.8f, 40.f}, {10.f}, {}}},
+                        {_ps.create_shape<BoxShape>(Vector3{10.f}), {level_origin, {10.f}, {}}},
                         2u,
                         2u,
                         collider}; }) |
