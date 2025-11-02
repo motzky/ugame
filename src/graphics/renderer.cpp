@@ -77,7 +77,7 @@ namespace game
           _skybox_cube(mesh_loader.cube()),
           _skybox_material(create_material(reader, "cube.vert", "cube.frag")),
           _debug_line_material(create_material(reader, "line.vert", "line.frag")),
-          _main_framebuffer{generate_textures(2uz, TextureUsage::FRAMEBUFFER, width, height, samples),
+          _main_framebuffer{generate_textures(3uz, TextureUsage::FRAMEBUFFER, width, height, samples),
                             {TextureUsage::DEPTH, width, height, samples}},
           _post_processing_framebuffer_1{generate_textures(1zu, TextureUsage::FRAMEBUFFER, width, height, 1),
                                          {TextureUsage::DEPTH, width, height, 1}},
