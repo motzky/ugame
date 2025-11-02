@@ -49,13 +49,16 @@ namespace game
         Texture(const TextureDescription &data, const TextureSampler *sampler);
         Texture(const TlvReader &reader, std::string_view name, const TextureSampler *sampler);
 
+        Texture(Texture &&) noexcept = default;
+        auto operator=(Texture &&) noexcept -> Texture & = default;
+
         auto native_handle() const -> ::GLuint;
         auto sampler() const -> const TextureSampler *;
         auto width() const -> std::uint32_t;
         auto height() const -> std::uint32_t;
 
     private:
-        AutoRelease<GLuint> _handle;
+        AutoRelease<::GLuint> _handle;
         const TextureSampler *_sampler;
         std::uint32_t _width;
         std::uint32_t _height;
