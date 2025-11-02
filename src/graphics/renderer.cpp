@@ -79,6 +79,8 @@ namespace game
           _debug_line_material(create_material(reader, "line.vert", "line.frag")),
           _main_framebuffer{generate_textures(3uz, TextureUsage::FRAMEBUFFER, width, height, samples),
                             {TextureUsage::DEPTH, width, height, samples}},
+          _ssao_framebuffer{generate_textures(3uz, TextureUsage::FRAMEBUFFER, width, height, 1),
+                            {TextureUsage::DEPTH, width, height, 1}},
           _post_processing_framebuffer_1{generate_textures(1zu, TextureUsage::FRAMEBUFFER, width, height, 1),
                                          {TextureUsage::DEPTH, width, height, 1}},
           _post_processing_framebuffer_2{generate_textures(1zu, TextureUsage::FRAMEBUFFER, width, height, 1),
@@ -88,6 +90,7 @@ namespace game
           _grey_scale_material{create_material(reader, "grey_scale.vert", "grey_scale.frag")},
           _label_material{create_material(reader, "label.vert", "label.frag")},
           _blur_material{create_material(reader, "blur.vert", "blur.frag")},
+          _ssao_material{create_material(reader, "ssao.vert", "ssao.frag")},
           _orth_camera{static_cast<float>(width), static_cast<float>(height), 1000.f}
     {
         _orth_camera.set_position({width / 2.f, height / -2.f, 0.f});
@@ -174,22 +177,60 @@ namespace game
 
         _main_framebuffer.frame_buffer.unbind();
 
-        ::glBlitNamedFramebuffer(
-            _main_framebuffer.frame_buffer.native_handle(),
-            _post_processing_framebuffer_1.frame_buffer.native_handle(),
-            0u,
-            0u,
-            _main_framebuffer.frame_buffer.width(),
-            _main_framebuffer.frame_buffer.height(),
-            0u,
-            0u,
-            _post_processing_framebuffer_1.frame_buffer.width(),
-            _post_processing_framebuffer_1.frame_buffer.height(),
-            GL_COLOR_BUFFER_BIT,
-            GL_NEAREST);
-
         auto *read_fb = &_post_processing_framebuffer_1.frame_buffer;
         auto *write_fb = &_post_processing_framebuffer_2.frame_buffer;
+
+        if (scene.effects.ssao)
+        {
+            for (auto i = 0; i < 3; ++i)
+            {
+                ::glNamedFramebufferReadBuffer(_main_framebuffer.frame_buffer.native_handle(), static_cast<::GLenum>(GL_COLOR_ATTACHMENT0 + i));
+                ::glNamedFramebufferDrawBuffer(_ssao_framebuffer.frame_buffer.native_handle(), static_cast<::GLenum>(GL_COLOR_ATTACHMENT0 + i));
+                ::glBlitNamedFramebuffer(
+                    _main_framebuffer.frame_buffer.native_handle(),
+                    _ssao_framebuffer.frame_buffer.native_handle(),
+                    0u,
+                    0u,
+                    _main_framebuffer.frame_buffer.width(),
+                    _main_framebuffer.frame_buffer.height(),
+                    0u,
+                    0u,
+                    _ssao_framebuffer.frame_buffer.width(),
+                    _ssao_framebuffer.frame_buffer.height(),
+                    GL_COLOR_BUFFER_BIT,
+                    GL_NEAREST);
+            }
+            write_fb->bind();
+            ::glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            _ssao_material.use();
+            _ssao_material.bind_texture(0, &_ssao_framebuffer.color_textures[1], scene.skybox_sampler);
+            _ssao_material.bind_texture(1, &_ssao_framebuffer.color_textures[2], scene.skybox_sampler);
+            _ssao_material.set_uniform("width", static_cast<float>(_ssao_framebuffer.frame_buffer.width()));
+            _ssao_material.set_uniform("height", static_cast<float>(_ssao_framebuffer.frame_buffer.height()));
+
+            _sprite.bind();
+            ::glDrawElements(GL_TRIANGLES, _sprite.index_count(), GL_UNSIGNED_INT, reinterpret_cast<void *>(_sprite.index_offset()));
+            _sprite.unbind();
+
+            write_fb->unbind();
+            std::ranges::swap(read_fb, write_fb);
+        }
+        else
+        {
+            ::glBlitNamedFramebuffer(
+                _main_framebuffer.frame_buffer.native_handle(),
+                _post_processing_framebuffer_1.frame_buffer.native_handle(),
+                0u,
+                0u,
+                _main_framebuffer.frame_buffer.width(),
+                _main_framebuffer.frame_buffer.height(),
+                0u,
+                0u,
+                _post_processing_framebuffer_1.frame_buffer.width(),
+                _post_processing_framebuffer_1.frame_buffer.height(),
+                GL_COLOR_BUFFER_BIT,
+                GL_NEAREST);
+        }
 
         if (scene.effects.hdr)
         {

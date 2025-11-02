@@ -72,6 +72,7 @@
     DO(::PFNGLGENERATETEXTUREMIPMAPPROC, glGenerateTextureMipmap)                             \
     DO(::PFNGLCREATERENDERBUFFERSPROC, glCreateRenderbuffers)                                 \
     DO(::PFNGLNAMEDFRAMEBUFFERDRAWBUFFERSPROC, glNamedFramebufferDrawBuffers)                 \
+    DO(::PFNGLNAMEDFRAMEBUFFERDRAWBUFFERPROC, glNamedFramebufferDrawBuffer)                   \
     DO(::PFNGLNAMEDFRAMEBUFFERRENDERBUFFERPROC, glNamedFramebufferRenderbuffer)               \
     DO(::PFNGLNAMEDFRAMEBUFFERREADBUFFERPROC, glNamedFramebufferReadBuffer)                   \
     DO(::PFNGLNAMEDRENDERBUFFERSTORAGEMULTISAMPLEPROC, glNamedRenderbufferStorageMultisample) \

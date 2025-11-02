@@ -48,6 +48,7 @@ namespace game
         Material _skybox_material;
         Material _debug_line_material;
         FrameBufferData _main_framebuffer;
+        FrameBufferData _ssao_framebuffer;
         FrameBufferData _post_processing_framebuffer_1;
         FrameBufferData _post_processing_framebuffer_2;
         Mesh _sprite;
@@ -55,6 +56,7 @@ namespace game
         Material _grey_scale_material;
         Material _label_material;
         Material _blur_material;
+        Material _ssao_material;
         Camera _orth_camera;
     };
 }
