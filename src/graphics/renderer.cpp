@@ -132,24 +132,6 @@ namespace game
 
         ::glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, _light_buffer.native_handle());
 
-        if (scene.skybox)
-        {
-            ::glDisable(GL_CULL_FACE);
-            ::glDepthMask(GL_FALSE);
-
-            _skybox_material.use();
-            _skybox_cube.bind();
-
-            ::glDrawElements(GL_TRIANGLES, _skybox_cube.index_count(), GL_UNSIGNED_INT, reinterpret_cast<void *>(_skybox_cube.index_offset()));
-
-            _skybox_material.bind_cube_map(scene.skybox, scene.skybox_sampler);
-
-            _skybox_cube.unbind();
-
-            ::glDepthMask(GL_TRUE);
-            ::glEnable(GL_CULL_FACE);
-        }
-
         // for (const auto *entity : scene.entities | std::views::filter([](const auto *e)
         //                                                               { return e->is_visible(); }))
         for (const auto *entity : scene.entities)
@@ -166,6 +148,24 @@ namespace game
             mesh->bind();
             ::glDrawElements(GL_TRIANGLES, mesh->index_count(), GL_UNSIGNED_INT, reinterpret_cast<void *>(mesh->index_offset()));
             mesh->unbind();
+        }
+
+        if (scene.skybox)
+        {
+            ::glDisable(GL_CULL_FACE);
+            ::glDepthFunc(GL_LEQUAL);
+
+            _skybox_cube.bind();
+
+            _skybox_material.use();
+            _skybox_material.bind_cube_map(scene.skybox, scene.skybox_sampler);
+
+            ::glDrawElements(GL_TRIANGLES, _skybox_cube.index_count(), GL_UNSIGNED_INT, reinterpret_cast<void *>(_skybox_cube.index_offset()));
+
+            _skybox_cube.unbind();
+
+            ::glDepthFunc(GL_LESS);
+            ::glEnable(GL_CULL_FACE);
         }
 
         if (const auto &dbl = scene.debug_lines; dbl)
