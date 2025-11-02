@@ -57,6 +57,7 @@ namespace game
         Material _label_material;
         Material _blur_material;
         Material _ssao_material;
+        Material _ssao_apply_material;
         Camera _orth_camera;
     };
 }

@@ -91,6 +91,7 @@ namespace game
           _label_material{create_material(reader, "label.vert", "label.frag")},
           _blur_material{create_material(reader, "blur.vert", "blur.frag")},
           _ssao_material{create_material(reader, "ssao.vert", "ssao.frag")},
+          _ssao_apply_material{create_material(reader, "ssao.vert", "ssao_apply.frag")},
           _orth_camera{static_cast<float>(width), static_cast<float>(height), 1000.f}
     {
         _orth_camera.set_position({width / 2.f, height / -2.f, 0.f});
@@ -207,6 +208,19 @@ namespace game
             _ssao_material.bind_texture(1, &_ssao_framebuffer.color_textures[2], scene.skybox_sampler);
             _ssao_material.set_uniform("width", static_cast<float>(_ssao_framebuffer.frame_buffer.width()));
             _ssao_material.set_uniform("height", static_cast<float>(_ssao_framebuffer.frame_buffer.height()));
+
+            _sprite.bind();
+            ::glDrawElements(GL_TRIANGLES, _sprite.index_count(), GL_UNSIGNED_INT, reinterpret_cast<void *>(_sprite.index_offset()));
+            _sprite.unbind();
+
+            write_fb->unbind();
+            std::ranges::swap(read_fb, write_fb);
+
+            write_fb->bind();
+            ::glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            _ssao_apply_material.use();
+            _ssao_apply_material.bind_texture(0, &_ssao_framebuffer.color_textures[0], scene.skybox_sampler);
+            _ssao_apply_material.bind_texture(1, read_fb->color_textures().front(), scene.skybox_sampler);
 
             _sprite.bind();
             ::glDrawElements(GL_TRIANGLES, _sprite.index_count(), GL_UNSIGNED_INT, reinterpret_cast<void *>(_sprite.index_offset()));
