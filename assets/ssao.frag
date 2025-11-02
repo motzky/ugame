@@ -70,7 +70,7 @@ void main()
     const vec3 frag_pos = texture(tex1, tex_coord).xyz;
     const vec3 normal = normalize(texture(tex0, tex_coord).xyz);
 
-    const int sample_count = 32;
+    const int sample_count = 64;
     const float radius = 0.5;
     const float bias = 0.025;
 
@@ -91,9 +91,8 @@ void main()
         sample_pos = frag_pos + sample_pos * radius;
 
         vec4 offset = projection * vec4(sample_pos, 1.0);
-        offset.xy /= offset.w;
-        offset.x = offset.x * 0.5 + 0.5;
-        offset.y = -offset.y * 0.5 + 0.5;
+        offset.xyz /= offset.w;
+        offset.xzy = offset.xzy * 0.5 + 0.5;
 
         const vec3 sample_normal = normalize(texture(tex0, offset.xy).rgb);
         if(dot(normal, sample_normal) > 0.99)
@@ -101,7 +100,7 @@ void main()
             continue;
         }
 
-        const float sample_depth = texture(tex1, vec2(offset.x, 1.0 - offset.y)).z;
+        const float sample_depth = texture(tex1, offset.xy).z;
         const float range_check = smoothstep(0.0, 1.0, radius / abs(frag_pos.z - sample_depth));
         occlusion += (sample_depth >= sample_pos.z + bias ? 1.0 : 0.0) * range_check;
     }
