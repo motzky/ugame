@@ -67,6 +67,70 @@ namespace
 
         return textures;
     }
+
+    auto blit_all(const game::FrameBuffer &src, ::GLenum src_attachment, const game::FrameBuffer &dst, ::GLenum dst_attachment, ::GLbitfield mask = GL_COLOR_BUFFER_BIT) -> void
+    {
+        ::glNamedFramebufferReadBuffer(src.native_handle(), src_attachment);
+        ::glNamedFramebufferDrawBuffer(dst.native_handle(), dst_attachment);
+        ::glBlitNamedFramebuffer(
+            src.native_handle(),
+            dst.native_handle(),
+            0u,
+            0u,
+            src.width(),
+            src.height(),
+            0u,
+            0u,
+            dst.width(),
+            dst.height(),
+            mask,
+            GL_NEAREST);
+    }
+    auto blit_all(const game::FrameBuffer &src, const game::FrameBuffer &dst, ::GLbitfield mask = GL_COLOR_BUFFER_BIT) -> void
+    {
+        ::glBlitNamedFramebuffer(
+            src.native_handle(),
+            dst.native_handle(),
+            0u,
+            0u,
+            src.width(),
+            src.height(),
+            0u,
+            0u,
+            dst.width(),
+            dst.height(),
+            mask,
+            GL_NEAREST);
+    }
+
+    auto apply_post_processing_effect(
+        game::FrameBuffer const *&read_fb,
+        game::FrameBuffer const *&write_fb,
+        const game::Material &material,
+        const game::TextureSampler *sampler,
+        const game::Mesh &sprite,
+        std::function<void(const game::Material &)> material_callback = nullptr) -> void
+    {
+        write_fb->bind();
+        ::glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        material.use();
+        material.bind_texture(0, read_fb->color_textures().front(), sampler);
+        if (material_callback)
+        {
+            material_callback(material);
+        }
+        ::glDrawElements(GL_TRIANGLES, sprite.index_count(), GL_UNSIGNED_INT, reinterpret_cast<void *>(sprite.index_offset()));
+
+        std::ranges::swap(read_fb, write_fb);
+    }
+
+    auto write_camera_data_to_ubo(const game::Camera &camera, const game::Buffer &camera_buffer) -> void
+    {
+        auto writer = game::BufferWriter{camera_buffer};
+        writer.write(camera.view());
+        writer.write(camera.projection());
+        writer.write(camera.position());
+    }
 }
 
 namespace game
@@ -104,12 +168,7 @@ namespace game
 
         ::glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        {
-            auto writer = BufferWriter{_camera_buffer};
-            writer.write(camera.view());
-            writer.write(camera.projection());
-            writer.write(camera.position());
-        }
+        write_camera_data_to_ubo(camera, _camera_buffer);
         ::glBindBufferBase(GL_UNIFORM_BUFFER, 0, _camera_buffer.native_handle());
 
         {
@@ -181,25 +240,16 @@ namespace game
         auto *read_fb = &_post_processing_framebuffer_1.frame_buffer;
         auto *write_fb = &_post_processing_framebuffer_2.frame_buffer;
 
+        _sprite.bind();
         if (scene.effects.ssao)
         {
             for (auto i = 0; i < 3; ++i)
             {
-                ::glNamedFramebufferReadBuffer(_main_framebuffer.frame_buffer.native_handle(), static_cast<::GLenum>(GL_COLOR_ATTACHMENT0 + i));
-                ::glNamedFramebufferDrawBuffer(_ssao_framebuffer.frame_buffer.native_handle(), static_cast<::GLenum>(GL_COLOR_ATTACHMENT0 + i));
-                ::glBlitNamedFramebuffer(
-                    _main_framebuffer.frame_buffer.native_handle(),
-                    _ssao_framebuffer.frame_buffer.native_handle(),
-                    0u,
-                    0u,
-                    _main_framebuffer.frame_buffer.width(),
-                    _main_framebuffer.frame_buffer.height(),
-                    0u,
-                    0u,
-                    _ssao_framebuffer.frame_buffer.width(),
-                    _ssao_framebuffer.frame_buffer.height(),
-                    GL_COLOR_BUFFER_BIT,
-                    GL_NEAREST);
+                blit_all(
+                    _main_framebuffer.frame_buffer,
+                    static_cast<::GLenum>(GL_COLOR_ATTACHMENT0 + i),
+                    _ssao_framebuffer.frame_buffer,
+                    static_cast<::GLenum>(GL_COLOR_ATTACHMENT0 + i));
             }
             write_fb->bind();
             ::glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -209,11 +259,8 @@ namespace game
             _ssao_material.set_uniform("width", static_cast<float>(_ssao_framebuffer.frame_buffer.width()));
             _ssao_material.set_uniform("height", static_cast<float>(_ssao_framebuffer.frame_buffer.height()));
 
-            _sprite.bind();
             ::glDrawElements(GL_TRIANGLES, _sprite.index_count(), GL_UNSIGNED_INT, reinterpret_cast<void *>(_sprite.index_offset()));
-            _sprite.unbind();
 
-            write_fb->unbind();
             std::ranges::swap(read_fb, write_fb);
 
             write_fb->bind();
@@ -222,114 +269,69 @@ namespace game
             _ssao_apply_material.bind_texture(0, &_ssao_framebuffer.color_textures[0], scene.skybox_sampler);
             _ssao_apply_material.bind_texture(1, read_fb->color_textures().front(), scene.skybox_sampler);
 
-            _sprite.bind();
             ::glDrawElements(GL_TRIANGLES, _sprite.index_count(), GL_UNSIGNED_INT, reinterpret_cast<void *>(_sprite.index_offset()));
-            _sprite.unbind();
 
-            write_fb->unbind();
             std::ranges::swap(read_fb, write_fb);
         }
         else
         {
-            ::glBlitNamedFramebuffer(
-                _main_framebuffer.frame_buffer.native_handle(),
-                _post_processing_framebuffer_1.frame_buffer.native_handle(),
-                0u,
-                0u,
-                _main_framebuffer.frame_buffer.width(),
-                _main_framebuffer.frame_buffer.height(),
-                0u,
-                0u,
-                _post_processing_framebuffer_1.frame_buffer.width(),
-                _post_processing_framebuffer_1.frame_buffer.height(),
-                GL_COLOR_BUFFER_BIT,
-                GL_NEAREST);
+            blit_all(_main_framebuffer.frame_buffer, _post_processing_framebuffer_1.frame_buffer);
+            // blit_all(_main_framebuffer.frame_buffer, GL_COLOR_ATTACHMENT0, *write_fb, GL_COLOR_ATTACHMENT0, GL_DEPTH_BUFFER_BIT);
         }
 
         if (scene.effects.hdr)
         {
-            write_fb->bind();
-            ::glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-            _hdr_material.use();
-            _hdr_material.bind_texture(0, read_fb->color_textures().front(), scene.skybox_sampler);
-            _hdr_material.set_uniform("gamma", gamma);
-
-            _sprite.bind();
-            ::glDrawElements(GL_TRIANGLES, _sprite.index_count(), GL_UNSIGNED_INT, reinterpret_cast<void *>(_sprite.index_offset()));
-            _sprite.unbind();
-
-            write_fb->unbind();
-            std::ranges::swap(read_fb, write_fb);
+            apply_post_processing_effect(read_fb, write_fb, _hdr_material, scene.skybox_sampler, _sprite,
+                                         [gamma](const auto &m)
+                                         { m.set_uniform("gamma", gamma); });
         }
 
         if (scene.effects.grey_scale)
         {
-            write_fb->bind();
-            ::glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-            _grey_scale_material.use();
-            _grey_scale_material.bind_texture(0, read_fb->color_textures().front(), scene.skybox_sampler);
-
-            _sprite.bind();
-            ::glDrawElements(GL_TRIANGLES, _sprite.index_count(), GL_UNSIGNED_INT, reinterpret_cast<void *>(_sprite.index_offset()));
-            _sprite.unbind();
-
-            write_fb->unbind();
-            std::ranges::swap(read_fb, write_fb);
+            apply_post_processing_effect(read_fb, write_fb, _grey_scale_material, scene.skybox_sampler, _sprite);
         }
 
         if (scene.effects.blur)
         {
-            write_fb->bind();
-            ::glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-            _blur_material.use();
-            _blur_material.bind_texture(0, read_fb->color_textures().front(), scene.skybox_sampler);
-            _blur_material.set_uniform("screen_width", static_cast<float>(write_fb->width()));
-            _blur_material.set_uniform("screen_height", static_cast<float>(write_fb->height()));
-
-            _sprite.bind();
-            ::glDrawElements(GL_TRIANGLES, _sprite.index_count(), GL_UNSIGNED_INT, reinterpret_cast<void *>(_sprite.index_offset()));
-            _sprite.unbind();
-
-            write_fb->unbind();
-            std::ranges::swap(read_fb, write_fb);
+            apply_post_processing_effect(read_fb, write_fb, _blur_material, scene.skybox_sampler, _sprite,
+                                         [write_fb](const auto &m)
+                                         {
+                                             m.set_uniform("screen_width", static_cast<float>(write_fb->width()));
+                                             m.set_uniform("screen_height", static_cast<float>(write_fb->height()));
+                                         });
         }
-
-        read_fb->bind();
-
-        ::glEnable(GL_BLEND);
-        ::glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-        _label_material.use();
-        _sprite.bind();
 
         if (!scene.labels.empty())
         {
-            auto writer = BufferWriter{_camera_buffer};
-            writer.write(_orth_camera.view());
-            writer.write(_orth_camera.projection());
-            writer.write(_orth_camera.position());
-        }
+            read_fb->bind();
+            write_camera_data_to_ubo(_orth_camera, _camera_buffer);
 
-        for (const auto &[x, y, texture, color] : scene.labels)
-        {
             ::glBindBufferBase(GL_UNIFORM_BUFFER, 0, _camera_buffer.native_handle());
 
-            const auto model = Matrix4{
-                Vector3{
-                    static_cast<float>(x) + (texture->width() / 2.f) + 5,
-                    -static_cast<float>(y) - (texture->height() / 2.f),
-                    0.0f},
-                Vector3{static_cast<float>(texture->width()) / 2.f, static_cast<float>(texture->height()) / 2.f, 1.0f}};
-            _label_material.set_uniform("model", model);
-            _label_material.set_uniform("textColor", color);
+            ::glEnable(GL_BLEND);
+            ::glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-            _label_material.bind_texture(0, texture, scene.skybox_sampler);
+            _label_material.use();
+            for (const auto &[x, y, texture, color] : scene.labels)
+            {
 
-            ::glDrawElements(GL_TRIANGLES, _sprite.index_count(), GL_UNSIGNED_INT, reinterpret_cast<void *>(_sprite.index_offset()));
+                const auto model = Matrix4{
+                    Vector3{
+                        static_cast<float>(x) + (texture->width() / 2.f) + 5,
+                        -static_cast<float>(y) - (texture->height() / 2.f),
+                        0.0f},
+                    Vector3{static_cast<float>(texture->width()) / 2.f, static_cast<float>(texture->height()) / 2.f, 1.0f}};
+                _label_material.set_uniform("model", model);
+                _label_material.set_uniform("textColor", color);
+
+                _label_material.bind_texture(0, texture, scene.skybox_sampler);
+
+                ::glDrawElements(GL_TRIANGLES, _sprite.index_count(), GL_UNSIGNED_INT, reinterpret_cast<void *>(_sprite.index_offset()));
+            }
+            ::glDisable(GL_BLEND);
         }
-        _sprite.unbind();
 
-        ::glDisable(GL_BLEND);
+        _sprite.unbind();
 
         read_fb->unbind();
 
