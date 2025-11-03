@@ -206,7 +206,6 @@ namespace game
 
             mesh->bind();
             ::glDrawElements(GL_TRIANGLES, mesh->index_count(), GL_UNSIGNED_INT, reinterpret_cast<void *>(mesh->index_offset()));
-            mesh->unbind();
         }
 
         if (scene.skybox)
@@ -221,8 +220,6 @@ namespace game
 
             ::glDrawElements(GL_TRIANGLES, _skybox_cube.index_count(), GL_UNSIGNED_INT, reinterpret_cast<void *>(_skybox_cube.index_offset()));
 
-            _skybox_cube.unbind();
-
             ::glDepthFunc(GL_LESS);
             ::glEnable(GL_CULL_FACE);
         }
@@ -232,7 +229,6 @@ namespace game
             _debug_line_material.use();
             dbl->bind();
             ::glDrawArrays(GL_LINES, 0u, dbl->count());
-            dbl->unbind();
         }
 
         _main_framebuffer.frame_buffer.unbind();
@@ -314,7 +310,6 @@ namespace game
             _label_material.use();
             for (const auto &[x, y, texture, color] : scene.labels)
             {
-
                 const auto model = Matrix4{
                     Vector3{
                         static_cast<float>(x) + (texture->width() / 2.f) + 5,
