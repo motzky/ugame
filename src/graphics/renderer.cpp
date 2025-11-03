@@ -68,6 +68,17 @@ namespace
         return textures;
     }
 
+    auto model_matrix_for_label(std::uint32_t x, std::uint32_t y, std::uint32_t width, std::uint32_t height, std::uint32_t offset = 5)
+    {
+        return game::Matrix4{
+            game::Vector3{static_cast<float>(x) + (width / 2.f) + offset,
+                          -static_cast<float>(y) - (height / 2.f),
+                          0.0f},
+            game::Vector3{static_cast<float>(width) / 2.f,
+                          static_cast<float>(height) / 2.f,
+                          1.0f}};
+    }
+
     auto blit_all(const game::FrameBuffer &src, ::GLenum src_attachment, const game::FrameBuffer &dst, ::GLenum dst_attachment, ::GLbitfield mask = GL_COLOR_BUFFER_BIT) -> void
     {
         ::glNamedFramebufferReadBuffer(src.native_handle(), src_attachment);
@@ -310,12 +321,7 @@ namespace game
             _label_material.use();
             for (const auto &[x, y, texture, color] : scene.labels)
             {
-                const auto model = Matrix4{
-                    Vector3{
-                        static_cast<float>(x) + (texture->width() / 2.f) + 5,
-                        -static_cast<float>(y) - (texture->height() / 2.f),
-                        0.0f},
-                    Vector3{static_cast<float>(texture->width()) / 2.f, static_cast<float>(texture->height()) / 2.f, 1.0f}};
+                const auto model = model_matrix_for_label(x, y, texture->width(), texture->height());
                 _label_material.set_uniform("model", model);
                 _label_material.set_uniform("textColor", color);
 
