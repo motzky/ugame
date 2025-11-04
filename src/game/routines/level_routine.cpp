@@ -153,6 +153,8 @@ namespace game::routines
                 _player.restart();
                 _level.reset();
                 _level = std::make_unique<levels::LuaLevel>(_ps, _level_names[_level_num], _resource_cache, _resource_loader, _reader, _player, _bus);
+                _level->set_show_debug(_show_debug);
+                _level->set_show_physics_debug(_show_physics_debug);
                 _level->restart();
                 curernt_level = _level_num;
 
@@ -166,15 +168,6 @@ namespace game::routines
             for (auto &entity : level->scene().entities)
             {
                 entity->set_visibility(intersects_frustum(entity->bounding_box(), _player.camera().frustum_planes()));
-
-                if (_show_physics_debug)
-                {
-                    entity->bounding_box().draw(level->physics().debug_renderer(), Color::white());
-                    if (const auto static_collider = entity->static_collider(); static_collider)
-                    {
-                        static_collider->draw(level->physics().debug_renderer(), Color::red());
-                    }
-                }
             }
 
             if (_show_physics_debug)
@@ -200,6 +193,7 @@ namespace game::routines
         }
         log::info("LevelRoutine ending");
     }
+
     auto LevelRoutine::player() const -> const Player &
     {
         return _player;
@@ -259,6 +253,10 @@ namespace game::routines
         else if (event.key() == Key::F2 && event.state() == KeyState::UP)
         {
             _show_physics_debug = !_show_physics_debug;
+            if (_level)
+            {
+                _level->set_show_physics_debug(_show_physics_debug);
+            }
         }
     }
 }

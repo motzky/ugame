@@ -14,6 +14,7 @@ namespace game::levels
         virtual auto restart() -> void = 0;
 
         auto set_show_debug(bool show_debug) -> void { _show_debug = show_debug; }
+        auto set_show_physics_debug(bool show_physics_debug) -> void { _show_physics_debug = show_physics_debug; }
 
         auto scene() -> Scene &
         {
@@ -22,6 +23,7 @@ namespace game::levels
 
     protected:
         Scene _scene;
-        bool _show_debug;
+        bool _show_debug = false;
+        bool _show_physics_debug = false;
     };
 }

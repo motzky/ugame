@@ -67,6 +67,7 @@ namespace game::levels
         auto update_player_collisions(Player &player) -> void;
         auto update_level_state() -> bool;
         auto update_scene() -> void;
+        auto update_debug_rendering() -> void;
 
         PhysicsSystem &_ps;
 

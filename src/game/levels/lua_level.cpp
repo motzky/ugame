@@ -273,7 +273,7 @@ namespace game::levels
                                           {0.4f},
                                           {{0.f}, {1.f}, {0.707107f, 0.f, 0.f, 0.707107f}},
                                           barrel_textures,
-                                          TransformedShape{shape, {std::get<0>(info), {0.4f}, {0.707107f, 0.f, 0.f, 0.707107f}}},
+                                          TransformedShape{shape, {std::get<0>(info), {1.f}, {0.707107f, 0.f, 0.f, 0.707107f}}},
                                           static_cast<std::uint32_t>(std::get<3>(info)),
                                           static_cast<std::uint32_t>(std::get<4>(info))});
 
@@ -419,6 +419,11 @@ namespace game::levels
         }
 
         update_scene();
+
+        if (_show_debug || _show_physics_debug)
+        {
+            update_debug_rendering();
+        }
     }
 
     auto LuaLevel::restart() -> void
@@ -559,11 +564,6 @@ namespace game::levels
                 }
             }
         }
-
-        for (const auto &e : transformed_shapes)
-        {
-            e.draw(_ps.debug_renderer(), Color::white());
-        }
     }
 
     auto LuaLevel::update_player_collisions(Player &player) -> void
@@ -636,6 +636,21 @@ namespace game::levels
             }
             _scene.points[index].position.x = entity.position().x;
             _scene.points[index].position.z = entity.position().z;
+        }
+    }
+
+    auto LuaLevel::update_debug_rendering() -> void
+    {
+        if (_show_physics_debug)
+        {
+            for (auto &entity : _scene.entities)
+            {
+                entity->bounding_box().draw(_ps.debug_renderer(), Color::white());
+                if (const auto static_collider = entity->static_collider(); static_collider)
+                {
+                    static_collider->draw(_ps.debug_renderer(), Color::red());
+                }
+            }
         }
     }
 }

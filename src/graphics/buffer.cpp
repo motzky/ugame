@@ -15,6 +15,7 @@ namespace game
                   { ::glDeleteBuffers(1, &vbo); }},
           _size(size)
     {
+        ensure(size > 0, "Cannot create Buffor of size <= 0");
         ::glCreateBuffers(1, &_buffer);
         ::glNamedBufferStorage(_buffer, size, nullptr, GL_DYNAMIC_STORAGE_BIT);
     }
