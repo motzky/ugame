@@ -63,6 +63,7 @@ namespace game::levels
     private:
         auto update_entity_visibility() -> void;
         auto update_level(Player &player) -> void;
+        auto update_entity_collisions() -> void;
 
         PhysicsSystem &_ps;
 

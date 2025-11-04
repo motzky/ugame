@@ -408,54 +408,7 @@ namespace game::levels
 
         const auto runner = ScriptRunner{_script};
 
-        auto orig_positions = _entities |
-                              std::views::transform([](const auto &e)
-                                                    { return std::make_tuple(false, e.position()); }) |
-                              std::ranges::to<std::vector>();
-
-        for (const auto &[index, entity] : std::views::enumerate(_entities))
-        {
-            const auto &[position, color, tint_amount, collsion_layer, collision_mask] =
-                runner.execute<Vector3, Vector3, float, std::int64_t, std::int64_t>("Level_entity_info", index + 1);
-            entity.set_position(position);
-
-            _barrel_info[std::addressof(entity)] = {.tint_color = {.r = color.x, .g = color.y, .b = color.z}, .tint_amount = tint_amount};
-        }
-
-        const auto transformed_shapes =
-            std::views::zip_transform(
-                [](const auto &shape, const auto &entitiy)
-                { return TransformedShape{shape, {entitiy.position(), {1.f}, {0.707107f, 0.f, 0.f, 0.707107f}}}; },
-                _shapes,
-                _entities) |
-            std::ranges::to<std::vector>();
-
-        const auto max = std::ranges::size(transformed_shapes);
-        auto combos = std::views::iota(0zu, max) |
-                      std::views::transform([max](auto x)
-                                            { return std::views::iota(x + 1, max) |
-                                                     std::views::transform([x](auto y)
-                                                                           { return std::make_pair(x, y); }); }) |
-                      std::views::join;
-
-        for (const auto &[i, j] : combos)
-        {
-            const auto ent1 = _entities[i];
-            const auto ent2 = _entities[j];
-
-            if ((ent1.collision_mask() & ent2.collision_layer()) && (ent2.collision_mask() & ent1.collision_layer()))
-            {
-                const auto &transform_shape1 = transformed_shapes[i];
-                const auto &transform_shape2 = transformed_shapes[j];
-
-                if (transform_shape1.intersects(transform_shape2))
-                {
-                    std::get<0>(orig_positions[i]) = true;
-                    std::get<0>(orig_positions[j]) = true;
-                    _bus.post_entity_intersect(std::addressof(_entities[i]), std::addressof(_entities[j]));
-                }
-            }
-        }
+        update_entity_collisions();
 
         if (!player.flying())
         {
@@ -491,14 +444,6 @@ namespace game::levels
         default:
         {
 
-            for (const auto &[index, orig] : std::views::enumerate(orig_positions))
-            {
-                if (const auto &[revert, orig_position] = orig; revert)
-                {
-                    _entities[index].set_position(orig_position);
-                    runner.execute("Level_set_entity_position", index + 1, orig_position);
-                }
-            }
             if (runner.has_function("Level_get_ambient"))
             {
                 const auto ambient_vec = runner.execute<Vector3>("Level_get_ambient");
@@ -516,16 +461,16 @@ namespace game::levels
 
             for (const auto &[index, entity] : std::views::enumerate(_entities))
             {
+                if (static_cast<size_t>(index) >= _scene.points.size())
+                {
+                    log::debug("not enough lights: {}", index);
+                    break;
+                }
                 _scene.points[index].position.x = entity.position().x;
                 _scene.points[index].position.z = entity.position().z;
             }
         }
         break;
-        }
-
-        for (const auto &e : transformed_shapes)
-        {
-            e.draw(_ps.debug_renderer(), Color::white());
         }
     }
 
@@ -600,5 +545,77 @@ namespace game::levels
         const auto runner = ScriptRunner{_script};
 
         runner.execute("Level_update_level", player.position());
+    }
+
+    auto LuaLevel::update_entity_collisions() -> void
+    {
+        const auto runner = ScriptRunner{_script};
+
+        auto orig_positions = _entities |
+                              std::views::transform([](const auto &e)
+                                                    { return std::make_tuple(false, e.position()); }) |
+                              std::ranges::to<std::vector>();
+
+        for (const auto &[index, entity] : std::views::enumerate(_entities))
+        {
+            const auto &[position, color, tint_amount, collsion_layer, collision_mask] =
+                runner.execute<Vector3, Vector3, float, std::int64_t, std::int64_t>("Level_entity_info", index + 1);
+            entity.set_position(position);
+
+            _barrel_info[std::addressof(entity)] = {.tint_color = {.r = color.x, .g = color.y, .b = color.z}, .tint_amount = tint_amount};
+        }
+
+        const auto transformed_shapes =
+            std::views::zip_transform(
+                [](const auto &shape, const auto &entitiy)
+                { return TransformedShape{shape, {entitiy.position(), {1.f}, {0.707107f, 0.f, 0.f, 0.707107f}}}; },
+                _shapes,
+                _entities) |
+            std::ranges::to<std::vector>();
+
+        const auto max = std::ranges::size(transformed_shapes);
+        auto combos = std::views::iota(0zu, max) |
+                      std::views::transform([max](auto x)
+                                            { return std::views::iota(x + 1, max) |
+                                                     std::views::transform([x](auto y)
+                                                                           { return std::make_pair(x, y); }); }) |
+                      std::views::join;
+
+        for (const auto &[i, j] : combos)
+        {
+            const auto ent1 = _entities[i];
+            const auto ent2 = _entities[j];
+
+            if ((ent1.collision_mask() & ent2.collision_layer()) && (ent2.collision_mask() & ent1.collision_layer()))
+            {
+                const auto &transform_shape1 = transformed_shapes[i];
+                const auto &transform_shape2 = transformed_shapes[j];
+
+                if (transform_shape1.intersects(transform_shape2))
+                {
+                    std::get<0>(orig_positions[i]) = true;
+                    std::get<0>(orig_positions[j]) = true;
+                    _bus.post_entity_intersect(std::addressof(_entities[i]), std::addressof(_entities[j]));
+                }
+            }
+        }
+
+        const auto level_state = static_cast<LevelState>(runner.execute<std::int64_t>("Level_state"));
+        if (level_state == LevelState::PLAYING)
+        {
+            for (const auto &[index, orig] : std::views::enumerate(orig_positions))
+            {
+                if (const auto &[revert, orig_position] = orig; revert)
+                {
+                    _entities[index].set_position(orig_position);
+                    runner.execute("Level_set_entity_position", index + 1, orig_position);
+                }
+            }
+        }
+
+        for (const auto &e : transformed_shapes)
+        {
+            e.draw(_ps.debug_renderer(), Color::white());
+        }
     }
 }
