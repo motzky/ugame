@@ -406,8 +406,6 @@ namespace game::levels
 
         update_level_lua_state(player);
 
-        const auto runner = ScriptRunner{_script};
-
         update_entity_collisions();
 
         if (!player.flying())
@@ -415,49 +413,36 @@ namespace game::levels
             update_player_collisions(player);
         }
 
-        const auto level_state = static_cast<LevelState>(runner.execute<std::int64_t>("Level_state"));
-        switch (level_state)
+        if (!update_level_state())
         {
-            using enum LevelState;
-        case COMPLETE:
-        {
-            const auto name = runner.execute<std::string>("Level_name");
-            _bus.post_level_complete(name);
+            return;
         }
-        break;
-        case LOST:
-            _bus.post_restart_level();
-            break;
-        default:
+
+        const auto runner = ScriptRunner{_script};
+        if (runner.has_function("Level_get_ambient"))
         {
-
-            if (runner.has_function("Level_get_ambient"))
-            {
-                const auto ambient_vec = runner.execute<Vector3>("Level_get_ambient");
-                _scene.ambient = {.r = ambient_vec.x, .g = ambient_vec.y, .b = ambient_vec.z};
-            }
-            if (runner.has_function("Level_get_direction_light"))
-            {
-                const auto [direction_light_dir, direction_light_color] = runner.execute<Vector3, Vector3>("Level_get_direction_light");
-                _scene.directional = {.direction = direction_light_dir,
-                                      .color = {
-                                          .r = direction_light_color.x,
-                                          .g = direction_light_color.y,
-                                          .b = direction_light_color.z}};
-            }
-
-            for (const auto &[index, entity] : std::views::enumerate(_entities))
-            {
-                if (static_cast<size_t>(index) >= _scene.points.size())
-                {
-                    log::debug("not enough lights: {}", index);
-                    break;
-                }
-                _scene.points[index].position.x = entity.position().x;
-                _scene.points[index].position.z = entity.position().z;
-            }
+            const auto ambient_vec = runner.execute<Vector3>("Level_get_ambient");
+            _scene.ambient = {.r = ambient_vec.x, .g = ambient_vec.y, .b = ambient_vec.z};
         }
-        break;
+        if (runner.has_function("Level_get_direction_light"))
+        {
+            const auto [direction_light_dir, direction_light_color] = runner.execute<Vector3, Vector3>("Level_get_direction_light");
+            _scene.directional = {.direction = direction_light_dir,
+                                  .color = {
+                                      .r = direction_light_color.x,
+                                      .g = direction_light_color.y,
+                                      .b = direction_light_color.z}};
+        }
+
+        for (const auto &[index, entity] : std::views::enumerate(_entities))
+        {
+            if (static_cast<size_t>(index) >= _scene.points.size())
+            {
+                log::debug("not enough lights: {}", index);
+                break;
+            }
+            _scene.points[index].position.x = entity.position().x;
+            _scene.points[index].position.z = entity.position().z;
         }
     }
 
@@ -624,6 +609,28 @@ namespace game::levels
                 ts2 = player.controller().transformed_shape();
                 collision = ts1.intersects(ts2);
             }
+        }
+    }
+
+    auto LuaLevel::update_level_state() -> bool
+    {
+        const auto runner = ScriptRunner{_script};
+        const auto level_state = static_cast<LevelState>(runner.execute<std::int64_t>("Level_state"));
+        switch (level_state)
+        {
+            using enum LevelState;
+        case COMPLETE:
+        {
+            const auto name = runner.execute<std::string>("Level_name");
+            _bus.post_level_complete(name);
+            return false;
+        }
+        break;
+        case LOST:
+            _bus.post_restart_level();
+            return false;
+        default:
+            return true;
         }
     }
 }
