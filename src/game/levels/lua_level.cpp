@@ -552,6 +552,22 @@ namespace game::levels
             }
         }
 
+        for (const auto &[index, entity] : std::views::enumerate(_entities))
+        {
+            auto ts2 = entity.bounding_box();
+            for (const auto &static_entity : _level_entities |
+                                                 std::views::filter([](const auto &e)
+                                                                    { return e.has_static_collider(); }))
+            {
+                const auto ts1 = static_entity.static_collider().value();
+                auto collision = ts1.intersects(ts2);
+                if (collision)
+                {
+                    std::get<0>(orig_positions[index]) = true;
+                }
+            }
+        }
+
         const auto level_state = static_cast<LevelState>(runner.execute<std::int64_t>("Level_state"));
         if (level_state == LevelState::PLAYING)
         {
