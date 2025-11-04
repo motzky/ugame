@@ -402,12 +402,9 @@ namespace game::levels
 
     auto LuaLevel::update(Player &player) -> void
     {
-        const auto runner = ScriptRunner{_script};
+        update_entity_visibility();
 
-        for (const auto &[index, entity] : std::views::enumerate(_entities))
-        {
-            runner.execute("Level_set_entity_visibility", index + 1, entity.is_visible());
-        }
+        const auto runner = ScriptRunner{_script};
 
         runner.execute("Level_update_level", player.position());
 
@@ -586,5 +583,15 @@ namespace game::levels
     auto LuaLevel::handle_restart_level() -> void
     {
         restart();
+    }
+
+    auto LuaLevel::update_entity_visibility() -> void
+    {
+        const auto runner = ScriptRunner{_script};
+
+        for (const auto &[index, entity] : std::views::enumerate(_entities))
+        {
+            runner.execute("Level_set_entity_visibility", index + 1, entity.is_visible());
+        }
     }
 }

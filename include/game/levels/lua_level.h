@@ -61,6 +61,8 @@ namespace game::levels
         auto handle_restart_level() -> void override;
 
     private:
+        auto update_entity_visibility() -> void;
+
         PhysicsSystem &_ps;
 
         LuaScript _script;
