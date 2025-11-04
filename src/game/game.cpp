@@ -129,18 +129,23 @@ namespace game
 
         const auto vertex_shader = game::Shader{vertex_shader_file.data, game::ShaderType::VERTEX};
         const auto fragment_shader = game::Shader{fragment_shader_file.data, game::ShaderType::FRAGMENT};
-        resource_cache.insert<Material>("barrel_material", vertex_shader, fragment_shader);
+        resource_cache.insert<Material>("barrel_material", "simple.vert", vertex_shader, "barrel.frag", fragment_shader);
 
-        const auto checker_vertex_shader_file = TlvReader::get_text_file(reader, "simple.vert");
         const auto checker_fragment_shader_file = TlvReader::get_text_file(reader, "checker.frag");
-        const auto checker_vertex_shader = game::Shader{checker_vertex_shader_file.data, game::ShaderType::VERTEX};
+        const auto checker_vertex_shader = game::Shader{vertex_shader_file.data, game::ShaderType::VERTEX};
         const auto checker_fragment_shader = game::Shader{checker_fragment_shader_file.data, game::ShaderType::FRAGMENT};
-        resource_cache.insert<Material>("checkerboard_material", checker_vertex_shader, checker_fragment_shader);
+        resource_cache.insert<Material>("checkerboard_material", "simple.vert", checker_vertex_shader, "checker.frag", checker_fragment_shader);
 
         const auto simple_fragment_shader_file = TlvReader::get_text_file(reader, "simple.frag");
         const auto simple_fragment_shader = game::Shader{simple_fragment_shader_file.data, game::ShaderType::FRAGMENT};
-        resource_cache.insert<Material>("floor_material", vertex_shader, simple_fragment_shader);
-        resource_cache.insert<Material>("level_material", vertex_shader, simple_fragment_shader);
+        resource_cache.insert<Material>("floor_material", "simple.vert", vertex_shader, "simple.frag", simple_fragment_shader);
+        resource_cache.insert<Material>("level_material", "simple.vert", vertex_shader, "simple.frag", simple_fragment_shader);
+
+        // const auto shadow_vertex_shader_file = TlvReader::get_text_file(reader, "shadow.vert");
+        // const auto shadow_fragment_shader_file = TlvReader::get_text_file(reader, "shadow.frag");
+        // const auto shadow_vertex_shader = game::Shader{shadow_vertex_shader_file.data, game::ShaderType::VERTEX};
+        // const auto shadow_fragment_shader = game::Shader{shadow_fragment_shader_file.data, game::ShaderType::FRAGMENT};
+        // resource_cache.insert<Material>("shadow_material", shadow_vertex_shader, shadow_fragment_shader);
 
         game::log::info("Creating GL textures...");
 

@@ -55,7 +55,7 @@ namespace
         const auto frag_file = game::TlvReader::get_text_file(reader, frag_name);
         const auto frag_data = frag_file.data;
         const auto fragment_shader = game::Shader{frag_data, game::ShaderType::FRAGMENT};
-        return game::Material{vertex_shader, fragment_shader};
+        return game::Material{vert_name, vertex_shader, frag_name, fragment_shader};
     }
 
     auto generate_textures(std::size_t n, game::TextureUsage usage, std::uint32_t width, std::uint32_t height, std::uint8_t sample_count) -> std::vector<game::Texture>
@@ -160,6 +160,8 @@ namespace game
                                          {TextureUsage::DEPTH, width, height, 1}},
           _post_processing_framebuffer_2{generate_textures(1zu, TextureUsage::FRAMEBUFFER, width, height, 1),
                                          {TextureUsage::DEPTH, width, height, 1}},
+          _depth_map_framebuffer{{},
+                                 {TextureUsage::DEPTH, 1024, 1024, 1}},
           _sprite{mesh_loader.sprite()},
           _hdr_material{create_material(reader, "hdr.vert", "hdr.frag")},
           _grey_scale_material{create_material(reader, "grey_scale.vert", "grey_scale.frag")},
@@ -167,6 +169,7 @@ namespace game
           _blur_material{create_material(reader, "blur.vert", "blur.frag")},
           _ssao_material{create_material(reader, "ssao.vert", "ssao.frag")},
           _ssao_apply_material{create_material(reader, "ssao.vert", "ssao_apply.frag")},
+          _shadow_material{create_material(reader, "shadow.vert", "shadow.frag")},
           _orth_camera{static_cast<float>(width), static_cast<float>(height), 1000.f}
     {
         _orth_camera.set_position({width / 2.f, height / -2.f, 0.f});
@@ -175,12 +178,42 @@ namespace game
 
     auto Renderer::render(const Camera &camera, const Scene &scene, float gamma) const -> void
     {
-        _main_framebuffer.frame_buffer.bind();
-
-        ::glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        write_camera_data_to_ubo(camera, _camera_buffer);
+        _shadow_material.use();
+        auto shadow_orth_camera = Camera{1024.f, 1024.f, 1000.f};
+        shadow_orth_camera.set_position(scene.directional.direction);
+        shadow_orth_camera.set_direction(-scene.directional.direction);
+        write_camera_data_to_ubo(shadow_orth_camera, _camera_buffer);
         ::glBindBufferBase(GL_UNIFORM_BUFFER, 0, _camera_buffer.native_handle());
+
+        auto lightSpaceMatrix = Matrix4{shadow_orth_camera.projection()} * Matrix4{shadow_orth_camera.view()};
+
+        ::glViewport(0, 0, 1024, 1024);
+        _depth_map_framebuffer.frame_buffer.bind();
+        ::glClear(GL_DEPTH_BUFFER_BIT);
+        ::glCullFace(GL_FRONT);
+
+        for (const auto *entity : scene.entities)
+        {
+            const auto *mesh = entity->mesh();
+            const auto *material = entity->material();
+
+            material->use();
+            const auto model = Matrix4{entity->transform()};
+            material->set_uniform("model", model);
+            material->set_uniform("lightSpaceMatrix", lightSpaceMatrix);
+            material->invoke_uniform_callback(entity);
+            material->bind_textures(entity->textures());
+
+            mesh->bind();
+            ::glDrawElements(GL_TRIANGLES, mesh->index_count(), GL_UNSIGNED_INT, reinterpret_cast<void *>(mesh->index_offset()));
+        }
+
+        _depth_map_framebuffer.frame_buffer.unbind();
+        ::glViewport(0, 0, camera.width(), camera.height());
+        ::glCullFace(GL_BACK);
+
+        _main_framebuffer.frame_buffer.bind();
+        ::glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         {
             auto light_buffer = LightBuffer{
@@ -200,6 +233,8 @@ namespace game
             }
         }
 
+        write_camera_data_to_ubo(camera, _camera_buffer);
+        ::glBindBufferBase(GL_UNIFORM_BUFFER, 0, _camera_buffer.native_handle());
         ::glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, _light_buffer.native_handle());
 
         // for (const auto *entity : scene.entities | std::views::filter([](const auto *e)
@@ -212,8 +247,10 @@ namespace game
             material->use();
             const auto model = Matrix4{entity->transform()};
             material->set_uniform("model", model);
+            material->set_uniform("lightSpaceMatrix", lightSpaceMatrix);
             material->invoke_uniform_callback(entity);
             material->bind_textures(entity->textures());
+            material->bind_texture(99, &_depth_map_framebuffer.depth_texture, scene.skybox_sampler);
 
             mesh->bind();
             ::glDrawElements(GL_TRIANGLES, mesh->index_count(), GL_UNSIGNED_INT, reinterpret_cast<void *>(mesh->index_offset()));

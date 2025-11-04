@@ -18,7 +18,7 @@ namespace game
           _color_textures{color_textures},
           _depth_texture{depth_texture}
     {
-        expect(!color_textures.empty(), "must have at least one color texture");
+        auto has_color_textures = !color_textures.empty();
         expect(color_textures.size() < 10u, "only 10 color textures are supported");
         expect(std::ranges::all_of(color_textures, [&](const auto *e)
                                    { return e->width() == color_textures[0]->width() && e->height() == color_textures[0]->height(); }),
@@ -27,19 +27,28 @@ namespace game
 
         ::glCreateFramebuffers(1, &_handle);
 
-        for (const auto &[index, tex] : std::views::enumerate(_color_textures))
+        if (has_color_textures)
         {
-            ::glNamedFramebufferTexture(_handle, static_cast<::GLenum>(GL_COLOR_ATTACHMENT0 + index), tex->native_handle(), 0);
+            for (const auto &[index, tex] : std::views::enumerate(_color_textures))
+            {
+                ::glNamedFramebufferTexture(_handle, static_cast<::GLenum>(GL_COLOR_ATTACHMENT0 + index), tex->native_handle(), 0);
+            }
+            const auto attachments = std::views::iota(0zu, _color_textures.size()) |
+                                     std::views::transform([](auto e)
+                                                           { return static_cast<::GLenum>(GL_COLOR_ATTACHMENT0 + e); }) |
+                                     std::ranges::to<std::vector>();
+
+            ::glNamedFramebufferDrawBuffers(_handle, static_cast<::GLsizei>(attachments.size()), attachments.data());
+        }
+        else
+        {
+            // if no color attachments are given, this FBO is most likely used in shadow pass
+            // thus we need to tell OpenGL not to draw to and not to read from it
+            ::glNamedFramebufferDrawBuffer(_handle, GL_NONE);
+            ::glNamedFramebufferReadBuffer(_handle, GL_NONE);
         }
 
         ::glNamedFramebufferTexture(_handle, GL_DEPTH_ATTACHMENT, depth_texture->native_handle(), 0);
-
-        const auto attachments = std::views::iota(0zu, _color_textures.size()) |
-                                 std::views::transform([](auto e)
-                                                       { return static_cast<::GLenum>(GL_COLOR_ATTACHMENT0 + e); }) |
-                                 std::ranges::to<std::vector>();
-
-        ::glNamedFramebufferDrawBuffers(_handle, static_cast<::GLsizei>(attachments.size()), attachments.data());
 
         auto status = ::glCheckNamedFramebufferStatus(_handle, GL_FRAMEBUFFER);
         expect(status == GL_FRAMEBUFFER_COMPLETE, "framebuffer is not complete");

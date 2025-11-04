@@ -6,14 +6,18 @@ in vec4 view_position;
 in vec2 tex_coord;
 in vec4 frag_position;
 in mat3 tbn;
+in vec4 frag_position_light_space;
 
 layout (location = 0) out vec4 frag_color;
 layout (location = 1) out vec4 norm_color;
 layout (location = 2) out vec4 position_color;
 
-uniform sampler2D tex0;
-uniform sampler2D tex1;
-uniform sampler2D tex2;
+uniform sampler2D tex0; // albedo
+uniform sampler2D tex1; // specular
+uniform sampler2D tex2; // normal
+
+uniform sampler2D tex99; // shadow map
+
 uniform vec3 tint_color;
 uniform float tint_amount;
 
@@ -76,6 +80,19 @@ vec3 calc_point(int index)
     return ((diff + spec) * att) * point_color;
 }
 
+float calc_shadow(vec4 frag_pos_light_space)
+{
+    vec3 proj_coords = frag_pos_light_space.xyz / frag_pos_light_space.w;
+    proj_coords = proj_coords * 0.5 + 0.5;
+
+    float closest_depth = texture(tex99, proj_coords.xy).r;
+    float current_depth = proj_coords.z;
+
+    float shadow = current_depth > closest_depth ? 1.0 : 0.0;
+
+    return shadow;
+}
+
 void main()
 {
     vec3 norm = normalize(normal);
@@ -89,7 +106,9 @@ void main()
         color += calc_point(i);
     }
 
-    frag_color = vec4(mix(color * albedo.rgb, tint_color, tint_amount), 1.0);
+    float shadow = calc_shadow(frag_position_light_space);
+
+    frag_color = vec4(mix(color * albedo.rgb, tint_color, tint_amount) * (1.0 - shadow), 1.0);
     norm_color = vec4(normal_view, 1.0);
     position_color = view_position;
 }

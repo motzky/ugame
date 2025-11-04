@@ -4,12 +4,15 @@ in vec3 normal;
 in vec2 tex_coord;
 in vec4 frag_position;
 in mat3 tbn;
+in vec4 frag_position_light_space;
 
 out vec4 frag_color;
 
-uniform sampler2D tex0;
-uniform sampler2D tex1;
-uniform sampler2D tex2;
+uniform sampler2D tex0; // albedo
+uniform sampler2D tex1; // specular
+uniform sampler2D tex2; // normal
+
+uniform sampler2D tex99; // shadow map
 
 layout(std140, binding = 0) uniform camera
 {
@@ -77,6 +80,20 @@ vec3 checker_pattern()
     return c ? vec3(0.0) : vec3(1.0, 1.0, 1.0);
 }
 
+float calc_shadow(vec4 frag_pos_light_space)
+{
+    vec3 proj_coords = frag_pos_light_space.xyz / frag_pos_light_space.w;
+    proj_coords = proj_coords * 0.5 + 0.5;
+
+    float closest_depth = texture(tex99, proj_coords.xy).r;
+    float current_depth = proj_coords.z;
+
+    float shadow = current_depth > closest_depth ? 1.0 : 0.0;
+
+    return shadow;
+}
+
+
 void main()
 {
     vec4 albedo = texture(tex0, tex_coord) * vec4(checker_pattern(), 1.0);
@@ -88,5 +105,7 @@ void main()
         color += calc_point(i);
     }
 
-    frag_color = vec4(color * albedo.rgb, 1.0);
+    float shadow = calc_shadow(frag_position_light_space);
+
+    frag_color = vec4(color * albedo.rgb * (1.0 - shadow), 1.0);
 }

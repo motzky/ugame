@@ -16,10 +16,12 @@
 
 namespace game
 {
-    Material::Material(const Shader &vertex_shader, const Shader &fragment_shader)
+    Material::Material(std::string_view vertex_shader_name, const Shader &vertex_shader, std::string_view fragment_shader_name, const Shader &fragment_shader)
         : _handle{},
           _uniforms{},
-          _uniform_callback{}
+          _uniform_callback{},
+          _vertex_shader_name{vertex_shader_name},
+          _fragment_shader_name{fragment_shader_name}
     {
         ensure(vertex_shader.type() == ShaderType::VERTEX, "vertex_shader is not a vertex shader");
         ensure(fragment_shader.type() == ShaderType::FRAGMENT, "fragment_shader is not a fragment shader");
@@ -77,7 +79,7 @@ namespace game
     auto Material::set_uniform(std::string_view name, const Color &obj) const -> void
     {
         const auto uniform = _uniforms.find(name);
-        ensure(uniform != std::ranges::cend(_uniforms), "uniform not found: {}", name);
+        ensure(uniform != std::ranges::cend(_uniforms), "uniform not found: {} in material {}, {}", name, _vertex_shader_name, _fragment_shader_name);
 
         ::glUniform3fv(uniform->second, 1, reinterpret_cast<const ::GLfloat *>(std::addressof(obj)));
     }
@@ -85,7 +87,7 @@ namespace game
     auto Material::set_uniform(std::string_view name, const Matrix4 &obj) const -> void
     {
         const auto uniform = _uniforms.find(name);
-        ensure(uniform != std::ranges::cend(_uniforms), "uniform not found: {}", name);
+        ensure(uniform != std::ranges::cend(_uniforms), "uniform not found: {} in material {}, {}", name, _vertex_shader_name, _fragment_shader_name);
 
         ::glUniformMatrix4fv(uniform->second, 1, GL_FALSE, obj.data().data());
     }
@@ -93,7 +95,7 @@ namespace game
     auto Material::set_uniform(std::string_view name, std::int32_t obj) const -> void
     {
         const auto uniform = _uniforms.find(name);
-        ensure(uniform != std::ranges::cend(_uniforms), "uniform not found: {}", name);
+        ensure(uniform != std::ranges::cend(_uniforms), "uniform not found: {} in material {}, {}", name, _vertex_shader_name, _fragment_shader_name);
 
         ::glUniform1i(uniform->second, obj);
     }
@@ -101,7 +103,7 @@ namespace game
     auto Material::set_uniform(std::string_view name, float obj) const -> void
     {
         const auto uniform = _uniforms.find(name);
-        ensure(uniform != std::ranges::cend(_uniforms), "uniform not found: {}", name);
+        ensure(uniform != std::ranges::cend(_uniforms), "uniform not found: {} in material {}, {}", name, _vertex_shader_name, _fragment_shader_name);
 
         ::glUniform1f(uniform->second, obj);
     }

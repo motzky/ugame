@@ -6,14 +6,17 @@ in vec4 view_position;
 in vec2 tex_coord;
 in vec4 frag_position;
 in mat3 tbn;
+in vec4 frag_position_light_space;
 
 layout (location = 0) out vec4 frag_color;
 layout (location = 1) out vec4 norm_color;
 layout (location = 2) out vec4 position_color;
 
-uniform sampler2D tex0;
-uniform sampler2D tex1;
-uniform sampler2D tex2;
+uniform sampler2D tex0; // albedo
+uniform sampler2D tex1; // specular
+uniform sampler2D tex2; // normal
+
+uniform sampler2D tex99; // shadow map
 
 layout(std140, binding = 0) uniform camera
 {
@@ -74,18 +77,34 @@ vec3 calc_point(int index)
     return ((diff + spec) * att) * point_color;
 }
 
+float calc_shadow(vec4 frag_pos_light_space)
+{
+    vec3 proj_coords = frag_pos_light_space.xyz / frag_pos_light_space.w;
+    proj_coords = proj_coords * 0.5 + 0.5;
+
+    float closest_depth = texture(tex99, proj_coords.xy).r;
+    float current_depth = proj_coords.z;
+
+    float shadow = current_depth > closest_depth ? 1.0 : 0.0;
+
+    return shadow;
+}
+
 void main()
 {
     vec3 norm = normalize(normal);
 
     vec4 albedo = texture(tex0, tex_coord);
-    vec3 color = calc_ambient() * albedo.rgb;
-    color += calc_directional();
+    float shadow = calc_shadow(frag_position_light_space);
+
+    vec3 color = calc_ambient() * (1.0 - shadow);
+    color += calc_directional() * (1.0 - shadow);
 
     for(int i = 0; i < num_points; ++i)
     {
-        color += calc_point(i);
+        color += calc_point(i) * (1.0 - shadow);
     }
+
 
     frag_color = vec4(color * albedo.rgb, 1.0);
     norm_color = vec4(normal_view, 1.0);

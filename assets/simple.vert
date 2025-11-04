@@ -11,8 +11,10 @@ out vec4 view_position;
 out vec2 tex_coord;
 out vec4 frag_position;
 out mat3 tbn;
+out vec4 frag_position_light_space;
 
 uniform mat4 model;
+uniform mat4 lightSpaceMatrix;
 
 layout(std140, binding = 0) uniform camera
 {
@@ -35,4 +37,6 @@ void main()
 
     frag_position = model * vec4(in_position, 1.0);
     view_position = view * frag_position;
+
+    frag_position_light_space = lightSpaceMatrix * frag_position;
 }

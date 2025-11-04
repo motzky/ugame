@@ -18,6 +18,7 @@ namespace game
         Camera(float width, float height, float depth);
 
         auto direction() const -> Vector3;
+        auto set_direction(const Vector3 &direction) -> void;
         auto right() const -> Vector3;
         auto up() const -> Vector3;
         auto position() const -> Vector3;

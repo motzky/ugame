@@ -26,7 +26,7 @@ namespace game
     public:
         using UniformCallback = std::function<void(const Material *, const Entity *)>;
 
-        Material(const Shader &vertex_shader, const Shader &fragment_shader);
+        Material(std::string_view vertex_shader_name, const Shader &vertex_shader, std::string_view fragment_shader_name, const Shader &fragment_shader);
 
         auto use() const -> void;
         auto set_uniform(std::string_view name, const Color &obj) const -> void;
@@ -47,5 +47,7 @@ namespace game
         AutoRelease<::GLuint> _handle;
         StringUnorderedMap<::GLuint> _uniforms;
         UniformCallback _uniform_callback;
+        std::string_view _vertex_shader_name;
+        std::string_view _fragment_shader_name;
     };
 }

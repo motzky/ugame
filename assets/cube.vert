@@ -8,6 +8,7 @@ layout(location = 3) in vec2 in_uv;
 out vec3 tex_coord;
 
 uniform mat4 model;
+uniform mat4 lightSpaceMatrix;
 
 layout(std140, binding = 0) uniform camera
 {

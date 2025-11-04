@@ -16,7 +16,6 @@ namespace
                                          std::sin(pitch),
                                          std::sin(yaw) * std::cos(pitch)});
     }
-
 }
 
 namespace game
@@ -61,6 +60,16 @@ namespace game
     auto Camera::direction() const -> Vector3
     {
         return _direction;
+    }
+    auto Camera::set_direction(const Vector3 &direction) -> void
+    {
+        _direction = direction;
+
+        // now calculate yaw and pitch from new direction vector
+        auto norm = game::Vector3::normalize(_direction - _position);
+        // auto norm = game::Vector3::normalize(_direction);
+        _yaw = std::asin(norm.y);
+        _pitch = std::atan2(norm.x, norm.z);
     }
     auto Camera::right() const -> Vector3
     {

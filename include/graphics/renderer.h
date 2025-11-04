@@ -51,6 +51,7 @@ namespace game
         FrameBufferData _ssao_framebuffer;
         FrameBufferData _post_processing_framebuffer_1;
         FrameBufferData _post_processing_framebuffer_2;
+        FrameBufferData _depth_map_framebuffer;
         Mesh _sprite;
         Material _hdr_material;
         Material _grey_scale_material;
@@ -58,6 +59,7 @@ namespace game
         Material _blur_material;
         Material _ssao_material;
         Material _ssao_apply_material;
+        Material _shadow_material;
         Camera _orth_camera;
     };
 }
