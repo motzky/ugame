@@ -438,7 +438,7 @@ namespace game::levels
         {
             if (static_cast<size_t>(index) >= _scene.points.size())
             {
-                log::debug("not enough lights: {}", index);
+                // log::debug("not enough lights: {}", index);
                 break;
             }
             _scene.points[index].position.x = entity.position().x;
