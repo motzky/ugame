@@ -404,9 +404,9 @@ namespace game::levels
     {
         update_entity_visibility();
 
-        const auto runner = ScriptRunner{_script};
+        update_level(player);
 
-        runner.execute("Level_update_level", player.position());
+        const auto runner = ScriptRunner{_script};
 
         auto orig_positions = _entities |
                               std::views::transform([](const auto &e)
@@ -593,5 +593,12 @@ namespace game::levels
         {
             runner.execute("Level_set_entity_visibility", index + 1, entity.is_visible());
         }
+    }
+
+    auto LuaLevel::update_level(Player &player) -> void
+    {
+        const auto runner = ScriptRunner{_script};
+
+        runner.execute("Level_update_level", player.position());
     }
 }
