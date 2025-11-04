@@ -418,32 +418,7 @@ namespace game::levels
             return;
         }
 
-        const auto runner = ScriptRunner{_script};
-        if (runner.has_function("Level_get_ambient"))
-        {
-            const auto ambient_vec = runner.execute<Vector3>("Level_get_ambient");
-            _scene.ambient = {.r = ambient_vec.x, .g = ambient_vec.y, .b = ambient_vec.z};
-        }
-        if (runner.has_function("Level_get_direction_light"))
-        {
-            const auto [direction_light_dir, direction_light_color] = runner.execute<Vector3, Vector3>("Level_get_direction_light");
-            _scene.directional = {.direction = direction_light_dir,
-                                  .color = {
-                                      .r = direction_light_color.x,
-                                      .g = direction_light_color.y,
-                                      .b = direction_light_color.z}};
-        }
-
-        for (const auto &[index, entity] : std::views::enumerate(_entities))
-        {
-            if (static_cast<size_t>(index) >= _scene.points.size())
-            {
-                // log::debug("not enough lights: {}", index);
-                break;
-            }
-            _scene.points[index].position.x = entity.position().x;
-            _scene.points[index].position.z = entity.position().z;
-        }
+        update_scene();
     }
 
     auto LuaLevel::restart() -> void
@@ -631,6 +606,36 @@ namespace game::levels
             return false;
         default:
             return true;
+        }
+    }
+
+    auto LuaLevel::update_scene() -> void
+    {
+        const auto runner = ScriptRunner{_script};
+        if (runner.has_function("Level_get_ambient"))
+        {
+            const auto ambient_vec = runner.execute<Vector3>("Level_get_ambient");
+            _scene.ambient = {.r = ambient_vec.x, .g = ambient_vec.y, .b = ambient_vec.z};
+        }
+        if (runner.has_function("Level_get_direction_light"))
+        {
+            const auto [direction_light_dir, direction_light_color] = runner.execute<Vector3, Vector3>("Level_get_direction_light");
+            _scene.directional = {.direction = direction_light_dir,
+                                  .color = {
+                                      .r = direction_light_color.x,
+                                      .g = direction_light_color.y,
+                                      .b = direction_light_color.z}};
+        }
+
+        for (const auto &[index, entity] : std::views::enumerate(_entities))
+        {
+            if (static_cast<size_t>(index) >= _scene.points.size())
+            {
+                // log::debug("not enough lights: {}", index);
+                break;
+            }
+            _scene.points[index].position.x = entity.position().x;
+            _scene.points[index].position.z = entity.position().z;
         }
     }
 }
