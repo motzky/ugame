@@ -404,7 +404,7 @@ namespace game::levels
     {
         update_entity_visibility();
 
-        update_level(player);
+        update_level_lua_state(player);
 
         const auto runner = ScriptRunner{_script};
 
@@ -412,20 +412,7 @@ namespace game::levels
 
         if (!player.flying())
         {
-            auto ts2 = player.controller().transformed_shape();
-            for (const auto &static_entity : _level_entities | std::views::filter([](const auto &e)
-                                                                                  { return e.has_static_collider(); }))
-            {
-                const auto ts1 = static_entity.static_collider().value();
-                auto collision = ts1.intersects(ts2);
-                while (collision)
-                {
-                    player.bounce(collision->penetration_axis, collision->penetration_depth);
-                    runner.execute("Level_update_level", player.position());
-                    ts2 = player.controller().transformed_shape();
-                    collision = ts1.intersects(ts2);
-                }
-            }
+            update_player_collisions(player);
         }
 
         const auto level_state = static_cast<LevelState>(runner.execute<std::int64_t>("Level_state"));
@@ -540,7 +527,7 @@ namespace game::levels
         }
     }
 
-    auto LuaLevel::update_level(Player &player) -> void
+    auto LuaLevel::update_level_lua_state(Player &player) -> void
     {
         const auto runner = ScriptRunner{_script};
 
@@ -616,6 +603,27 @@ namespace game::levels
         for (const auto &e : transformed_shapes)
         {
             e.draw(_ps.debug_renderer(), Color::white());
+        }
+    }
+
+    auto LuaLevel::update_player_collisions(Player &player) -> void
+    {
+        const auto runner = ScriptRunner{_script};
+
+        auto ts2 = player.controller().transformed_shape();
+        for (const auto &static_entity : _level_entities |
+                                             std::views::filter([](const auto &e)
+                                                                { return e.has_static_collider(); }))
+        {
+            const auto ts1 = static_entity.static_collider().value();
+            auto collision = ts1.intersects(ts2);
+            while (collision)
+            {
+                player.bounce(collision->penetration_axis, collision->penetration_depth);
+                runner.execute("Level_update_level", player.position());
+                ts2 = player.controller().transformed_shape();
+                collision = ts1.intersects(ts2);
+            }
         }
     }
 }

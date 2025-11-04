@@ -62,8 +62,9 @@ namespace game::levels
 
     private:
         auto update_entity_visibility() -> void;
-        auto update_level(Player &player) -> void;
+        auto update_level_lua_state(Player &player) -> void;
         auto update_entity_collisions() -> void;
+        auto update_player_collisions(Player &player) -> void;
 
         PhysicsSystem &_ps;
 
