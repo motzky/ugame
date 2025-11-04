@@ -26,7 +26,7 @@ function Level_restart_level()
         position = Vector3(0.0, -0.2, 0.0),
         visibility = true,
         color = Vector3(1.0, 0.0, 0.0),
-        tint = 1.0,
+        tint = 5.0,
         collision_layer = 1,
         collision_mask = 0,
     }
@@ -34,7 +34,7 @@ function Level_restart_level()
         position = Vector3(5.0, -0.2, 0.0),
         visibility = true,
         color = Vector3(1.0, 0.0, 0.0),
-        tint = 0.5,
+        tint = 0.3,
         collision_layer = 2,
         collision_mask = 2,
     }
