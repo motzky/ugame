@@ -29,10 +29,10 @@ auto main(int argc, char **argv) -> int
 #endif
 
     {
-        auto g = game::Game{args};
 
         try
         {
+            auto g = game::Game{args};
             const auto root = !args.empty() ? args.front() : ".";
             g.run(root);
         }
