@@ -60,17 +60,17 @@ namespace game::routines
         }
         else
         {
-            const *auto main_theme_data = _resource_cache.get<SoundData>("main_theme");
+            const auto main_theme_data = _resource_cache.get<SoundData>("main_theme");
 
             auto wfx = ::WAVEFORMATEXTENSIBLE{};
-            ensure(main_theme_data.format.size_bytes() >= sizeof(wfx), "fmt chunk to small");
-            std::memcpy(&wfx, main_theme_data.format..data(), sizeof(wfx));
+            ensure(main_theme_data->format.size_bytes() >= sizeof(wfx), "fmt chunk to small");
+            std::memcpy(&wfx, main_theme_data->format.data(), sizeof(wfx));
 
-            _impl->sound_data = main_theme_data.data | std::ranges::to<std::vector>();
+            _impl->sound_data = main_theme_data->data | std::ranges::to<std::vector>();
 
             const auto xaudio_buffer = ::XAUDIO2_BUFFER{
                 .Flags = XAUDIO2_END_OF_STREAM,
-                .AudioBytes = static_cast<::UINT32>(_impl->sound_data.size_bytes()),
+                .AudioBytes = static_cast<::UINT32>(_impl->sound_data.size()),
                 .pAudioData = reinterpret_cast<const ::BYTE *>(_impl->sound_data.data()),
                 .LoopCount = XAUDIO2_LOOP_INFINITE};
 

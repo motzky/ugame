@@ -78,7 +78,7 @@ target_include_directories(gamelib PUBLIC ${stb_lib_SOURCE_DIR} ${imgui_SOURCE_D
 if(${Freetype_FOUND})
 target_include_directories(gamelib PUBLIC ${FREETYPE_INCLUDE_DIRS})
 else()
-target_include_directories(gamelib PUBLIC ${freetype_INCLUDE_DIRS})
+target_include_directories(gamelib PUBLIC ${freetype_SOURCE_DIR}/include)
 endif()
 
 target_compile_features(gamelib PUBLIC cxx_std_23)
@@ -89,7 +89,7 @@ target_include_directories(gamelib PUBLIC third_party)
 target_compile_options(gamelib PUBLIC /W4 /WX /Debug /Od)
 target_compile_definitions(gamelib PRIVATE -DWIN32 -D_WIN32 -DNOMINMAX)
 target_compile_options(nathan_stream PUBLIC  /W4 /WX /Debug /Od)
-target_compile_definitions(nathan_stream PRIVATE -DWIN32 -D_WIN32)
+target_compile_definitions(nathan_stream PRIVATE -DWIN32 -D_WIN32 -DNOMINMAX)
 
 target_include_directories(gamelib PRIVATE ${zstd_SOURCE_DIR}/lib)
 target_include_directories(nathan_stream PRIVATE ${zstd_SOURCE_DIR}/lib)

@@ -222,7 +222,7 @@ namespace game::routines
                                       {0.4f},
                                       {{0.f}, {1.f}, {0.707107f, 0.f, 0.f, 0.707107f}},
                                       barrel_textures,
-                                      TransformedShape{nullptr, {Vector3{0.0, -0.2, 0.0}, {0.4f}, {0.707107f, 0.f, 0.f, 0.707107f}}},
+                                      TransformedShape{nullptr, {Vector3{0.0f, -0.2f, 0.0f}, {0.4f}, {0.707107f, 0.f, 0.f, 0.707107f}}},
                                       0u,
                                       0u});
 
@@ -235,7 +235,7 @@ namespace game::routines
 
         const auto ambient_vec = Vector3{0.15f};
         const auto direction_light_dir = Vector3{0.f, 0.f, 1.f};
-        const auto direction_light_color = Vector3{0.2};
+        const auto direction_light_color = Vector3{0.2f};
 
         _scene = Scene{
             .entities = _entities |

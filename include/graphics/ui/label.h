@@ -6,7 +6,7 @@ namespace game
 {
 
     class Texture;
-    class Color;
+    struct Color;
 
     namespace graphics::ui
     {

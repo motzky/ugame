@@ -103,7 +103,7 @@
                 },
                 {
                     "type": "build",
-                    "name": "debug-build"
+                    "name": "Debug"
                 },
                 {
                     "type": "test",
@@ -126,7 +126,7 @@
                 },
                 {
                     "type": "build",
-                    "name": "release-build"
+                    "name": "Release"
                 },
                 {
                     "type": "test",
